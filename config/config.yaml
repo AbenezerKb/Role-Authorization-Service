@@ -1,0 +1,20 @@
+database:
+  url: postgres://root@localhost:26257/authz?sslmode=disable
+server:
+  port: 8000
+  timeout: 30s
+cors:
+  origin:
+    - "*"
+  allow_credentials: true
+  headers:
+    - "*"
+  methods:
+    - GET
+    - POST
+    - PUT
+    - OPTIONS
+    - DELETE
+    - PATCH
+opa:
+  path: platform/opa/authz.rego
