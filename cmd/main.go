@@ -1,7 +1,10 @@
 package main
 
-import "2f-authorization/initiator"
+import (
+	"2f-authorization/initiator"
+	"context"
+)
 
 func main() {
-	initiator.Initiator()
+	initiator.Initiator(context.Background())
 }

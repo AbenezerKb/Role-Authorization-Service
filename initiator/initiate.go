@@ -1,8 +1,9 @@
 package initiator
 
 import (
-	"2f-authorization/platform/logger"
+	"2f-authorization/internal/constants/dbinstance"
 	"2f-authorization/internal/handler/middleware"
+	"2f-authorization/platform/logger"
 	"context"
 	"fmt"
 	"net/http"
@@ -17,7 +18,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Initiator() {
+func Initiator(ctx context.Context) {
 
 	log := logger.New(InitLogger())
 	log.Info(context.Background(), "logger initialized")
@@ -31,11 +32,15 @@ func Initiator() {
 	log.Info(context.Background(), "database initialized")
 
 	log.Info(context.Background(), "initializing persistence layer")
-	persistence := InitPersistence(Conn, log)
+	persistence := InitPersistence(dbinstance.New(Conn), log)
 	log.Info(context.Background(), "persistence layer initialized")
 
+	log.Info(context.Background(), "initializing opa")
+	opa := InitOpa(ctx, viper.GetString("opa.path"), persistence, log)
+	log.Info(context.Background(), "opa initialized")
+
 	log.Info(context.Background(), "initializing module")
-	module := InitModule(persistence, log)
+	module := InitModule(persistence, log, opa)
 	log.Info(context.Background(), "module initialized")
 
 	log.Info(context.Background(), "initializing handler")

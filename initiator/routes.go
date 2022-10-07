@@ -7,5 +7,4 @@ import (
 )
 
 func InitRouter(group *gin.RouterGroup, handler Handler, module Module, log logger.Logger) {
-
 }
