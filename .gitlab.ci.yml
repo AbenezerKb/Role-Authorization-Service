@@ -16,7 +16,6 @@ test:
   extends: .go-cache
   stage: test
   services:
-    - redis:latest
     - name: cockroachdb/cockroach:latest
       alias: db
       command: ["start-single-node", "--insecure"]
