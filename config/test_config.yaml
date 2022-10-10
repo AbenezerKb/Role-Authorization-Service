@@ -1,5 +1,5 @@
 database:
-  url: postgres://root@localhost:26257/authz?sslmode=disable
+  url: postgres://root@db:26257/defaultdb?sslmode=disable
 migration:
   path: internal/constants/query/schemas
 server:

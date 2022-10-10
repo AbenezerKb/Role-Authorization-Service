@@ -6,6 +6,8 @@ import (
 	"2f-authorization/internal/handler/middleware"
 	"2f-authorization/platform/logger"
 	"context"
+	"fmt"
+	"os"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
@@ -22,7 +24,14 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "logger initialized")
 
 	log.Info(context.Background(), "initializing config")
-	initiator.InitConfig("config", path+"config", log)
+	configName := "config"
+	if name := os.Getenv("CONFIG_NAME"); name != "" {
+		configName = name
+		log.Info(context.Background(), fmt.Sprintf("config name is set to %s", configName))
+	} else {
+		log.Info(context.Background(), "using default config name 'config'")
+	}
+	initiator.InitConfig(configName, path+"config", log)
 	log.Info(context.Background(), "config initialized")
 
 	log.Info(context.Background(), "initializing database")
@@ -30,7 +39,7 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "database initialized")
 
 	log.Info(context.Background(), "initializing migration")
-	m := initiator.InitiateMigration(path+viper.GetString("migration.path"), path+viper.GetString("database.test_url"), log)
+	m := initiator.InitiateMigration(path+viper.GetString("migration.path"), path+viper.GetString("database.url"), log)
 	initiator.UpMigration(m, log)
 	log.Info(context.Background(), "migration initialized")
 

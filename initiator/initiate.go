@@ -24,7 +24,14 @@ func Initiator(ctx context.Context) {
 	log.Info(context.Background(), "logger initialized")
 
 	log.Info(context.Background(), "initializing config")
-	InitConfig("config", "config", log)
+	configName := "config"
+	if name := os.Getenv("CONFIG_NAME"); name != "" {
+		configName = name
+		log.Info(context.Background(), fmt.Sprintf("config name is set to %s", configName))
+	} else {
+		log.Info(context.Background(), "using default config name 'config'")
+	}
+	InitConfig(configName, "config", log)
 	log.Info(context.Background(), "config initialized")
 
 	log.Info(context.Background(), "initializing database")
