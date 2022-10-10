@@ -21,7 +21,7 @@ test:
       command: ["start-single-node", "--insecure"]
 
   tags:
-    - sso
+    - authorization
   before_script:
     - apt update && apt install openssh-client
     - eval $(ssh-agent -s)
