@@ -1,5 +1,8 @@
 database:
   url: postgres://root@localhost:26257/authz?sslmode=disable
+  test_url: postgres://root@localhost:26257/defaultdb?sslmode=disable
+migration:
+  path: internal/constants/query/schemas
 server:
   port: 8000
   timeout: 30s
