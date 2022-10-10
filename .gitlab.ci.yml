@@ -1,0 +1,39 @@
+image: golang:1.18
+
+.go-cache:
+  variables:
+    GOPATH: $CI_PROJECT_DIR/.go
+  before_script:
+    - mkdir -p .go
+  cache:
+    paths:
+      - .go/pkg/mod/
+
+stages:
+  - test
+
+test:
+  extends: .go-cache
+  stage: test
+  services:
+    - redis:latest
+    - name: cockroachdb/cockroach:latest
+      alias: db
+      command: ["start-single-node", "--insecure"]
+
+  tags:
+    - sso
+  before_script:
+    - apt update && apt install openssh-client
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - echo "$SSH_ACCESS_KEY" | tr -d '\r' | ssh-add -
+    - chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - go env -w GOPRIVATE="gitlab.com/2ftimeplc/*"
+    - printf "machine gitlab.com\nlogin 2ftimesgitlab@gmail.com\npassword $ACCESS_TOKEN" > ~/.netrc
+    - printf '[user]\n\temail = 2ftimesgitlab@gmail.com\n\tname = Two F Times Trading PLC\n\n[url "ssh://git@gitlab.com/"]\n\tinsteadOf = https://gitlab.com/' > ~/.gitconfig
+
+  script:
+    - go test ./... -p=1 -count=1
