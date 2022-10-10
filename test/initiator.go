@@ -35,7 +35,7 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "config initialized")
 
 	log.Info(context.Background(), "initializing database")
-	Conn := initiator.InitDB(viper.GetString("database.test_url"), log)
+	Conn := initiator.InitDB(viper.GetString("database.url"), log)
 	log.Info(context.Background(), "database initialized")
 
 	log.Info(context.Background(), "initializing migration")
