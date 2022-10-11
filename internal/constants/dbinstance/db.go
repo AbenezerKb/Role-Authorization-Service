@@ -8,13 +8,13 @@ import (
 
 type DBInstance struct {
 	*db.Queries
-	pool *pgxpool.Pool
+	Pool *pgxpool.Pool
 }
 
 func New(pool *pgxpool.Pool) DBInstance {
 	return DBInstance{
 		Queries: db.New(pool),
-		pool:    pool,
+		Pool:    pool,
 	}
 }
 
