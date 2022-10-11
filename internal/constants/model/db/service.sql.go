@@ -12,30 +12,125 @@ import (
 )
 
 const createService = `-- name: CreateService :one
-INSERT INTO services (
-    name,
-    password
-) VALUES (
-    $1, $2
-) RETURNING id, status, name, password, deleted_at, created_at, updated_at
+with _service as (
+    insert
+        into
+            services (name,
+                      password)
+            values ($1,
+                    $2)
+            returning password,
+                id as service_id,
+                name as service,
+                status as service_status
+),
+     _tenant as (
+         insert
+             into
+                 tenants (tenant_name,
+                          service_id)
+                 select
+                     'administrator',
+                     service_id
+                 from
+                     _service
+                 returning tenant_name as tenant,
+                     id as tenant_id
+     ),
+     _role as (
+         insert
+             into
+                 roles(name,
+                       tenant_id)
+                 select
+                     'service-admin',
+                     tenant_id
+                 from
+                     _tenant
+                 returning id as role_id
+     ),
+     _permission as(
+         insert
+             into
+                 permissions(name,
+                             description,
+                             statment)
+                 values ('manage-all',
+                         'super admin can perform any action on any domain',
+                         json_build_object('action', '*', 'resource', '*', 'effect', 'allow'))
+                 returning id as permission_id
+     ),
+     _user as(
+         insert
+             into
+                 users(user_id)
+                 values ($3)
+                 returning id as user_id
+     ),
+     _tenant_user_role as
+         (
+             insert
+                 into
+                     tenant_users_roles(tenant_id,
+                                        user_id,
+                                        role_id)
+                     select
+                         tenant_id ,
+                         user_id,
+                         role_id
+                     from
+                         _tenant,
+                         _user,
+                         _role
+                     returning role_id),
+     _role_permission as
+         (
+             insert
+                 into
+                     role_permissions (role_id,
+                                       permission_id)
+                     select
+                         role_id,
+                         permission_id
+                     from
+                         _tenant_user_role,
+                         _permission
+                     returning role_id
+         )
+select
+    service_id,
+    password,
+    service,
+    service_status,
+    tenant
+from
+    _service,
+    _tenant
 `
 
 type CreateServiceParams struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	Name     string    `json:"name"`
+	Password string    `json:"password"`
+	UserID   uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
-	row := q.db.QueryRow(ctx, createService, arg.Name, arg.Password)
-	var i Service
+type CreateServiceRow struct {
+	ServiceID     uuid.UUID `json:"service_id"`
+	Password      string    `json:"password"`
+	Service       string    `json:"service"`
+	ServiceStatus bool      `json:"service_status"`
+	Tenant        string    `json:"tenant"`
+}
+
+func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (CreateServiceRow, error) {
+	row := q.db.QueryRow(ctx, createService, arg.Name, arg.Password, arg.UserID)
+	var i CreateServiceRow
 	err := row.Scan(
-		&i.ID,
-		&i.Status,
-		&i.Name,
+		&i.ServiceID,
 		&i.Password,
-		&i.DeletedAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.Service,
+		&i.ServiceStatus,
+		&i.Tenant,
 	)
 	return i, err
 }
