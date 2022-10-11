@@ -26,7 +26,7 @@ func Init(logger logger.Logger, serviceModule module.Service) rest.Service {
 }
 
 func (s *service) CreateService(ctx *gin.Context) {
-	service := dto.Service{}
+	service := dto.CreateService{}
 	err := ctx.ShouldBind(&service)
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")

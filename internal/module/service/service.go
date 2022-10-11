@@ -27,7 +27,7 @@ func Init(log logger.Logger, servicePersistence storage.Service, opa opa.Opa) mo
 	}
 }
 
-func (s *service) CreateService(ctx context.Context, param dto.Service) (*dto.Service, error) {
+func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*dto.CreateServiceResponse, error) {
 	var err error
 	if err = param.Validate(); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")

@@ -51,7 +51,7 @@ type Role struct {
 	ID        uuid.UUID    `json:"id"`
 	Status    bool         `json:"status"`
 	Name      string       `json:"name"`
-	TenantID  string       `json:"tenant_id"`
+	TenantID  uuid.UUID    `json:"tenant_id"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`
@@ -87,7 +87,7 @@ type Tenant struct {
 
 type TenantUsersRole struct {
 	ID        uuid.UUID    `json:"id"`
-	TenantID  string       `json:"tenant_id"`
+	TenantID  uuid.UUID    `json:"tenant_id"`
 	UserID    uuid.UUID    `json:"user_id"`
 	RoleID    uuid.UUID    `json:"role_id"`
 	Status    bool         `json:"status"`

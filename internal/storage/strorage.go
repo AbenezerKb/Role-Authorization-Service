@@ -10,6 +10,6 @@ type Policy interface {
 }
 
 type Service interface {
-	CreateService(ctx context.Context, param dto.Service) (*dto.Service, error)
-	IsServiceExist(ctx context.Context, param dto.Service) (bool, error)
+	CreateService(ctx context.Context, param dto.CreateService) (*dto.CreateServiceResponse, error)
+	IsServiceExist(ctx context.Context, param dto.CreateService) (bool, error)
 }

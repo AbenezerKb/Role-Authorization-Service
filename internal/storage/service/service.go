@@ -10,6 +10,7 @@ import (
 	"2f-authorization/platform/logger"
 	"context"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -25,27 +26,26 @@ func Init(db dbinstance.DBInstance, log logger.Logger) storage.Service {
 	}
 }
 
-func (s *service) CreateService(ctx context.Context, param dto.Service) (*dto.Service, error) {
+func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*dto.CreateServiceResponse, error) {
 	service, err := s.db.CreateService(ctx, db.CreateServiceParams{
 		Name:     param.Name,
 		Password: param.Password,
+		UserID:   uuid.MustParse(param.UserId),
 	})
 	if err != nil {
 		err = errors.ErrWriteError.Wrap(err, "could not create service")
 		s.log.Error(ctx, "unable to create service", zap.Error(err), zap.Any("service", param))
 		return nil, err
 	}
-	return &dto.Service{
-		ID:        service.ID,
-		Name:      service.Name,
-		Password:  service.Password,
-		CreatedAt: service.CreatedAt,
-		UpdatedAt: service.UpdatedAt,
-		Status:    service.Status,
+	return &dto.CreateServiceResponse{
+		ServiceID:     service.ServiceID,
+		Tenant:        service.Tenant,
+		ServiceStatus: service.ServiceStatus,
+		Service:       service.Service,
 	}, nil
 }
 
-func (s *service) IsServiceExist(ctx context.Context, param dto.Service) (bool, error) {
+func (s *service) IsServiceExist(ctx context.Context, param dto.CreateService) (bool, error) {
 	_, err := s.db.GetServiceByName(ctx, param.Name)
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
