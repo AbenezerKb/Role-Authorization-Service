@@ -16,8 +16,8 @@ type createServiceTest struct {
 	test.TestInstance
 	apiTest src.ApiTest
 	service struct {
-		OK   bool        `json:"ok"`
-		Data dto.Service `json:"data"`
+		OK   bool                      `json:"ok"`
+		Data dto.CreateServiceResponse `json:"data"`
 	}
 }
 
@@ -66,7 +66,7 @@ func (c *createServiceTest) theResultShouldBeSuccessfull(arg1 string) error {
 		return err
 	}
 
-	if err := c.apiTest.AssertColumnExists("data.id"); err != nil {
+	if err := c.apiTest.AssertColumnExists("data.service_id"); err != nil {
 		return err
 	}
 	return nil
@@ -81,8 +81,7 @@ func (c *createServiceTest) InitializeScenario(ctx *godog.ScenarioContext) {
 		return ctx, nil
 	})
 	ctx.After(func(ctx context.Context, sc *godog.Scenario, err error) (context.Context, error) {
-		// delete the registered service
-		_ = c.DB.DeleteService(ctx, c.service.Data.ID)
+		_, _ = c.DB.Pool.Exec(ctx, "truncate table services,tenants,users,roles,permissions,role_permissions,tenant_users_roles,domains,permission_domains,permissions_hierarchy cascade;")
 		return ctx, nil
 	})
 
