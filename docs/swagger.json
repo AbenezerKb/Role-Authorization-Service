@@ -50,6 +50,73 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "this function deletes the service if it does already exist.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "service"
+                ],
+                "summary": "deletes the service.",
+                "parameters": [
+                    {
+                        "description": "delete service request body",
+                        "name": "deleteservice",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully deletes the service",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized service",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "service is not active",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "service not found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
             }
         }
     },
@@ -133,6 +200,31 @@
                 },
                 "name": {
                     "description": "Name is the name of the field that caused the error.",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Request": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "Action  is the urn of the action the user is taking on the resource.",
+                    "type": "string"
+                },
+                "resource": {
+                    "description": "Resource is the urn for the resource the user is trying to take action on.",
+                    "type": "string"
+                },
+                "service": {
+                    "description": "Service is the id of the service.\nIt is set by the server after authenticating the service.",
+                    "type": "string"
+                },
+                "subject": {
+                    "description": "Subject is the user id who is trying to take action on the resource.",
+                    "type": "string"
+                },
+                "tenant": {
+                    "description": "Tenant is the scope the user is operating.\nIt is set to \"administrator\" if it is not provided.",
                     "type": "string"
                 }
             }

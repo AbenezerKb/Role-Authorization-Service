@@ -55,6 +55,21 @@ func (s *service) CreateService(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusCreated, createdService, nil)
 }
 
+// DeletService is used to delete service.
+// @Summary      deletes the service.
+// @Description  this function deletes the service if it does already exist.
+// @Tags         service
+// @Accept       json
+// @Produce      json
+// @param 		 deleteservice body model.Request true "delete service request body"
+// @Success      200 boolean true "successfully deletes the service"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      404  {object}  model.ErrorResponse "service not found"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized service"
+// @Failure      403  {object}  model.ErrorResponse "service is not active"
+// @Failure      500  {object}  model.ErrorResponse "invalid input"
+// @Router       /services [delete]
+// @security 	 BasicAuth
 func (s *service) DeletService(ctx *gin.Context) {
 
 	serviceId, err := uuid.Parse(ctx.GetString("x-service-id"))

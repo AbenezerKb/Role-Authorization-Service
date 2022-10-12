@@ -71,6 +71,29 @@ definitions:
         description: Name is the name of the field that caused the error.
         type: string
     type: object
+  model.Request:
+    properties:
+      action:
+        description: Action  is the urn of the action the user is taking on the resource.
+        type: string
+      resource:
+        description: Resource is the urn for the resource the user is trying to take
+          action on.
+        type: string
+      service:
+        description: |-
+          Service is the id of the service.
+          It is set by the server after authenticating the service.
+        type: string
+      subject:
+        description: Subject is the user id who is trying to take action on the resource.
+        type: string
+      tenant:
+        description: |-
+          Tenant is the scope the user is operating.
+          It is set to "administrator" if it is not provided.
+        type: string
+    type: object
 host: 206.189.54.235:8000
 info:
   contact:
@@ -81,6 +104,49 @@ info:
   version: "0.1"
 paths:
   /services:
+    delete:
+      consumes:
+      - application/json
+      description: this function deletes the service if it does already exist.
+      parameters:
+      - description: delete service request body
+        in: body
+        name: deleteservice
+        required: true
+        schema:
+          $ref: '#/definitions/model.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully deletes the service
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized service
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: service is not active
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: service not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: invalid input
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: deletes the service.
+      tags:
+      - service
     post:
       consumes:
       - application/json
