@@ -2,6 +2,7 @@ package services
 
 import (
 	"2f-authorization/internal/glue/routing"
+	"2f-authorization/internal/handler/middleware"
 	"2f-authorization/internal/handler/rest"
 	"2f-authorization/platform/logger"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoute(group *gin.RouterGroup, service rest.Service, log logger.Logger) {
+func InitRoute(group *gin.RouterGroup, service rest.Service, log logger.Logger, authMiddleware middleware.AuthMiddeleware) {
 	services := group.Group("/services")
 	servicesRoutes := []routing.Router{
 		{
@@ -17,6 +18,17 @@ func InitRoute(group *gin.RouterGroup, service rest.Service, log logger.Logger) 
 			Path:        "",
 			Handler:     service.CreateService,
 			UnAuthorize: true,
-		}}
+		},
+		{
+			Method:      http.MethodDelete,
+			Path:        "",
+			Handler:     service.DeletService,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
+	}
 	routing.RegisterRoutes(services, servicesRoutes)
 }
