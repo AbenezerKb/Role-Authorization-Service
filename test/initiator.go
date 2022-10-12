@@ -5,6 +5,7 @@ import (
 	"2f-authorization/internal/constants/dbinstance"
 	"2f-authorization/internal/handler/middleware"
 	"2f-authorization/platform/logger"
+	"2f-authorization/platform/opa"
 	"context"
 	"fmt"
 	"os"
@@ -17,6 +18,7 @@ import (
 type TestInstance struct {
 	Server *gin.Engine
 	DB     dbinstance.DBInstance
+	Opa    opa.Opa
 }
 
 func Initiate(ctx context.Context, path string) TestInstance {
@@ -69,11 +71,12 @@ func Initiate(ctx context.Context, path string) TestInstance {
 
 	log.Info(context.Background(), "initializing router")
 	v1 := server.Group("/v1")
-	initiator.InitRouter(v1, handler, module, log)
+	initiator.InitRouter(v1, handler, persistence, log, opa)
 	log.Info(context.Background(), "router initialized")
 
 	return TestInstance{
 		Server: server,
 		DB:     dbConn,
+		Opa:    opa,
 	}
 }
