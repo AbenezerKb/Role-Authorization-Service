@@ -58,3 +58,38 @@ func (s *service) IsServiceExist(ctx context.Context, param dto.CreateService) (
 	}
 	return true, nil
 }
+
+func (s *service) SoftDeleteService(ctx context.Context, param dto.Service) error {
+	if _, err := s.db.SoftDeleteService(ctx, param.ID); err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no record of service found")
+			s.log.Info(ctx, "service not found", zap.Error(err), zap.String("service-id", param.ID.String()))
+			return err
+		}
+		err = errors.ErrDBDelError.Wrap(err, "error deleting service")
+		s.log.Error(ctx, "error deleting service", zap.Error(err), zap.String("service-id", param.ID.String()))
+		return err
+	}
+	return nil
+}
+
+func (s *service) GetServiceById(ctx context.Context, param dto.Service) (*dto.Service, error) {
+	service, err := s.db.GetServiceById(ctx, param.ID)
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no record of service found")
+			s.log.Warn(ctx, "service not found", zap.Error(err), zap.String("service-id", param.ID.String()))
+			return nil, err
+		} else {
+			err = errors.ErrReadError.Wrap(err, "error reading the service data")
+			s.log.Error(ctx, "unable to get service data", zap.Error(err), zap.Any("service-name", param.Name))
+			return nil, err
+		}
+	}
+	return &dto.Service{
+		ID:        service.ID,
+		Status:    service.Status,
+		Name:      service.Name,
+		Password:  service.Password,
+	}, nil
+}
