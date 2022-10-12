@@ -38,7 +38,7 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		Id, secret, ok := ctx.Request.BasicAuth()
 		if !ok {
-			err := errors.ErrInternalServerError.New("could not extract service credentials")
+			err := errors.ErrInternalServerError.Wrap(nil, "could not extract service credentials")
 			a.logger.Error(ctx, "extract error", zap.Error(err))
 			ctx.Error(err)
 			ctx.AbortWithStatus(http.StatusBadRequest)
@@ -62,7 +62,7 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 		}
 
 		if service.Status != constants.Active {
-			Err := errors.ErrAuthError.New("Your service is not active, Please consult the system administrator to activate your service")
+			Err := errors.ErrAuthError.Wrap(nil, "Your service is not active, Please consult the system administrator to activate your service")
 			a.logger.Warn(ctx, "service status is not active", zap.String("service-id", service.ID.String()))
 			ctx.Error(Err)
 			ctx.Abort()
@@ -70,7 +70,7 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 		}
 
 		if ok, _ := argon.ComparePasswordAndHash(secret, service.Password); !ok {
-			err = errors.ErrAcessError.New("unauthorized_service")
+			err = errors.ErrAcessError.Wrap(nil, "unauthorized_service")
 			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
 			ctx.Error(err)
 			ctx.Abort()

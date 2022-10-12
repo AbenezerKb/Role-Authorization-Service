@@ -74,7 +74,7 @@ func (s *service) DeletService(ctx *gin.Context) {
 
 	serviceId, err := uuid.Parse(ctx.GetString("x-service-id"))
 	if err != nil {
-		err := errors.ErrInvalidUserInput.New("invalid input")
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		s.logger.Info(ctx, "invalid input", zap.Error(err))
 		_ = ctx.Error(err)
 		return
