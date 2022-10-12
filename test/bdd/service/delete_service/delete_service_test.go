@@ -48,6 +48,7 @@ func (d *deleteServiceTest) iDeleteTheServiceWithId(id string) error {
 }
 
 func (d *deleteServiceTest) iHaveARegisteredService(service *godog.Table) error {
+	d.createdService = nil
 	body, err := d.apiTest.ReadRow(service, nil, false)
 	if err != nil {
 		return err
