@@ -7,4 +7,5 @@ import (
 
 type Service interface {
 	CreateService(ctx context.Context, param dto.CreateService) (*dto.CreateServiceResponse, error)
+	DeleteService(ctx context.Context, param dto.Service) error
 }

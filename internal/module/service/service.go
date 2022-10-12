@@ -5,10 +5,12 @@ import (
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
+	"2f-authorization/platform/argon"
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"2f-authorization/platform/utils"
 	"context"
+	"fmt"
 
 	"go.uber.org/zap"
 )
@@ -45,8 +47,8 @@ func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*
 		return nil, errors.ErrDataExists.Wrap(err, "service with this name already exists")
 	}
 
-	hashpass := utils.GenerateRandomString(10, true)
-	if param.Password, err = utils.HashAndSalt(ctx, []byte(hashpass), s.log); err != nil {
+	hashpass := utils.GenerateRandomString(20, true)
+	if param.Password, err = argon.CreateHash(hashpass, argon.DefaultParams); err != nil {
 		return nil, err
 	}
 
@@ -56,4 +58,16 @@ func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*
 	}
 	service.Password = hashpass
 	return service, nil
+}
+
+func (s *service) DeleteService(ctx context.Context, param dto.Service) error {
+	if err := s.servicePersistence.SoftDeleteService(ctx, param); err != nil {
+		return err
+	}
+
+	if err := s.opa.Refresh(ctx, fmt.Sprintf("Removed service with id - [%v]", param.ID)); err != nil {
+		return err
+	}
+
+	return nil
 }
