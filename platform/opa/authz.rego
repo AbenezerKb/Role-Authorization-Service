@@ -34,6 +34,11 @@ check_tenant = tenant {
 	tenant.status
 }
 
+check_tenant = tenant {
+	tenant := check_service.tenants.administrator
+	tenant.status
+}
+
 check_user = user {
 	user := check_tenant.users[input.subject]
 	user.status

@@ -2,6 +2,7 @@ package opa
 
 import (
 	errors "2f-authorization/internal/constants/error"
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/platform/logger"
 	"context"
 
@@ -18,7 +19,7 @@ type Opa interface {
 	Refresh(ctx context.Context, reason string) error
 	GetData(ctx context.Context) error
 	prepare(ctx context.Context, query string) (rego.PreparedEvalQuery, error)
-	Allow(ctx context.Context, input map[string]interface{}) (bool, error)
+	Allow(ctx context.Context, req model.Request) (bool, error)
 	AllowedPermissions(ctx context.Context, input map[string]interface{}) (interface{}, error)
 }
 
@@ -53,7 +54,16 @@ func (o *opa) prepare(ctx context.Context, query string) (rego.PreparedEvalQuery
 	return qr, nil
 }
 
-func (o *opa) Allow(ctx context.Context, input map[string]interface{}) (bool, error) {
+func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
+
+	input := map[string]interface{}{
+		"subject":  req.Subject,
+		"resource": req.Resource,
+		"action":   req.Action,
+		"service":  req.Service,
+		"tenant":   req.Tenant,
+	}
+
 	query, err := o.prepare(ctx, "data.authz.allow")
 	if err != nil {
 		return false, err
@@ -72,7 +82,7 @@ func (o *opa) Refresh(ctx context.Context, reason string) error {
 	if err := o.GetData(ctx); err != nil {
 		return err
 	}
-	o.log.Info(ctx, "successfully triggered policy update")
+	o.log.Info(ctx, "successfully triggered policy data update")
 	return nil
 }
 
