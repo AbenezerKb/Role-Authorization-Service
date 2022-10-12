@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -42,4 +43,22 @@ func (s *service) CreateService(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusCreated, createdService, nil)
+}
+
+func (s *service) DeletService(ctx *gin.Context) {
+
+	serviceId, err := uuid.Parse(ctx.GetString("x-service-id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.New("invalid input")
+		s.logger.Info(ctx, "invalid input", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := s.serviceModule.DeleteService(ctx, dto.Service{ID: serviceId}); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
