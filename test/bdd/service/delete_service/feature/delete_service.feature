@@ -14,13 +14,13 @@ Feature: Delete Service
             | *      | a93fab67-1c11-4cdc-b410-f6fc728f592a | *        |
         Then The service should be deleted
 
-    @failure
-    Scenario Outline: no service
-        When I delete the service with id "<id>"
-        Then the request should fail with error message "<message>"
-        Examples:
-            | id                                   | message                    |
-            | 60d56419-c2e9-4ee4-951f-04644d245ee3 | no record of service found |
+    # @failure
+    # Scenario Outline: no service
+    #     When I delete the service with id "<id>"
+    #     Then the request should fail with error message "<message>"
+    #     Examples:
+    #         | id                                   | message                    |
+    #         | 60d56419-c2e9-4ee4-951f-04644d245ee3 | no record of service found |
 
     Scenario Outline: Required fields are missing
         Given I have a registered service
@@ -33,5 +33,5 @@ Feature: Delete Service
         Examples:
             | action | subject                              | resource | message              |
             |        | a93fab67-1c11-4cdc-b410-f6fc728f592a | *        | action is required   |
-            | *      |                                      | *        | subject is required   |
+            | *      |                                      | *        | subject is required  |
             | *      | a93fab67-1c11-4cdc-b410-f6fc728f592a |          | resource is required |
