@@ -5,6 +5,7 @@ import (
 	"2f-authorization/test"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -62,7 +63,7 @@ func (c *createServiceTest) theResultShouldBeSuccessfull(arg1 string) error {
 	if err != nil {
 		return err
 	}
-	if err := c.apiTest.AssertEqual(arg1, "true"); err != nil {
+	if err := c.apiTest.AssertEqual(arg1, fmt.Sprint(c.service.OK)); err != nil {
 		return err
 	}
 
