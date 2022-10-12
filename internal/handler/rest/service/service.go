@@ -26,6 +26,16 @@ func Init(logger logger.Logger, serviceModule module.Service) rest.Service {
 	}
 }
 
+// CreateService is used to create new service.
+// @Summary      create new service.
+// @Description  this function creates new service if it does not already exist.
+// @Tags         service
+// @Accept       json
+// @Produce      json
+// @param 		 createservice body dto.CreateService true "create service request body"
+// @Success      204 {object} dto.CreateServiceResponse "successfully create new service"
+// @Failure      400  {object}  model.ErrorResponse "required field error,bad request error"
+// @Router       /services [post]
 func (s *service) CreateService(ctx *gin.Context) {
 	service := dto.CreateService{}
 	err := ctx.ShouldBind(&service)

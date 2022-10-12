@@ -18,6 +18,17 @@ import (
 	"go.uber.org/zap"
 )
 
+// Initiate
+// @title           Authorization API
+// @version         0.1
+//
+// @contact.name   2F Capital Support Email
+// @contact.url    http://www.2fcapital.com
+// @contact.email  info@1f-capital.com
+//
+// @host 206.189.54.235:8000
+// @BasePath  /v1
+// @securityDefinitions.basic BasicAuth
 func Initiator(ctx context.Context) {
 
 	log := logger.New(InitLogger())

@@ -1,0 +1,112 @@
+basePath: /v1
+definitions:
+  dto.CreateService:
+    properties:
+      name:
+        description: Name is the name of the service.
+        type: string
+      password:
+        description: |-
+          Password is the secret the service uses to authenticate itself.
+          It is automatically generated when the service is created.
+        type: string
+      user_id:
+        description: UserId is the id of the user assigned as the super admin for
+          the created service.
+        type: string
+    type: object
+  dto.CreateServiceResponse:
+    properties:
+      password:
+        description: |-
+          Password is the secret the service uses to authenticate itself.
+          It is automatically generated when the service is created.
+        type: string
+      service:
+        description: Service is the name of the service.
+        type: string
+      service_id:
+        description: ServiceID is the unique identifier for the created service.
+        type: string
+      service_status:
+        description: |-
+          ServiceStatus is the status of the service.
+          It is set to false when the service is created.
+        type: boolean
+      tenant:
+        description: |-
+          Tenant is the domain the super admin is in.
+          It is automatically created upon the creation of the service.
+        type: string
+    type: object
+  model.ErrorResponse:
+    properties:
+      code:
+        description: Code is the error code. It is not status code
+        type: integer
+      description:
+        description: Description is the error description.
+        type: string
+      field_error:
+        description: FieldError is the error detail for each field, if available that
+          is.
+        items:
+          $ref: '#/definitions/model.FieldError'
+        type: array
+      message:
+        description: Message is the error message.
+        type: string
+      stack_trace:
+        description: |-
+          StackTrace is the stack trace of the error.
+          It is only returned for debugging
+        type: string
+    type: object
+  model.FieldError:
+    properties:
+      description:
+        description: Description is the error description for this field.
+        type: string
+      name:
+        description: Name is the name of the field that caused the error.
+        type: string
+    type: object
+host: 206.189.54.235:8000
+info:
+  contact:
+    email: info@1f-capital.com
+    name: 2F Capital Support Email
+    url: http://www.2fcapital.com
+  title: Authorization API
+  version: "0.1"
+paths:
+  /services:
+    post:
+      consumes:
+      - application/json
+      description: this function creates new service if it does not already exist.
+      parameters:
+      - description: create service request body
+        in: body
+        name: createservice
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateService'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: successfully create new service
+          schema:
+            $ref: '#/definitions/dto.CreateServiceResponse'
+        "400":
+          description: required field error,bad request error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: create new service.
+      tags:
+      - service
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

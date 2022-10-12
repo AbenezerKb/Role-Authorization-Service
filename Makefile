@@ -10,3 +10,5 @@ migrate-create:
 	- migrate create -ext sql -dir internal/constants/query/schemas -tz "UTC" $(ARGS)
 go-test:
 	go test -v ./... -p=1 -count=1 -v
+swagger-init:
+	- swag init -g initiator/initiate.go
