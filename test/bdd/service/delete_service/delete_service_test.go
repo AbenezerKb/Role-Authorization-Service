@@ -19,7 +19,7 @@ type deleteServiceTest struct {
 	apiTest        src.ApiTest
 	OK             bool `json:"ok"`
 	service        db.CreateServiceParams
-	createdService *db.CreateServiceRow
+	createdService db.CreateServiceRow
 }
 
 func TestDeleteService(t *testing.T) {
@@ -48,7 +48,6 @@ func (d *deleteServiceTest) iDeleteTheServiceWithId(id string) error {
 }
 
 func (d *deleteServiceTest) iHaveARegisteredService(service *godog.Table) error {
-	d.createdService = nil
 	body, err := d.apiTest.ReadRow(service, nil, false)
 	if err != nil {
 		return err
@@ -61,11 +60,9 @@ func (d *deleteServiceTest) iHaveARegisteredService(service *godog.Table) error 
 		return err
 	}
 
-	createdService, err := d.DB.CreateService(context.Background(), d.service)
-	if err != nil {
+	if d.createdService, err = d.DB.CreateService(context.Background(), d.service); err != nil {
 		return err
 	}
-	d.createdService = &createdService
 
 	if _, err := d.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", d.createdService.ServiceID); err != nil {
 		return err
