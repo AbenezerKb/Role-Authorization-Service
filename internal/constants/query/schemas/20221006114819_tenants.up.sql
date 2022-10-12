@@ -9,4 +9,4 @@ CREATE TABLE "tenants" (
     UNIQUE("tenant_name","service_id")
 );
 
-ALTER TABLE "tenants" add FOREIGN KEY ("service_id") REFERENCES "services"  ("id");
+ALTER TABLE "tenants" add FOREIGN KEY ("service_id") REFERENCES "services"  ("id") ON DELETE CASCADE;

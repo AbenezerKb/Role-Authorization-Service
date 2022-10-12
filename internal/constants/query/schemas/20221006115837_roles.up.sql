@@ -8,7 +8,7 @@ CREATE TABLE "roles" (
     "updated_at" timestamptz NOT NULL default now()
 );
 
-ALTER TABLE "roles" add FOREIGN KEY ("tenant_id") REFERENCES "tenants"  ("id");
+ALTER TABLE "roles" add FOREIGN KEY ("tenant_id") REFERENCES "tenants"  ("id") ON DELETE CASCADE;
 
 CREATE TABLE "role_permissions"(
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -18,6 +18,6 @@ CREATE TABLE "role_permissions"(
     "updated_at" timestamptz NOT NULL default now()
 );
 
-ALTER TABLE "role_permissions" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE "role_permissions" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "role_permissions" ADD FOREIGN KEY ("permission_id") REFERENCES "permissions" ("id");
+ALTER TABLE "role_permissions" ADD FOREIGN KEY ("permission_id") REFERENCES "permissions" ("id") ON DELETE CASCADE;

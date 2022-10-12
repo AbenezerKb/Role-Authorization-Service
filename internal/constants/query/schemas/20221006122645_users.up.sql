@@ -18,8 +18,8 @@ CREATE TABLE "tenant_users_roles" (
     "updated_at" timestamptz NOT NULL default now(),
     UNIQUE("user_id","role_id","tenant_id")
 );
-ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("tenant_id") REFERENCES "tenants" ("id");
+ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("tenant_id") REFERENCES "tenants" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE CASCADE;

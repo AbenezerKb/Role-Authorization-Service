@@ -144,12 +144,50 @@ func (q *Queries) DeleteService(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getServiceById = `-- name: GetServiceById :one
+SELECT id, status, name, password, deleted_at, created_at, updated_at FROM services WHERE id = $1 AND deleted_at IS NULL
+`
+
+func (q *Queries) GetServiceById(ctx context.Context, id uuid.UUID) (Service, error) {
+	row := q.db.QueryRow(ctx, getServiceById, id)
+	var i Service
+	err := row.Scan(
+		&i.ID,
+		&i.Status,
+		&i.Name,
+		&i.Password,
+		&i.DeletedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getServiceByName = `-- name: GetServiceByName :one
 SELECT id, status, name, password, deleted_at, created_at, updated_at FROM services WHERE name = $1
 `
 
 func (q *Queries) GetServiceByName(ctx context.Context, name string) (Service, error) {
 	row := q.db.QueryRow(ctx, getServiceByName, name)
+	var i Service
+	err := row.Scan(
+		&i.ID,
+		&i.Status,
+		&i.Name,
+		&i.Password,
+		&i.DeletedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const softDeleteService = `-- name: SoftDeleteService :one
+UPDATE services set deleted_at = now() WHERE id = $1 AND deleted_at IS NULL returning id, status, name, password, deleted_at, created_at, updated_at
+`
+
+func (q *Queries) SoftDeleteService(ctx context.Context, id uuid.UUID) (Service, error) {
+	row := q.db.QueryRow(ctx, softDeleteService, id)
 	var i Service
 	err := row.Scan(
 		&i.ID,

@@ -1,6 +1,9 @@
 -- name: GetServiceByName :one
 SELECT * FROM services WHERE name = $1;
 
+-- name: GetServiceById :one
+SELECT * FROM services WHERE id = $1 AND deleted_at IS NULL;
+
 -- name: CreateService :one
 with _service as (
     insert
@@ -100,4 +103,7 @@ from
 
 -- name: DeleteService :exec
 DELETE FROM services WHERE id = $1;
+
+-- name: SoftDeleteService :one
+UPDATE services set deleted_at = now() WHERE id = $1 AND deleted_at IS NULL returning *;
 
