@@ -72,7 +72,7 @@ func Initiator(ctx context.Context) {
 
 	log.Info(context.Background(), "initializing router")
 	v1 := server.Group("/v1")
-	InitRouter(v1, handler, module, log)
+	InitRouter(v1, handler, persistence, log, opa)
 	log.Info(context.Background(), "router initialized")
 
 	srv := &http.Server{
