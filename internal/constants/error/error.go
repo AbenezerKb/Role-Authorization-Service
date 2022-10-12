@@ -40,6 +40,26 @@ var Error = []ErrorType{
 		ErrorCode: http.StatusInternalServerError,
 		ErrorType: ErrWriteError,
 	},
+	{
+		ErrorCode: http.StatusNotFound,
+		ErrorType: ErrNoRecordFound,
+	},
+	{
+		ErrorCode: http.StatusInternalServerError,
+		ErrorType: ErrDBDelError,
+	},
+	{
+		ErrorCode: http.StatusUnauthorized,
+		ErrorType: ErrAuthError,
+	},
+	{
+		ErrorCode: http.StatusForbidden,
+		ErrorType: ErrAcessError,
+	},
+	{
+		ErrorCode: http.StatusInternalServerError,
+		ErrorType: ErrInternalServerError,
+	},
 }
 
 var (
@@ -48,6 +68,10 @@ var (
 	invalidInput = errorx.NewNamespace("validation error").ApplyModifiers(errorx.TypeModifierOmitStackTrace)
 	dbError      = errorx.NewNamespace("db error")
 	duplicate    = errorx.NewNamespace("duplicate").ApplyModifiers(errorx.TypeModifierOmitStackTrace)
+	dataNotFound = errorx.NewNamespace("data not found").ApplyModifiers(errorx.TypeModifierOmitStackTrace)
+	AccessDenied = errorx.RegisterTrait("You are not authorized to perform the action")
+	unauthorized = errorx.NewNamespace("unauthorized").ApplyModifiers(errorx.TypeModifierOmitStackTrace)
+	serverError  = errorx.NewNamespace("server error")
 )
 
 var (
@@ -58,4 +82,9 @@ var (
 	ErrWriteError           = errorx.NewType(dbError, "could not write to db")
 	ErrReadError            = errorx.NewType(dbError, "could not read data from db")
 	ErrDataExists           = errorx.NewType(duplicate, "data already exists")
+	ErrDBDelError           = errorx.NewType(dbError, "could not delete record")
+	ErrNoRecordFound        = errorx.NewType(dataNotFound, "no record found")
+	ErrAuthError            = errorx.NewType(unauthorized, "you are not authorized.")
+	ErrAcessError           = errorx.NewType(unauthorized, "Unauthorized", AccessDenied)
+	ErrInternalServerError  = errorx.NewType(serverError, "internal server error")
 )
