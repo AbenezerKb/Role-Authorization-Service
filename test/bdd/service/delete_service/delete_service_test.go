@@ -104,6 +104,17 @@ func (d *deleteServiceTest) theRequestShouldFailWithFieldErrorMessage(message st
 	}
 	return nil
 }
+func (d *deleteServiceTest) iDeleteTheServiceWithInput(service *godog.Table) error {
+	body, err := d.apiTest.ReadRow(service, nil, false)
+	if err != nil {
+		return err
+	}
+	d.apiTest.Body = body
+	d.apiTest.SetHeader("Authorization", "Basic "+basicAuth(d.createdService.ServiceID.String(), "123456"))
+
+	d.apiTest.SendRequest()
+	return nil
+}
 
 func (d *deleteServiceTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
@@ -120,6 +131,7 @@ func (d *deleteServiceTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^I delete the service:$`, d.iDeleteTheService)
 	ctx.Step(`^I delete the service with id "([^"]*)"$`, d.iDeleteTheServiceWithId)
 	ctx.Step(`^I have a registered service$`, d.iHaveARegisteredService)
+	ctx.Step(`^I delete the service with input:$`, d.iDeleteTheServiceWithInput)
 	ctx.Step(`^the request should fail with field error message "([^"]*)"$`, d.theRequestShouldFailWithFieldErrorMessage)
 	ctx.Step(`^the request should fail with error message "([^"]*)"$`, d.theRequestShouldFailWithErrorMessage)
 	ctx.Step(`^The service should be deleted$`, d.theServiceShouldBeDeleted)
