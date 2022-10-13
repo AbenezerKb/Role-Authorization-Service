@@ -20,6 +20,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/domains": {
+            "post": {
+                "description": "this function create new domain within the service if not exist.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "domain"
+                ],
+                "summary": "create new domain.",
+                "parameters": [
+                    {
+                        "description": "create domain request body",
+                        "name": "createdomain",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Domain"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successfully create new domain",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Domain"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error,bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/services": {
             "post": {
                 "description": "this function creates new service if it does not already exist.",
@@ -45,7 +85,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "201": {
                         "description": "successfully create new service",
                         "schema": {
                             "$ref": "#/definitions/dto.CreateServiceResponse"
@@ -171,6 +211,35 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Domain": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt is the  time this domain created at.",
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "description": "DeletedAt is the time this domain was deleted.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the unique identifier for the domain\nIt is automatically generated when the domain is created.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the name of the domain",
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service which own the domain.",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "CreatedAt is the  time this domain updated at.",
+                    "type": "string"
+                }
+            }
+        },
         "model.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -248,7 +317,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
-	Host:             "206.189.54.235:8000",
+	Host:             "localhost:8000",
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Authorization API",

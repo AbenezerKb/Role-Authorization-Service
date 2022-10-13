@@ -39,6 +39,29 @@ definitions:
           It is automatically created upon the creation of the service.
         type: string
     type: object
+  dto.Domain:
+    properties:
+      created_at:
+        description: CreatedAt is the  time this domain created at.
+        type: string
+      deleted_at:
+        description: DeletedAt is the time this domain was deleted.
+        type: string
+      id:
+        description: |-
+          ID is the unique identifier for the domain
+          It is automatically generated when the domain is created.
+        type: string
+      name:
+        description: Name is the name of the domain
+        type: string
+      service_id:
+        description: ServiceID is the id of the service which own the domain.
+        type: string
+      updated_at:
+        description: CreatedAt is the  time this domain updated at.
+        type: string
+    type: object
   model.ErrorResponse:
     properties:
       code:
@@ -94,7 +117,7 @@ definitions:
           It is set to "administrator" if it is not provided.
         type: string
     type: object
-host: 206.189.54.235:8000
+host: localhost:8000
 info:
   contact:
     email: info@1f-capital.com
@@ -103,6 +126,32 @@ info:
   title: Authorization API
   version: "0.1"
 paths:
+  /domains:
+    post:
+      consumes:
+      - application/json
+      description: this function create new domain within the service if not exist.
+      parameters:
+      - description: create domain request body
+        in: body
+        name: createdomain
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Domain'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: successfully create new domain
+          schema:
+            $ref: '#/definitions/dto.Domain'
+        "400":
+          description: required field error,bad request error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: create new domain.
+      tags:
+      - domain
   /services:
     delete:
       consumes:
@@ -161,7 +210,7 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
+        "201":
           description: successfully create new service
           schema:
             $ref: '#/definitions/dto.CreateServiceResponse'
