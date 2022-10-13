@@ -15,3 +15,8 @@ type Service interface {
 	SoftDeleteService(ctx context.Context, param dto.Service) error
 	GetServiceById(ctx context.Context, param dto.Service) (*dto.Service, error)
 }
+
+type Domain interface {
+	CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domain, error)
+	IsDomainExist(ctx context.Context, param dto.Domain) (bool, error)
+}
