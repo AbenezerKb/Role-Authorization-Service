@@ -78,8 +78,6 @@ func (c *createTestDomain) iSendTheRequest(domain *godog.Table) error {
 		return err
 	}
 
-	c.domainrequest.ServiceID = c.serviceId
-
 	requestBody, err := json.Marshal(c.domainrequest)
 	if err != nil {
 		return err

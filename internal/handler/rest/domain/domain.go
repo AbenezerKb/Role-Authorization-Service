@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -44,7 +45,14 @@ func (d *domain) CreateDomain(ctx *gin.Context) {
 		_ = ctx.Error(err)
 		return
 	}
-
+	serviceId, err := uuid.Parse(ctx.GetString("x-service-id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		d.logger.Info(ctx, "invalid input", zap.Error(err), zap.String("service id", ctx.GetString("x-service-id")))
+		_ = ctx.Error(err)
+		return
+	}
+	domain.ServiceID = serviceId
 	createdDomain, err := d.domainModule.CreateDomain(ctx, domain)
 	if err != nil {
 		_ = ctx.Error(err)
