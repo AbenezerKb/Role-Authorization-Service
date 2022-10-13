@@ -28,7 +28,7 @@ type Domain struct {
 func (d Domain) Validate() error {
 	return validation.ValidateStruct(&d,
 		validation.Field(&d.Name, validation.Required.Error("domain name can not be blank")),
-		validation.Field(&d.ServiceID, validation.Required.Error(" servoce od  is required"), is.UUID),
+		validation.Field(&d.ServiceID, validation.Required.Error("service id is required"), is.UUID),
 	)
 
 }
