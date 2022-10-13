@@ -19,7 +19,7 @@ type Service struct {
 	// Password is the secret the service uses to authenticate itself.
 	// It is automatically generated when the service is created.
 	Password string `json:"password"`
-	// CreatedAt is the time this service was deleted.
+	// DelatedAt is the time this service was deleted.
 	DeletedAt time.Time `json:"deleted_at"`
 	// CreatedAt is the time this service was created.
 	CreatedAt time.Time `json:"created_at"`
