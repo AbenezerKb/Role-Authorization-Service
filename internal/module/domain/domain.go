@@ -6,7 +6,9 @@ import (
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
+	"2f-authorization/platform/opa"
 	"context"
+	"fmt"
 
 	"go.uber.org/zap"
 )
@@ -14,13 +16,15 @@ import (
 type domain struct {
 	domainPersistant storage.Domain
 	log              logger.Logger
+	opa              opa.Opa
 }
 
-func Init(log logger.Logger, domainPersistant storage.Domain) module.Domain {
+func Init(log logger.Logger, domainPersistant storage.Domain, opa opa.Opa) module.Domain {
 	return &domain{
 
 		domainPersistant: domainPersistant,
 		log:              log,
+		opa:              opa,
 	}
 }
 
@@ -50,5 +54,24 @@ func (d *domain) CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domai
 	}
 
 	return domain, nil
+
+}
+func (d *domain) DeleteDomain(ctx context.Context, param dto.Domain) error {
+	err := param.Validate()
+	if err != nil {
+		err = errors.ErrInvalidUserInput.Wrap(err, "error on validating input")
+		d.log.Error(ctx, "error validating input of domain", zap.Error(err), zap.String("service-id", param.ServiceID.String()))
+		return err
+
+	}
+	if err := d.domainPersistant.SoftDeleteDomain(ctx, param); err != nil {
+
+		return err
+	}
+
+	if err := d.opa.Refresh(ctx, fmt.Sprintf("Removed domain - [%v]", param.Name)); err != nil {
+		return err
+	}
+	return nil
 
 }

@@ -12,4 +12,5 @@ type Service interface {
 
 type Domain interface {
 	CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domain, error)
+	DeleteDomain(ctx context.Context, param dto.Domain) error
 }
