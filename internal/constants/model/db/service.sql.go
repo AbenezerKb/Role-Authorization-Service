@@ -54,10 +54,10 @@ with _service as (
              into
                  permissions(name,
                              description,
-                             statment)
-                 values ('manage-all',
+                             statment,service_id)
+                select 'manage-all',
                          'super admin can perform any action on any domain',
-                         json_build_object('action', '*', 'resource', '*', 'effect', 'allow'))
+                         json_build_object('action', '*', 'resource', '*', 'effect', 'allow'),service_id from _service
                  returning id as permission_id
      ),
      _user as(

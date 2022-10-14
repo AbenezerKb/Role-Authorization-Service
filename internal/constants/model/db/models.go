@@ -29,6 +29,7 @@ type Permission struct {
 	Statment    pgtype.JSON `json:"statment"`
 	CreatedAt   time.Time   `json:"created_at"`
 	UpdatedAt   time.Time   `json:"updated_at"`
+	ServiceID   uuid.UUID   `json:"service_id"`
 }
 
 type PermissionDomain struct {
