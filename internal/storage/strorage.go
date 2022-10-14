@@ -3,6 +3,8 @@ package storage
 import (
 	"2f-authorization/internal/constants/model/dto"
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Policy interface {
@@ -20,4 +22,9 @@ type Domain interface {
 	CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto.Domain, error)
 	IsDomainExist(ctx context.Context, param dto.CreateDomain) (bool, error)
 	SoftDeleteDomain(ctx context.Context, param dto.Domain) error
+}
+
+type Permission interface {
+	CreatePermission(ctx context.Context, param dto.CreatePermission) (uuid.UUID, error)
+	AddToDomain(ctx context.Context, permissionId, domain uuid.UUID) error
 }
