@@ -1,5 +1,35 @@
 basePath: /v1
 definitions:
+  dto.CreatePermission:
+    properties:
+      action:
+        description: Action is the urn for the action(method) the user is taking on
+          the resource
+        type: string
+      description:
+        description: Description is the description of the permission being created
+        type: string
+      domains:
+        description: Domain is an array that holds the id of the domains the permission
+          is accessible at
+        items:
+          type: string
+        type: array
+      effect:
+        description: |-
+          Effect is the effect that's taken on the permission
+          It is either allow or deny
+        type: string
+      name:
+        description: Name is the name of the permission being created
+        type: string
+      resource:
+        description: Resource is the urn for the path that is being accessed
+        type: string
+      service_id:
+        description: ServiceID is the id of the service the permission belongs to
+        type: string
+    type: object
   dto.CreateService:
     properties:
       name:
@@ -149,9 +179,50 @@ paths:
           description: required field error,bad request error
           schema:
             $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
       summary: create new domain.
       tags:
       - domain
+  /permissions:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        this function registers the service if it does already exist.
+        if the process finishes with out any error it returns true.
+        if the process finishes with any error it returns false.
+      parameters:
+      - description: register permission request body
+        in: body
+        name: creatnewpermission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePermission'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: successfully register the permission
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized service
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: service is not active
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: register a new permission.
+      tags:
+      - permissions
   /services:
     delete:
       consumes:

@@ -22,6 +22,11 @@ const docTemplate = `{
     "paths": {
         "/domains": {
             "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "description": "this function create new domain within the service if not exist.",
                 "consumes": [
                     "application/json"
@@ -53,6 +58,63 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "required field error,bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/permissions": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "this function registers the service if it does already exist.\nif the process finishes with out any error it returns true.\nif the process finishes with any error it returns false.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "permissions"
+                ],
+                "summary": "register a new permission.",
+                "parameters": [
+                    {
+                        "description": "register permission request body",
+                        "name": "creatnewpermission",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePermission"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successfully register the permission",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized service",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "service is not active",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -169,6 +231,42 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CreatePermission": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "Action is the urn for the action(method) the user is taking on the resource",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description is the description of the permission being created",
+                    "type": "string"
+                },
+                "domains": {
+                    "description": "Domain is an array that holds the id of the domains the permission is accessible at",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "effect": {
+                    "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the name of the permission being created",
+                    "type": "string"
+                },
+                "resource": {
+                    "description": "Resource is the urn for the path that is being accessed",
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service the permission belongs to",
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateService": {
             "type": "object",
             "properties": {
