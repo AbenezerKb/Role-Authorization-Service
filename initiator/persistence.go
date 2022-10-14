@@ -5,20 +5,23 @@ import (
 	"2f-authorization/internal/storage"
 	"2f-authorization/internal/storage/domain"
 	"2f-authorization/internal/storage/opa"
+	"2f-authorization/internal/storage/permission"
 	"2f-authorization/internal/storage/service"
 	"2f-authorization/platform/logger"
 )
 
 type Persistence struct {
-	opa     storage.Policy
-	service storage.Service
-	doamin  storage.Domain
+	opa        storage.Policy
+	service    storage.Service
+	doamin     storage.Domain
+	permission storage.Permission
 }
 
 func InitPersistence(db dbinstance.DBInstance, log logger.Logger) Persistence {
 	return Persistence{
-		opa:     opa.Init(db, log),
-		service: service.Init(db, log),
-		doamin:  domain.Init(db, log.Named("domain-persistant")),
+		opa:        opa.Init(db, log),
+		service:    service.Init(db, log),
+		doamin:     domain.Init(db, log.Named("domain-persistant")),
+		permission: permission.Init(db, log.Named("permission-persistant")),
 	}
 }
