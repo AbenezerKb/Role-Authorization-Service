@@ -44,6 +44,23 @@ func (d *domain) CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domai
 	}, nil
 
 }
+
+func (d *domain) SoftDeleteDomain(ctx context.Context, param dto.Domain) error {
+
+	if _, err := d.db.SoftDeleteDomain(ctx, db.SoftDeleteDomainParams{
+		Name:      param.Name,
+		ServiceID: param.ServiceID,
+	}); err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no record of domain found")
+			d.log.Info(ctx, "Domain  not found with this name in this service", zap.Error(err), zap.String("service-id", param.Name))
+			return err
+		}
+	}
+
+	return nil
+
+}
 func (d *domain) IsDomainExist(ctx context.Context, param dto.Domain) (bool, error) {
 
 	_, err := d.db.IsDomainExist(ctx, db.IsDomainExistParams{ServiceID: param.ServiceID, Name: param.Name})
