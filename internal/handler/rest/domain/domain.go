@@ -36,9 +36,10 @@ func Init(log logger.Logger, domainModule module.Domain) rest.Domain {
 // @Success      201 {object} dto.Domain "successfully create new domain"
 // @Failure      400  {object}  model.ErrorResponse "required field error,bad request error"
 // @Router       /domains [post]
+// @security 	 BasicAuth
 func (d *domain) CreateDomain(ctx *gin.Context) {
 
-	domain := dto.Domain{}
+	domain := dto.CreateDomain{}
 	if err := ctx.ShouldBind(&domain); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		d.logger.Info(ctx, "couldn't bind to dto.Domain body", zap.Error(err))
@@ -80,13 +81,6 @@ func (d *domain) CreateDomain(ctx *gin.Context) {
 
 func (d *domain) DeleteDomain(ctx *gin.Context) {
 	domain := dto.Domain{}
-	serviceId, err := uuid.Parse(ctx.GetString("x-service-id"))
-	if err != nil {
-		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		d.logger.Info(ctx, "invalid input", zap.Error(err))
-		_ = ctx.Error(err)
-		return
-	}
 
 	if err := ctx.ShouldBind(&domain); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
@@ -94,12 +88,11 @@ func (d *domain) DeleteDomain(ctx *gin.Context) {
 		_ = ctx.Error(err)
 		return
 	}
-	domain.ServiceID = serviceId
 
 	if err := d.domainModule.DeleteDomain(ctx, domain); err != nil {
 		_ = ctx.Error(err)
 		return
 	}
 
-	constants.SuccessResponse(ctx, http.StatusCreated, nil, nil)
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }

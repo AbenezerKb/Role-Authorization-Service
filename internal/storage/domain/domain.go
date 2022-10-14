@@ -26,7 +26,7 @@ func Init(db dbinstance.DBInstance, log logger.Logger) storage.Domain {
 	}
 }
 
-func (d *domain) CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domain, error) {
+func (d *domain) CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto.Domain, error) {
 	domain, err := d.db.CreateDomain(ctx, db.CreateDomainParams{
 		Name:      param.Name,
 		ServiceID: param.ServiceID,
@@ -56,12 +56,15 @@ func (d *domain) SoftDeleteDomain(ctx context.Context, param dto.Domain) error {
 			d.log.Info(ctx, "Domain  not found with this name in this service", zap.Error(err), zap.String("service-id", param.Name))
 			return err
 		}
+		err = errors.ErrDBDelError.Wrap(err, "error deleting service")
+		d.log.Error(ctx, "error deleting domain", zap.Error(err), zap.String("service-id", param.ID.String()))
+		return err
 	}
 
 	return nil
 
 }
-func (d *domain) IsDomainExist(ctx context.Context, param dto.Domain) (bool, error) {
+func (d *domain) IsDomainExist(ctx context.Context, param dto.CreateDomain) (bool, error) {
 
 	_, err := d.db.IsDomainExist(ctx, db.IsDomainExistParams{ServiceID: param.ServiceID, Name: param.Name})
 	if err != nil {

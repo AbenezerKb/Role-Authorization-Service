@@ -6,31 +6,29 @@ import (
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
-	"2f-authorization/platform/opa"
 	"context"
-	"fmt"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
 type domain struct {
 	domainPersistant storage.Domain
 	log              logger.Logger
-	opa              opa.Opa
 }
 
-func Init(log logger.Logger, domainPersistant storage.Domain, opa opa.Opa) module.Domain {
+func Init(log logger.Logger, domainPersistant storage.Domain) module.Domain {
 	return &domain{
 
 		domainPersistant: domainPersistant,
 		log:              log,
-		opa:              opa,
 	}
 }
 
-func (d *domain) CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domain, error) {
+func (d *domain) CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto.Domain, error) {
+
 	var err error
-	if err = param.Validate(); err != nil {
+	if err = param.Validated(); err != nil {
 
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		d.log.Info(ctx, "invalid input", zap.Error(err))
@@ -57,7 +55,14 @@ func (d *domain) CreateDomain(ctx context.Context, param dto.Domain) (*dto.Domai
 
 }
 func (d *domain) DeleteDomain(ctx context.Context, param dto.Domain) error {
-	err := param.Validate()
+	var err error
+	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		d.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+	err = param.Validate()
 	if err != nil {
 		err = errors.ErrInvalidUserInput.Wrap(err, "error on validating input")
 		d.log.Error(ctx, "error validating input of domain", zap.Error(err), zap.String("service-id", param.ServiceID.String()))
@@ -69,9 +74,6 @@ func (d *domain) DeleteDomain(ctx context.Context, param dto.Domain) error {
 		return err
 	}
 
-	if err := d.opa.Refresh(ctx, fmt.Sprintf("Removed domain - [%v]", param.Name)); err != nil {
-		return err
-	}
 	return nil
 
 }

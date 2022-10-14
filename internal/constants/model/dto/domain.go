@@ -9,6 +9,21 @@ import (
 	"github.com/google/uuid"
 )
 
+type CreateDomain struct {
+	//Name is the name of the domain
+	Name string `json:"name"`
+	// ServiceID is the id of the service which own the domain.
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
+func (d CreateDomain) Validated() error {
+	return validation.ValidateStruct(&d,
+		validation.Field(&d.Name, validation.Required.Error("domain name can not be blank")),
+		validation.Field(&d.ServiceID, validation.Required.Error("service id is required"), is.UUID),
+	)
+
+}
+
 type Domain struct {
 	// ID is the unique identifier for the domain
 	// It is automatically generated when the domain is created.

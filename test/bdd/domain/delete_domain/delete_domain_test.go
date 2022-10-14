@@ -107,7 +107,7 @@ func (d *deleteDomainTest) theResultShouldBeNotFoundError(message string) error 
 
 func (d *deleteDomainTest) theResultShouldBeSuccessfull(message string) error {
 
-	if err := d.apiTest.AssertStatusCode(http.StatusCreated); err != nil {
+	if err := d.apiTest.AssertStatusCode(http.StatusOK); err != nil {
 		return err
 	}
 	if err := d.apiTest.AssertStringValueOnPathInResponse("ok", message); err != nil {
