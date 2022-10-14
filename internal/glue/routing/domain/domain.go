@@ -23,6 +23,16 @@ func InitRoute(group *gin.RouterGroup, domain rest.Domain, log logger.Logger, au
 				// authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodDelete,
+			Path:        "",
+			Handler:     domain.DeleteDomain,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				// authMiddleware.Authorize(),
+			},
+		},
 	}
 	routing.RegisterRoutes(domains, domainRoutes)
 }

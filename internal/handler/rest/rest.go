@@ -8,4 +8,5 @@ type Service interface {
 }
 type Domain interface {
 	CreateDomain(ctx *gin.Context)
+	DeleteDomain(ctx *gin.Context)
 }

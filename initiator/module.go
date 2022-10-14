@@ -16,6 +16,6 @@ type Module struct {
 func InitModule(persistence Persistence, log logger.Logger, opa opa_platform.Opa) Module {
 	return Module{
 		service: service.Init(log, persistence.service, opa),
-		domain:  domain.Init(log.Named("domain module"), persistence.doamin),
+		domain:  domain.Init(log.Named("domain module"), persistence.doamin, opa),
 	}
 }
