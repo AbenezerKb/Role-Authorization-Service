@@ -10,3 +10,6 @@ type Domain interface {
 	CreateDomain(ctx *gin.Context)
 	DeleteDomain(ctx *gin.Context)
 }
+type Permission interface {
+	CreatePermission(ctx *gin.Context)
+}
