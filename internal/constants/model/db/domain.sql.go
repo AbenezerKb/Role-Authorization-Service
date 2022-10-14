@@ -104,3 +104,28 @@ func (q *Queries) IsDomainExist(ctx context.Context, arg IsDomainExistParams) (D
 	)
 	return i, err
 }
+
+const softDeleteDomain = `-- name: SoftDeleteDomain :one
+UPDATE domains set deleted_at = now() 
+WHERE name = $1 AND service_id = $2
+RETURNING id, name, deleted_at, service_id, created_at, updated_at
+`
+
+type SoftDeleteDomainParams struct {
+	Name      string    `json:"name"`
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
+func (q *Queries) SoftDeleteDomain(ctx context.Context, arg SoftDeleteDomainParams) (Domain, error) {
+	row := q.db.QueryRow(ctx, softDeleteDomain, arg.Name, arg.ServiceID)
+	var i Domain
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.DeletedAt,
+		&i.ServiceID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

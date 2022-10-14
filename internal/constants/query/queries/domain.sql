@@ -10,6 +10,11 @@ INSERT INTO domains (
 DELETE from domains 
 WHERE id = $1;
 
+-- name: SoftDeleteDomain :one 
+UPDATE domains set deleted_at = now() 
+WHERE name = $1 AND service_id = $2
+RETURNING *;
+
 
 -- name: GetDomainByServiceId :many
 SELECT * FROM domains 
