@@ -2,12 +2,10 @@ package domain
 
 import (
 	"2f-authorization/internal/constants/model/db"
-	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -17,15 +15,10 @@ import (
 )
 
 type createTestDomain struct {
-	domainrequest dto.Domain
 	test.TestInstance
 	apiTest      src.ApiTest
 	servicemodel db.CreateServiceParams
 	serviceId    uuid.UUID
-	domain       struct {
-		OK   bool       `json:"ok"`
-		Data dto.Domain `json:"data"`
-	}
 }
 
 func TestCreateDomain(t *testing.T) {
@@ -73,17 +66,7 @@ func (c *createTestDomain) iSendTheRequest(domain *godog.Table) error {
 		return err
 	}
 
-	err = c.apiTest.UnmarshalJSON([]byte(body), &c.domainrequest)
-	if err != nil {
-		return err
-	}
-
-	requestBody, err := json.Marshal(c.domainrequest)
-	if err != nil {
-		return err
-	}
-
-	c.apiTest.Body = string(requestBody)
+	c.apiTest.Body = body
 	c.apiTest.SetHeader("Authorization", "Basic "+basicAuth(c.serviceId.String(), "password"))
 	c.apiTest.SendRequest()
 	return nil

@@ -7,7 +7,6 @@ import (
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -16,17 +15,11 @@ import (
 )
 
 type deleteDomainTest struct {
-	domainrequest  dto.Domain
-	domainToDelete dto.Domain
+	domainrequest dto.Domain
 	test.TestInstance
 	apiTest        src.ApiTest
 	servicemodel   db.CreateServiceParams
 	createdService db.CreateServiceRow
-
-	domain struct {
-		OK   bool       `json:"ok"`
-		Data dto.Domain `json:"data"`
-	}
 }
 
 func TestDeleteDomain(t *testing.T) {
@@ -71,8 +64,7 @@ func (d *deleteDomainTest) iHaveDomain(domainName *godog.Table) error {
 
 	}
 
-	d.domainrequest.ServiceID = d.createdService.ServiceID
-	_, err = d.DB.CreateDomain(context.Background(), db.CreateDomainParams{Name: d.domainrequest.Name, ServiceID: d.domainrequest.ServiceID})
+	_, err = d.DB.CreateDomain(context.Background(), db.CreateDomainParams{Name: d.domainrequest.Name, ServiceID: d.createdService.ServiceID})
 	if err != nil {
 		return err
 	}
@@ -86,17 +78,7 @@ func (d *deleteDomainTest) iSendTheRequest(domain *godog.Table) error {
 		return err
 	}
 
-	err = d.apiTest.UnmarshalJSON([]byte(body), &d.domainToDelete)
-	if err != nil {
-		return err
-	}
-
-	requestBody, err := json.Marshal(d.domainToDelete)
-	if err != nil {
-		return err
-	}
-
-	d.apiTest.Body = string(requestBody)
+	d.apiTest.Body = body
 	d.apiTest.SetHeader("Authorization", "Basic "+basicAuth(d.createdService.ServiceID.String(), "password"))
 	d.apiTest.SendRequest()
 	return nil
