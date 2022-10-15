@@ -10,7 +10,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -35,16 +34,8 @@ func (t *tenant) CreateTenant(ctx *gin.Context) {
 		_ = ctx.Error(err)
 		return
 	}
-	serviceId, err := uuid.Parse(ctx.GetString("x-service-id"))
-	if err != nil {
-		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		t.logger.Info(ctx, "invalid input", zap.Error(err), zap.String("service id", ctx.GetString("x-service-id")))
-		_ = ctx.Error(err)
-		return
-	}
-	tenant.ServiceID = serviceId
 
-	err = t.tenantModule.CreateTenant(ctx, tenant)
+	err := t.tenantModule.CreateTenant(ctx, tenant)
 	if err != nil {
 		_ = ctx.Error(err)
 		return

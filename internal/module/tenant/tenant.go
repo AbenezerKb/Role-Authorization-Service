@@ -8,6 +8,7 @@ import (
 	"2f-authorization/platform/logger"
 	"context"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -26,6 +27,13 @@ func Init(log logger.Logger, tenantPersistant storage.Tenant) module.Tenant {
 func (t *tenant) CreateTenant(ctx context.Context, param dto.CreateTenent) error {
 
 	var err error
+	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		t.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
 	if err = param.Validate(); err != nil {
 
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
@@ -39,7 +47,7 @@ func (t *tenant) CreateTenant(ctx context.Context, param dto.CreateTenent) error
 
 	if isTenantExist {
 		t.log.Info(ctx, "tenant already exists", zap.String("name", param.TenantName))
-		return errors.ErrDataExists.Wrap(err, "tenant with this name already exists")
+		return errors.ErrDataExists.New("tenant with this name already exists")
 	}
 	return t.tenantPersistant.CreateTenant(ctx, param)
 }
