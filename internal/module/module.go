@@ -18,3 +18,7 @@ type Domain interface {
 type Permission interface {
 	CreatePermission(ctx context.Context, param dto.CreatePermission) error
 }
+
+type Tenant interface {
+	CreateTenant(ctx context.Context, param dto.CreateTenent) error
+}
