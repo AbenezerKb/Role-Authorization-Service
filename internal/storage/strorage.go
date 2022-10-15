@@ -28,3 +28,8 @@ type Permission interface {
 	CreatePermission(ctx context.Context, param dto.CreatePermission) (uuid.UUID, error)
 	AddToDomain(ctx context.Context, permissionId, domain uuid.UUID) error
 }
+
+type Tenant interface {
+	CreateTenant(ctx context.Context, param dto.CreateTenent) error
+	IsTenantExist(ctx context.Context, param dto.CreateTenent) (bool, error)
+}
