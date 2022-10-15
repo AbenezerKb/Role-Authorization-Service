@@ -25,6 +25,18 @@ func Init(log logger.Logger, tenantModule module.Tenant) rest.Tenant {
 	}
 }
 
+// CreateTenant is used to create tenant.
+// @Summary      create tenant.
+// @Description  this function create tenant if it is not exist in the service.
+// @Tags         tenant
+// @Accept       json
+// @Produce      json
+// @param 		 createtenant body model.CreateTenent true "create tenant request body"
+// @Success      201  boolean true "successfully create new tenant"
+// @Failure      400  {object}  model.ErrorResponse "required field error,bad request error"
+// @Router       /tenants [post]
+// @security 	 BasicAuth
+
 func (t *tenant) CreateTenant(ctx *gin.Context) {
 
 	tenant := dto.CreateTenent{}

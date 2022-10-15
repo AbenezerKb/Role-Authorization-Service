@@ -19,8 +19,10 @@ type TenantResponse struct {
 }
 
 type CreateTenent struct {
-	TenantName string    `json:"tenant_name"`
-	ServiceID  uuid.UUID `json:"service_id"`
+	//TenantName is the name of the tenant
+	TenantName string `json:"tenant_name"`
+	//ServiceID  is the service id of service.
+	ServiceID uuid.UUID `json:"service_id"`
 }
 
 func (d CreateTenent) Validate() error {
