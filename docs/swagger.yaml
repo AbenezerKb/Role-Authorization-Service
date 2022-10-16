@@ -92,6 +92,14 @@ definitions:
         description: CreatedAt is the  time this domain updated at.
         type: string
     type: object
+  dto.RegisterUser:
+    properties:
+      service_id:
+        description: ServiceID is the id of the service which own the domain.
+        type: string
+      user_id:
+        type: string
+    type: object
   model.ErrorResponse:
     properties:
       code:
@@ -292,6 +300,64 @@ paths:
       summary: create new service.
       tags:
       - service
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        This function registers new user if the user doesn't exist.
+        If the process finishes with out any error it returns true.
+      parameters:
+      - description: Register user request body
+        in: body
+        name: registeruser
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterUser'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully register the permission
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: add new user to the system.
+      tags:
+      - users
 securityDefinitions:
   BasicAuth:
     type: basic
