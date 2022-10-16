@@ -36,6 +36,10 @@ func (d *deleteServiceTest) iDeleteTheService(service *godog.Table) error {
 	}
 	d.apiTest.Body = body
 	d.apiTest.SetHeader("Authorization", "Basic "+basicAuth(d.createdService.ServiceID.String(), "123456"))
+	d.apiTest.SetHeader("x-subject", d.service.UserID.String())
+	d.apiTest.SetHeader("x-action", "*")
+	d.apiTest.SetHeader("x-resource", "*")
+	d.apiTest.SetHeader("x-tenant", "administrator")
 
 	d.apiTest.SendRequest()
 	return nil
