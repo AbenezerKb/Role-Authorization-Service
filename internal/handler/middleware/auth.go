@@ -93,13 +93,12 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 
 func (a *authMiddeleware) Authorize() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		req := model.Request{}
-		if err := ctx.ShouldBind(&req); err != nil {
-			err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-			a.logger.Info(ctx, "couldn't bind to dto.request body", zap.Error(err))
-			_ = ctx.Error(err)
-			ctx.Abort()
-			return
+		req := model.Request{
+			Tenant:   ctx.GetHeader("x-tenant"),
+			Subject:  ctx.GetHeader("x-subject"),
+			Action:   ctx.GetHeader("x-action"),
+			Resource: ctx.GetHeader("x-resource"),
+			Service:  ctx.GetString("x-service-id"),
 		}
 
 		if err := req.Validate(); err != nil {
@@ -109,8 +108,6 @@ func (a *authMiddeleware) Authorize() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		req.Service = ctx.GetString("x-service-id")
 
 		ok, err := a.opa.Allow(ctx, req)
 		if err != nil {
