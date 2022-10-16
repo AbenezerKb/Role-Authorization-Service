@@ -63,8 +63,8 @@ with _service as (
      _user as(
          insert
              into
-                 users(user_id)
-                 values ($3)
+                 users(user_id,service_id)
+                 select $3,service_id from _service
                  returning id as user_id
      ),
      _tenant_user_role as

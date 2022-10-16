@@ -104,4 +104,5 @@ type User struct {
 	DeletedAt sql.NullTime `json:"deleted_at"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`
+	ServiceID uuid.UUID    `json:"service_id"`
 }
