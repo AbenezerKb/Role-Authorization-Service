@@ -20,10 +20,9 @@ type registerUser struct {
 	apiTest        src.ApiTest
 	service        dto.CreateService
 	createdService dto.CreateServiceResponse
-	userId         uuid.UUID
 }
 
-func TestCreateTenant(t *testing.T) {
+func TestRegisterUser(t *testing.T) {
 	r := &registerUser{}
 	r.TestInstance = test.Initiate(context.Background(), "../../../../")
 	r.apiTest.InitializeServer(r.Server)
