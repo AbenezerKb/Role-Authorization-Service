@@ -6,6 +6,7 @@ import (
 	"2f-authorization/internal/handler/rest/permission"
 	"2f-authorization/internal/handler/rest/service"
 	"2f-authorization/internal/handler/rest/tenant"
+	"2f-authorization/internal/handler/rest/user"
 	"2f-authorization/platform/logger"
 )
 
@@ -14,6 +15,7 @@ type Handler struct {
 	domain     rest.Domain
 	permission rest.Permission
 	tenant     rest.Tenant
+	user       rest.User
 }
 
 func InitHandler(module Module, log logger.Logger) Handler {
@@ -21,6 +23,7 @@ func InitHandler(module Module, log logger.Logger) Handler {
 		service:    service.Init(log, module.service),
 		domain:     domain.Init(log.Named("domain handler"), module.domain),
 		permission: permission.Init(log.Named("permission-handler"), module.permission),
-		tenant:     tenant.Init(log, module.tenant),
+		tenant:     tenant.Init(log.Named("tenant-handler"), module.tenant),
+		user:       user.Init(log.Named("user-handler"), module.user),
 	}
 }

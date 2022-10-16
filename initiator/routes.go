@@ -5,6 +5,7 @@ import (
 	"2f-authorization/internal/glue/routing/permission"
 	"2f-authorization/internal/glue/routing/services"
 	"2f-authorization/internal/glue/routing/tenant"
+	"2f-authorization/internal/glue/routing/user"
 
 	"2f-authorization/internal/handler/middleware"
 	"2f-authorization/platform/logger"
@@ -27,5 +28,6 @@ func InitRouter(group *gin.RouterGroup, handler Handler, persistence Persistence
 	domain.InitRoute(group, handler.domain, log, authmiddleware)
 	permission.InitRoute(group, handler.permission, log, authmiddleware)
 	tenant.InitRoute(group, handler.tenant, log, authmiddleware)
+	user.InitRoute(group, handler.user, log, authmiddleware)
 
 }
