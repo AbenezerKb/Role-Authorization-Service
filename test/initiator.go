@@ -7,6 +7,7 @@ import (
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"os"
 
@@ -79,4 +80,9 @@ func Initiate(ctx context.Context, path string) TestInstance {
 		DB:     dbConn,
 		Opa:    opa,
 	}
+}
+
+func (t *TestInstance) BasicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
