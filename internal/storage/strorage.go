@@ -33,3 +33,7 @@ type Tenant interface {
 	CreateTenant(ctx context.Context, param dto.CreateTenent) error
 	IsTenantExist(ctx context.Context, param dto.CreateTenent) (bool, error)
 }
+type User interface {
+	RegiseterUser(ctx context.Context, param dto.RegisterUser) error
+	IsUserExist(ctx context.Context, param dto.RegisterUser) (bool, error)
+}
