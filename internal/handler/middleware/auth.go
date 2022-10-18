@@ -125,6 +125,7 @@ func (a *authMiddeleware) Authorize() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+		ctx.Set("x-tenant", ctx.GetHeader("x-tenant"))
 		ctx.Next()
 	}
 }
