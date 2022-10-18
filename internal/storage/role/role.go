@@ -42,7 +42,7 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 		Name:      role.Name,
 		ID:        role.RoleID,
 		CreatedAt: role.CreatedAt,
-		Status:    role.Status,
+		Status:    string(role.Status),
 	}, nil
 }
 func (r *role) IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, error) {

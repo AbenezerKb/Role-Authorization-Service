@@ -13,7 +13,7 @@ type Service struct {
 	ID uuid.UUID `json:"id"`
 	// Status is the current status of the service.
 	// It is set to false by default.
-	Status bool `json:"status"`
+	Status string `json:"status"`
 	// Name is the name of the service.
 	Name string `json:"name"`
 	// Password is the secret the service uses to authenticate itself.
@@ -46,7 +46,7 @@ type CreateServiceResponse struct {
 	Service string `json:"service"`
 	// ServiceStatus is the status of the service.
 	// It is set to false when the service is created.
-	ServiceStatus bool `json:"service_status"`
+	ServiceStatus string `json:"service_status"`
 	// Tenant is the domain the super admin is in.
 	// It is automatically created upon the creation of the service.
 	Tenant string `json:"tenant"`

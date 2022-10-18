@@ -40,7 +40,7 @@ func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*
 	return &dto.CreateServiceResponse{
 		ServiceID:     service.ServiceID,
 		Tenant:        service.Tenant,
-		ServiceStatus: service.ServiceStatus,
+		ServiceStatus: string(service.ServiceStatus),
 		Service:       service.Service,
 	}, nil
 }
@@ -87,9 +87,9 @@ func (s *service) GetServiceById(ctx context.Context, param dto.Service) (*dto.S
 		}
 	}
 	return &dto.Service{
-		ID:        service.ID,
-		Status:    service.Status,
-		Name:      service.Name,
-		Password:  service.Password,
+		ID:       service.ID,
+		Status:   string(service.Status),
+		Name:     service.Name,
+		Password: service.Password,
 	}, nil
 }

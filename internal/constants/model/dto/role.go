@@ -48,7 +48,7 @@ type Role struct {
 	// Name is the name of the role.
 	Name string `json:"name,omitempty"`
 	// Status is the status of the role.
-	Status bool `json:"status,omitempty"`
+	Status string `json:"status,omitempty"`
 	// DeletedAt is the time this service was created.
 	DeletedAt time.Time `json:"deleted_at,omitempty"`
 	// CreatedAt is the time this service was created.
