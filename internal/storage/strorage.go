@@ -37,3 +37,8 @@ type User interface {
 	RegiseterUser(ctx context.Context, param dto.RegisterUser) error
 	IsUserExist(ctx context.Context, param dto.RegisterUser) (bool, error)
 }
+
+type Role interface {
+	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
+	IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, error)
+}
