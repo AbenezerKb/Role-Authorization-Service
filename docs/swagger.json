@@ -114,6 +114,91 @@
                 }
             }
         },
+        "/roles": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function creates new role if the role doesn't exist.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roles"
+                ],
+                "summary": "add new role.",
+                "parameters": [
+                    {
+                        "description": "create role request body",
+                        "name": "createrole",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateRole"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully creates the role",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Role"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/services": {
             "post": {
                 "description": "this function creates new service if it does not already exist.",
@@ -280,7 +365,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "successfully register the permission",
+                        "description": "successfully register the user",
                         "schema": {
                             "type": "boolean"
                         }
@@ -340,6 +425,30 @@
                 },
                 "service_id": {
                     "description": "ServiceID is the id of the service the permission belongs to",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateRole": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the role.",
+                    "type": "string"
+                },
+                "permissions_id": {
+                    "description": "PermissionID is the list of permissions id's.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service the tenant belongs to.",
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "description": "TenantName is the name of the tenant the role is in.",
                     "type": "string"
                 }
             }
@@ -419,10 +528,40 @@
             "type": "object",
             "properties": {
                 "service_id": {
-                    "description": "ServiceID is the id of the service which own the domain.",
+                    "description": "ServiceID is the id of the service the user belongs to.",
                     "type": "string"
                 },
                 "user_id": {
+                    "description": "UserId is the id of the user.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Role": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt is the time this service was created.",
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "description": "CreatedAt is the time this service was created.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the unique identifier for the service.\nIt is automatically generated when the role is created.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the name of the role.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status is the status of the role.",
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is the time this service was last updated.",
                     "type": "string"
                 }
             }

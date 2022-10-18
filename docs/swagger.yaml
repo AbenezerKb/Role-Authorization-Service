@@ -30,6 +30,23 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
     type: object
+  dto.CreateRole:
+    properties:
+      name:
+        description: Name is the name of the role.
+        type: string
+      permissions_id:
+        description: PermissionID is the list of permissions id's.
+        items:
+          type: string
+        type: array
+      service_id:
+        description: ServiceID is the id of the service the tenant belongs to.
+        type: string
+      tenant_name:
+        description: TenantName is the name of the tenant the role is in.
+        type: string
+    type: object
   dto.CreateService:
     properties:
       name:
@@ -95,9 +112,33 @@ definitions:
   dto.RegisterUser:
     properties:
       service_id:
-        description: ServiceID is the id of the service which own the domain.
+        description: ServiceID is the id of the service the user belongs to.
         type: string
       user_id:
+        description: UserId is the id of the user.
+        type: string
+    type: object
+  dto.Role:
+    properties:
+      created_at:
+        description: CreatedAt is the time this service was created.
+        type: string
+      deleted_at:
+        description: CreatedAt is the time this service was created.
+        type: string
+      id:
+        description: |-
+          ID is the unique identifier for the service.
+          It is automatically generated when the role is created.
+        type: string
+      name:
+        description: Name is the name of the role.
+        type: string
+      status:
+        description: Status is the status of the role.
+        type: boolean
+      updated_at:
+        description: UpdatedAt is the time this service was last updated.
         type: string
     type: object
   model.ErrorResponse:
@@ -231,6 +272,62 @@ paths:
       summary: register a new permission.
       tags:
       - permissions
+  /roles:
+    post:
+      consumes:
+      - application/json
+      description: This function creates new role if the role doesn't exist.
+      parameters:
+      - description: create role request body
+        in: body
+        name: createrole
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRole'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully creates the role
+          schema:
+            $ref: '#/definitions/dto.Role'
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: add new role.
+      tags:
+      - roles
   /services:
     delete:
       consumes:
@@ -338,7 +435,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: successfully register the permission
+          description: successfully register the user
           schema:
             type: boolean
         "400":
