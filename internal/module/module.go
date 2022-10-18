@@ -25,3 +25,7 @@ type Tenant interface {
 type User interface {
 	RegisterUser(ctx context.Context, param dto.RegisterUser) error
 }
+
+type Role interface {
+	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
+}
