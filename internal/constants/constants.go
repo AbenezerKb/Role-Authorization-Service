@@ -1,5 +1,7 @@
 package constants
 
 const (
-	Active = true
+	Active = "ACTIVE"
+	InActive = "INACTIVE"
+	Pending = "PENDING"
 )
