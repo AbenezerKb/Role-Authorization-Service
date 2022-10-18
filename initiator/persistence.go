@@ -6,6 +6,7 @@ import (
 	"2f-authorization/internal/storage/domain"
 	"2f-authorization/internal/storage/opa"
 	"2f-authorization/internal/storage/permission"
+	"2f-authorization/internal/storage/role"
 	"2f-authorization/internal/storage/service"
 	"2f-authorization/internal/storage/tenant"
 	"2f-authorization/internal/storage/user"
@@ -19,6 +20,7 @@ type Persistence struct {
 	permission storage.Permission
 	tenant     storage.Tenant
 	user       storage.User
+	role       storage.Role
 }
 
 func InitPersistence(db dbinstance.DBInstance, log logger.Logger) Persistence {
@@ -29,5 +31,6 @@ func InitPersistence(db dbinstance.DBInstance, log logger.Logger) Persistence {
 		permission: permission.Init(db, log.Named("permission-persistant")),
 		tenant:     tenant.Init(db, log.Named("tenant-persistant")),
 		user:       user.Init(db, log.Named("user-persistant")),
+		role:       role.Init(db, log.Named("role-persistant")),
 	}
 }

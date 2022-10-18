@@ -4,6 +4,7 @@ import (
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/module/domain"
 	"2f-authorization/internal/module/permission"
+	"2f-authorization/internal/module/role"
 	"2f-authorization/internal/module/service"
 	"2f-authorization/internal/module/tenant"
 	"2f-authorization/internal/module/user"
@@ -18,6 +19,7 @@ type Module struct {
 	permission module.Permission
 	tenant     module.Tenant
 	user       module.User
+	role       module.Role
 }
 
 func InitModule(persistence Persistence, log logger.Logger, opa opa_platform.Opa) Module {
@@ -27,5 +29,6 @@ func InitModule(persistence Persistence, log logger.Logger, opa opa_platform.Opa
 		permission: permission.Init(log.Named("permission module"), persistence.permission, opa),
 		tenant:     tenant.Init(log.Named("tenant module"), persistence.tenant),
 		user:       user.Init(log.Named("user-module"), persistence.user),
+		role:       role.Init(log.Named("role-module"), persistence.role, opa),
 	}
 }
