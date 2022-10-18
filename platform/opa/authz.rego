@@ -18,7 +18,7 @@ match(permission) {
 
 match(permission) {
 	pc := permission.child[_]
-	pc.status
+	pc.status="ACTIVE"
 	pc.statment.effect = "allow"
 	has_resource(pc)
 	has_action(pc)
@@ -26,33 +26,33 @@ match(permission) {
 
 check_service = service {
 	service := data.services[input.service]
-	service.status
+	service.status="ACTIVE"
 }
 
 check_tenant = tenant {
 	tenant := check_service.tenants[input.tenant]
-	tenant.status
+	tenant.status="ACTIVE"
 }
 
 check_tenant = tenant {
 	tenant := check_service.tenants.administrator
-	tenant.status
+	tenant.status="ACTIVE"
 }
 
 check_user = user {
 	user := check_tenant.users[input.subject]
-	user.status
+	user.status="ACTIVE"
 	user.user_role_status
 }
 
 check_user_role = role {
 	role := check_user.role
-	role.status
+	role.status="ACTIVE"
 }
 
 check_user_permissions[permission] {
 	permission := check_user_role.permissions[_]
-	permission.status
+	permission.status="ACTIVE"
 	permission.statment.effect == "allow"
 }
 
