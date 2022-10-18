@@ -61,9 +61,16 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			return
 		}
 
-		if service.Status != constants.Active {
-			Err := errors.ErrAuthError.Wrap(nil, "Your service is not active, Please consult the system administrator to activate your service")
+		switch service.Status {
+		case constants.InActive:
+			Err := errors.ErrAuthError.New("Your service is not active, Please consult the system administrator to activate your service")
 			a.logger.Warn(ctx, "service status is not active", zap.String("service-id", service.ID.String()))
+			_ = ctx.Error(Err)
+			ctx.Abort()
+			return
+		case constants.Pending:
+			Err := errors.ErrAuthError.New("Your service is on pending state, Please consult the system administrator to activate your service")
+			a.logger.Warn(ctx, "service status is pending", zap.String("service-id", service.ID.String()))
 			_ = ctx.Error(Err)
 			ctx.Abort()
 			return
