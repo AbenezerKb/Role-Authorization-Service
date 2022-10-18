@@ -7,7 +7,6 @@ import (
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -33,7 +32,7 @@ func (u *user) RegisterUser(ctx context.Context, param dto.RegisterUser) error {
 		u.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
 		return err
 	}
-	fmt.Println("req params", param)
+
 	if err = param.Validate(); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		u.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("input", param))

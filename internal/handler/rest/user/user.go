@@ -37,7 +37,7 @@ func Init(logger logger.Logger, userModule module.User) rest.User {
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"
 // @param 		 x-resource header string true "resource"
-// @Success      200  boolean true "successfully register the permission"
+// @Success      200  boolean true "successfully register the user"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
