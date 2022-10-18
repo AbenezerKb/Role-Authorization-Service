@@ -35,7 +35,7 @@ type CreateRoleRow struct {
 	RoleID    uuid.UUID `json:"role_id"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
-	Status    bool      `json:"status"`
+	Status    Status    `json:"status"`
 }
 
 func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (CreateRoleRow, error) {

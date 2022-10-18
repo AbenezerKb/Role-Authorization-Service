@@ -1,6 +1,6 @@
 CREATE TABLE "permissions" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "status" boolean NOT NULL DEFAULT true,
+    "status" status NOT NULL DEFAULT 'ACTIVE',
     "name" varchar NOT NULL,
     "description" varchar NOT NULL,
     "statment" JSON NOT NULL,

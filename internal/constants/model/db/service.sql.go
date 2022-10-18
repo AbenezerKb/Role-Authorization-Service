@@ -118,7 +118,7 @@ type CreateServiceRow struct {
 	ServiceID     uuid.UUID `json:"service_id"`
 	Password      string    `json:"password"`
 	Service       string    `json:"service"`
-	ServiceStatus bool      `json:"service_status"`
+	ServiceStatus Status    `json:"service_status"`
 	Tenant        string    `json:"tenant"`
 }
 

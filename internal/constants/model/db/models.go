@@ -6,15 +6,61 @@ package db
 
 import (
 	"database/sql"
+	"database/sql/driver"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgtype"
 )
 
+type Status string
+
+const (
+	StatusPENDING  Status = "PENDING"
+	StatusACTIVE   Status = "ACTIVE"
+	StatusINACTIVE Status = "INACTIVE"
+)
+
+func (e *Status) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Status(s)
+	case string:
+		*e = Status(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Status: %T", src)
+	}
+	return nil
+}
+
+type NullStatus struct {
+	Status Status
+	Valid  bool // Valid is true if String is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.Status, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Status.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return ns.Status, nil
+}
+
 type Domain struct {
 	ID        uuid.UUID    `json:"id"`
 	Name      string       `json:"name"`
+	Status    Status       `json:"status"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
 	ServiceID uuid.UUID    `json:"service_id"`
 	CreatedAt time.Time    `json:"created_at"`
@@ -22,14 +68,15 @@ type Domain struct {
 }
 
 type Permission struct {
-	ID          uuid.UUID   `json:"id"`
-	Status      bool        `json:"status"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Statment    pgtype.JSON `json:"statment"`
-	CreatedAt   time.Time   `json:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at"`
-	ServiceID   uuid.UUID   `json:"service_id"`
+	ID          uuid.UUID     `json:"id"`
+	Status      Status        `json:"status"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Statment    pgtype.JSON   `json:"statment"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
+	ServiceID   uuid.UUID     `json:"service_id"`
+	TenantID    uuid.NullUUID `json:"tenant_id"`
 }
 
 type PermissionDomain struct {
@@ -50,7 +97,7 @@ type PermissionsHierarchy struct {
 
 type Role struct {
 	ID        uuid.UUID    `json:"id"`
-	Status    bool         `json:"status"`
+	Status    Status       `json:"status"`
 	Name      string       `json:"name"`
 	TenantID  uuid.UUID    `json:"tenant_id"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
@@ -68,7 +115,7 @@ type RolePermission struct {
 
 type Service struct {
 	ID        uuid.UUID    `json:"id"`
-	Status    bool         `json:"status"`
+	Status    Status       `json:"status"`
 	Name      string       `json:"name"`
 	Password  string       `json:"password"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
@@ -78,12 +125,14 @@ type Service struct {
 
 type Tenant struct {
 	ID         uuid.UUID    `json:"id"`
-	Status     bool         `json:"status"`
+	Status     Status       `json:"status"`
 	TenantName string       `json:"tenant_name"`
 	ServiceID  uuid.UUID    `json:"service_id"`
 	DeletedAt  sql.NullTime `json:"deleted_at"`
 	CreatedAt  time.Time    `json:"created_at"`
 	UpdatedAt  time.Time    `json:"updated_at"`
+	DomainID   uuid.UUID    `json:"domain_id"`
+	Inherit    sql.NullBool `json:"inherit"`
 }
 
 type TenantUsersRole struct {
@@ -91,7 +140,7 @@ type TenantUsersRole struct {
 	TenantID  uuid.UUID    `json:"tenant_id"`
 	UserID    uuid.UUID    `json:"user_id"`
 	RoleID    uuid.UUID    `json:"role_id"`
-	Status    bool         `json:"status"`
+	Status    Status       `json:"status"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`
@@ -100,7 +149,7 @@ type TenantUsersRole struct {
 type User struct {
 	ID        uuid.UUID    `json:"id"`
 	UserID    uuid.UUID    `json:"user_id"`
-	Status    bool         `json:"status"`
+	Status    Status       `json:"status"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`

@@ -1,6 +1,6 @@
 CREATE TABLE "tenants" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "status" boolean NOT NULL DEFAULT true,
+    "status" status NOT NULL DEFAULT 'ACTIVE',
     "tenant_name" varchar NOT NULL,
     "service_id" UUID NOT NULL,
     "deleted_at" timestamptz,

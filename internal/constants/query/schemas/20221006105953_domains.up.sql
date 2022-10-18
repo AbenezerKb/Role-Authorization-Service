@@ -1,6 +1,7 @@
 CREATE TABLE "domains" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" varchar NOT NULL ,
+    "status" status NOT NULL DEFAULT 'ACTIVE',
     "deleted_at" timestamptz,
     "service_id" UUID NOT NULL,
     "created_at" timestamptz NOT NULL default now(),

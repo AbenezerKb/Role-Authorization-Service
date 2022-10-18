@@ -1,6 +1,8 @@
+CREATE TYPE status AS ENUM ('PENDING', 'ACTIVE', 'INACTIVE');
+
 CREATE TABLE "services" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "status" boolean NOT NULL DEFAULT false,
+    "status" status NOT NULL DEFAULT 'PENDING',
     "name" varchar UNIQUE NOT NULL,
     "password" varchar NOT NULL,
     "deleted_at" timestamptz,

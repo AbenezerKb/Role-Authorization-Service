@@ -1,6 +1,6 @@
 CREATE TABLE "roles" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "status" boolean NOT NULL DEFAULT true,
+    "status" status NOT NULL DEFAULT 'ACTIVE',
     "name" varchar NOT NULL,
     "tenant_id" UUID NOT NULL,
     "deleted_at" timestamptz,

@@ -23,7 +23,7 @@ service_id
 `
 
 type CreateTenentParams struct {
-	Status     bool      `json:"status"`
+	Status     Status    `json:"status"`
 	TenantName string    `json:"tenant_name"`
 	ServiceID  uuid.UUID `json:"service_id"`
 }
@@ -34,7 +34,7 @@ func (q *Queries) CreateTenent(ctx context.Context, arg CreateTenentParams) erro
 }
 
 const getTenentWithNameAndServiceId = `-- name: GetTenentWithNameAndServiceId :one
-SELECT id, status, tenant_name, service_id, deleted_at, created_at, updated_at FROM tenants WHERE 
+SELECT id, status, tenant_name, service_id, deleted_at, created_at, updated_at, domain_id, inherit FROM tenants WHERE 
 tenant_name = $1 AND service_id = $2
 `
 
@@ -54,6 +54,8 @@ func (q *Queries) GetTenentWithNameAndServiceId(ctx context.Context, arg GetTene
 		&i.DeletedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DomainID,
+		&i.Inherit,
 	)
 	return i, err
 }
