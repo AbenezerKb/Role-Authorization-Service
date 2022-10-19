@@ -38,7 +38,7 @@ from
                             u.user_id,
                             tur.tenant_id,
                             tur.status as user_role_status,
-                            to_json(role) as role
+                            json_agg(role) as role
                         from
                             users as u
                                 join tenant_users_roles tur on
@@ -91,7 +91,10 @@ from
                                     r.status,
                                     r.name
                             ) as role on
-                                    role.id = tur.role_id
+                                    role.id = tur.role_id group by    u.status,
+                                                                      u.user_id,
+                                                                      tur.tenant_id,
+                                                                      tur.status
                     ) as tu on
                             tu.tenant_id = tenants.id
                 group by
