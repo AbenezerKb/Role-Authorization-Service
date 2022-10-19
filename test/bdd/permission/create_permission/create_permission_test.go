@@ -119,7 +119,7 @@ func (c *createTestPermission) iHaveARegisteredService(service *godog.Table) err
 		return err
 	}
 	c.createdService.ServiceID = createdService.ServiceID
-	if _, err := c.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", c.createdService.ServiceID); err != nil {
+	if _, err := c.DB.Pool.Exec(context.Background(), "UPDATE services set status = 'ACTIVE'  where id = $1", c.createdService.ServiceID); err != nil {
 		return err
 	}
 

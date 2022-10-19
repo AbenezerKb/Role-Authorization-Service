@@ -57,7 +57,7 @@ func (d *deleteDomainTest) iHaveDomain(domainName *godog.Table) error {
 		return err
 	}
 
-	_, err = d.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", d.createdService.ServiceID)
+	_, err = d.DB.Pool.Exec(context.Background(), "UPDATE services set status = 'ACTIVE'  where id = $1", d.createdService.ServiceID)
 	if err != nil {
 
 		return err

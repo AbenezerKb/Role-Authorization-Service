@@ -50,7 +50,7 @@ func (c *createTestDomain) iHaveServiceWith(service *godog.Table) error {
 		return err
 	}
 
-	_, err = c.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", result.ServiceID)
+	_, err = c.DB.Pool.Exec(context.Background(), "UPDATE services set status = 'ACTIVE'  where id = $1", result.ServiceID)
 	if err != nil {
 		return err
 	}

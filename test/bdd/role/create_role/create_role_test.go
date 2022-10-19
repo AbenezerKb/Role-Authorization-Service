@@ -95,7 +95,7 @@ func (c *createRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table
 		ServiceID: c.createdService.ServiceID,
 	})
 	if err != nil {
-		return nil
+		return err
 	}
 	c.domain.ID = result.ID
 
@@ -104,13 +104,12 @@ func (c *createRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table
 		return err
 	}
 
-	err = c.DB.CreateTenent(context.Background(), db.CreateTenentParams{
+	if err = c.DB.CreateTenent(context.Background(), db.CreateTenentParams{
 		TenantName: tenant,
 		ServiceID:  c.createdService.ServiceID,
-	})
-
-	if err != nil {
-		return nil
+		DomainID:   c.domain.ID,
+	}); err != nil {
+		return err
 	}
 	c.tenant.TenantName = tenant
 
@@ -138,7 +137,7 @@ func (c *createRoleTest) iHaveServiceWith(service *godog.Table) error {
 		return err
 	}
 	c.createdService.ServiceID = createdService.ServiceID
-	if _, err := c.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", c.createdService.ServiceID); err != nil {
+	if _, err := c.DB.Pool.Exec(context.Background(), "UPDATE services set status = 'ACTIVE'  where id = $1", c.createdService.ServiceID); err != nil {
 		return err
 	}
 

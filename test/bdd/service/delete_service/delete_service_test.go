@@ -68,7 +68,7 @@ func (d *deleteServiceTest) iHaveARegisteredService(service *godog.Table) error 
 		return err
 	}
 
-	if _, err := d.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", d.createdService.ServiceID); err != nil {
+	if _, err := d.DB.Pool.Exec(context.Background(), "UPDATE services set status = 'ACTIVE'  where id = $1", d.createdService.ServiceID); err != nil {
 		return err
 	}
 
