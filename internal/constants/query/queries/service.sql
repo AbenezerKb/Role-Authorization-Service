@@ -17,16 +17,29 @@ with _service as (
                 name as service,
                 status as service_status
 ),
+    _domain as(
+        insert
+            into
+                domains (name,
+                         service_id)
+                select
+                    'administrator',
+                    service_id
+                from
+                    _service
+                returning id as domain
+    ),
      _tenant as (
          insert
              into
                  tenants (tenant_name,
-                          service_id)
+                          service_id,domain_id)
                  select
                      'administrator',
-                     service_id
+                     service_id,
+                     domain
                  from
-                     _service
+                     _service,_domain
                  returning tenant_name as tenant,
                      id as tenant_id
      ),
@@ -48,9 +61,9 @@ with _service as (
                  permissions(name,
                              description,
                              statment,service_id)
-                select 'manage-all',
-                         'super admin can perform any action on any domain',
-                         json_build_object('action', '*', 'resource', '*', 'effect', 'allow'),service_id from _service
+                 select 'manage-all',
+                        'super admin can perform any action on any domain',
+                        json_build_object('action', '*', 'resource', '*', 'effect', 'allow'),service_id from _service
                  returning id as permission_id
      ),
      _user as(
@@ -99,7 +112,6 @@ select
 from
     _service,
     _tenant;
-
 
 -- name: DeleteService :exec
 DELETE FROM services WHERE id = $1;

@@ -1,6 +1,6 @@
 -- name: CreateTenent :exec 
 INSERT INTO tenants (
-status,
+domain_id,
 tenant_name,
 service_id
 

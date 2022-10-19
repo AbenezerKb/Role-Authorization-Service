@@ -13,7 +13,7 @@ import (
 
 const createTenent = `-- name: CreateTenent :exec
 INSERT INTO tenants (
-status,
+domain_id,
 tenant_name,
 service_id
 
@@ -23,13 +23,13 @@ service_id
 `
 
 type CreateTenentParams struct {
-	Status     Status    `json:"status"`
+	DomainID   uuid.UUID `json:"domain_id"`
 	TenantName string    `json:"tenant_name"`
 	ServiceID  uuid.UUID `json:"service_id"`
 }
 
 func (q *Queries) CreateTenent(ctx context.Context, arg CreateTenentParams) error {
-	_, err := q.db.Exec(ctx, createTenent, arg.Status, arg.TenantName, arg.ServiceID)
+	_, err := q.db.Exec(ctx, createTenent, arg.DomainID, arg.TenantName, arg.ServiceID)
 	return err
 }
 
