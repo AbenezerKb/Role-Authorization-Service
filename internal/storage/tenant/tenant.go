@@ -29,6 +29,7 @@ func (t *tenant) CreateTenant(ctx context.Context, param dto.CreateTenent) error
 	err := t.db.CreateTenent(ctx, db.CreateTenentParams{
 		TenantName: param.TenantName,
 		ServiceID:  param.ServiceID,
+		DomainID:   param.DomainID,
 	})
 	if err != nil {
 		err := errors.ErrWriteError.Wrap(err, "could not create tenant")
