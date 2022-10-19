@@ -49,7 +49,7 @@ func (r *registerUser) iHaveServiceWith(service *godog.Table) error {
 		return err
 	}
 	r.createdService.ServiceID = createdService.ServiceID
-	if _, err := r.DB.Pool.Exec(context.Background(), "UPDATE services set status = true where id = $1", r.createdService.ServiceID); err != nil {
+	if _, err := r.DB.Pool.Exec(context.Background(), "UPDATE services set status = 'ACTIVE'  where id = $1", r.createdService.ServiceID); err != nil {
 		return err
 	}
 

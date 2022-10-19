@@ -5,7 +5,7 @@ Feature: Register User
 
     Background:
         Given I have service with
-            | tenant_name | user_id                              |
+            | name | user_id                              |
             | sso2        | a93fab67-1c11-4cdc-b410-f6fc728f592a |
 
     Scenario Outline: successfully register the new user
