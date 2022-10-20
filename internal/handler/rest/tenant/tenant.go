@@ -31,12 +31,11 @@ func Init(log logger.Logger, tenantModule module.Tenant) rest.Tenant {
 // @Tags         tenant
 // @Accept       json
 // @Produce      json
-// @param 		 createtenant body model.CreateTenent true "create tenant request body"
+// @param 		 createtenant body dto.CreateTenent true "create tenant request body"
 // @Success      201  boolean true "successfully create new tenant"
 // @Failure      400  {object}  model.ErrorResponse "required field error,bad request error"
 // @Router       /tenants [post]
 // @security 	 BasicAuth
-
 func (t *tenant) CreateTenant(ctx *gin.Context) {
 
 	tenant := dto.CreateTenent{}
