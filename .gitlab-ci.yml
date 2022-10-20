@@ -74,7 +74,7 @@ deploy-for-main:
   script:
     - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
     - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker pull $TAG"
-    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker service update --image $TAG --force authz"
+    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker service update --image $TAG --force authz_authz"
 
   only:
     refs:
