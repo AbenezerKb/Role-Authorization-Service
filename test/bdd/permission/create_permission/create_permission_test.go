@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"testing"
 
@@ -90,7 +91,7 @@ func (c *createTestPermission) iCreateAPermmissionInTheDomain(permission *godog.
 	if err != nil {
 		return err
 	}
-
+	log.Fatal(string(requestBody))
 	c.apiTest.Body = string(requestBody)
 	c.apiTest.SetHeader("Authorization", "Basic "+basicAuth(c.createdService.ServiceID.String(), "123456"))
 
