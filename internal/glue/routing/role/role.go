@@ -23,6 +23,16 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodPost,
+			Path:        "/:userid/:roleid",
+			Handler:     role.AssignRole,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
 	}
 	routing.RegisterRoutes(roles, roleRoutes)
 }

@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -59,4 +60,39 @@ func (r *role) CreateRole(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusCreated, createdRole, nil)
+}
+
+// AssignRole is used to create new role.
+// @Summary      assign role to a user.
+// @Description  This function assign new role if the role  dosen't assigned.
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 assignrole body dto.TenantUsersRole true "assign role request body"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  {object} dto.Role "successfully assigned role"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /roles/{user_id}/{role_id} [post]
+// @security 	 BasicAuth
+func (t *role) AssignRole(ctx *gin.Context) {
+
+	user_id, _ := uuid.Parse(ctx.Param("userid"))
+	role_id, _ := uuid.Parse(ctx.Param("roleid"))
+	role := dto.TenantUsersRole{
+		UserID: user_id,
+		RoleID: role_id,
+	}
+
+	err := t.roleModule.AssignRole(ctx, role)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+
 }

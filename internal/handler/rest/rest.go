@@ -1,6 +1,8 @@
 package rest
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type Service interface {
 	CreateService(ctx *gin.Context)
@@ -24,4 +26,5 @@ type User interface {
 
 type Role interface {
 	CreateRole(ctx *gin.Context)
+	AssignRole(ctx *gin.Context)
 }
