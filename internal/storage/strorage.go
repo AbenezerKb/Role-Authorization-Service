@@ -41,4 +41,6 @@ type User interface {
 type Role interface {
 	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
 	IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, error)
+	IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (bool, error)
+	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
 }

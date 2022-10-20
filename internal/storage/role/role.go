@@ -61,3 +61,38 @@ func (r *role) IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, err
 	}
 	return true, nil
 }
+
+func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error {
+
+	err := r.db.AssignRole(ctx, db.AssignRoleParams{
+		TenantName: param.TenantName,
+		RoleID:     param.RoleID,
+		UserID:     param.UserID,
+	})
+	if err != nil {
+		err := errors.ErrWriteError.Wrap(err, "could not assign role")
+		r.log.Error(ctx, "unable to assign role ", zap.Error(err), zap.Any("role", param))
+		return err
+	}
+	return nil
+
+}
+func (r *role) IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (bool, error) {
+	_, err := r.db.IsRoleAssigned(ctx, db.IsRoleAssignedParams{
+		TenantName: param.TenantName,
+		UserID:     param.UserID,
+		RoleID:     param.RoleID,
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			return false, nil
+		} else {
+			err := errors.ErrReadError.Wrap(err, "could not  read role")
+			r.log.Error(ctx, "unable to read the role", zap.Error(err), zap.Any("role ", param))
+			return false, err
+
+		}
+
+	}
+	return true, nil
+}

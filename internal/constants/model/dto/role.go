@@ -5,6 +5,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/google/uuid"
 )
 
@@ -55,4 +56,23 @@ type Role struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt is the time this service was last updated.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+}
+
+type TenantUsersRole struct {
+	//UserID is the user identifier which going to get the the role
+	UserID uuid.UUID `json:"user_id"`
+	//RoleID is id of the role which is going to be assigned to the user.
+	RoleID uuid.UUID `json:"role_id"`
+	//TenantName The Name of the tenante which is given when the tenant is created
+	TenantName string `json:"tenant_name"`
+}
+
+func (t TenantUsersRole) Validate() error {
+
+	return validation.ValidateStruct(
+		&t,
+		validation.Field(&t.TenantName, validation.Required.Error("tenant name cann be empty")),
+		validation.Field(&t.UserID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("User id required")),
+		validation.Field(&t.RoleID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("Role id required")),
+	)
 }
