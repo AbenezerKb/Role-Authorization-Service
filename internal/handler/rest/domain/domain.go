@@ -33,8 +33,14 @@ func Init(log logger.Logger, domainModule module.Domain) rest.Domain {
 // @Accept       json
 // @Produce      json
 // @param 		 createdomain body dto.Domain true "create domain request body"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
 // @Success      201 {object} dto.Domain "successfully create new domain"
 // @Failure      400  {object}  model.ErrorResponse "required field error,bad request error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
 // @Router       /domains [post]
 // @security 	 BasicAuth
 func (d *domain) CreateDomain(ctx *gin.Context) {
@@ -69,18 +75,20 @@ func (d *domain) CreateDomain(ctx *gin.Context) {
 // @Tags         domain
 // @Accept       json
 // @Produce      json
-// @param 		 deletedomain body dto.Domain true "delete domain request body"
+// @param 		 deletedomain body dto.DeleteDomain true "delete domain request body"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
 // @Success      200 boolean true "successfully deletes the service"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      404  {object}  model.ErrorResponse "service not found"
-// @Failure      401  {object}  model.ErrorResponse "unauthorized service"
-// @Failure      403  {object}  model.ErrorResponse "service is not active"
-// @Failure      500  {object}  model.ErrorResponse "invalid input"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
 // @Router       /domains [delete]
 // @security 	 BasicAuth
-
 func (d *domain) DeleteDomain(ctx *gin.Context) {
-	domain := dto.Domain{}
+	domain := dto.DeleteDomain{}
 
 	if err := ctx.ShouldBind(&domain); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")

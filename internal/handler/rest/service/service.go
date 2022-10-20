@@ -62,11 +62,15 @@ func (s *service) CreateService(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @param 		 deleteservice body model.Request true "delete service request body"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
 // @Success      200 boolean true "successfully deletes the service"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      404  {object}  model.ErrorResponse "service not found"
-// @Failure      401  {object}  model.ErrorResponse "unauthorized service"
-// @Failure      403  {object}  model.ErrorResponse "service is not active"
+// @Failure      403  {object}  model.ErrorResponse "unauthorized"
+// @Failure      401  {object}  model.ErrorResponse "service is not active"
 // @Failure      500  {object}  model.ErrorResponse "invalid input"
 // @Router       /services [delete]
 // @security 	 BasicAuth

@@ -7,6 +7,7 @@ import (
 	"2f-authorization/internal/handler/rest"
 	"2f-authorization/internal/module"
 	"2f-authorization/platform/logger"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -49,7 +50,7 @@ func (p *permission) CreatePermission(ctx *gin.Context) {
 		_ = ctx.Error(err)
 		return
 	}
-
+	fmt.Printf(" %#v\n", permission)
 	if err := p.permissionModule.CreatePermission(ctx, permission); err != nil {
 		_ = ctx.Error(err)
 		return

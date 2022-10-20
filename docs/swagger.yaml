@@ -97,6 +97,15 @@ definitions:
         description: TenantName is the name of the tenant
         type: string
     type: object
+  dto.DeleteDomain:
+    properties:
+      name:
+        description: Name is the name of the domain
+        type: string
+      service_id:
+        description: ServiceID is the id of the service which own the domain.
+        type: string
+    type: object
   dto.Domain:
     properties:
       created_at:
@@ -207,7 +216,7 @@ definitions:
           It is set to "administrator" if it is not provided.
         type: string
     type: object
-host: localhost:8000
+host: 206.189.54.235:5184
 info:
   contact:
     email: info@1f-capital.com
@@ -217,6 +226,65 @@ info:
   version: "0.1"
 paths:
   /domains:
+    delete:
+      consumes:
+      - application/json
+      description: this function deletes the domain if it does already exist.
+      parameters:
+      - description: delete domain request body
+        in: body
+        name: deletedomain
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DeleteDomain'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully deletes the service
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: service not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: deletes the domain.
+      tags:
+      - domain
     post:
       consumes:
       - application/json
@@ -228,6 +296,26 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.Domain'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -237,6 +325,14 @@ paths:
             $ref: '#/definitions/dto.Domain'
         "400":
           description: required field error,bad request error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
           schema:
             $ref: '#/definitions/model.ErrorResponse'
       security:
@@ -351,6 +447,26 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.Request'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -363,11 +479,11 @@ paths:
           schema:
             $ref: '#/definitions/model.ErrorResponse'
         "401":
-          description: unauthorized service
+          description: service is not active
           schema:
             $ref: '#/definitions/model.ErrorResponse'
         "403":
-          description: service is not active
+          description: unauthorized
           schema:
             $ref: '#/definitions/model.ErrorResponse'
         "404":

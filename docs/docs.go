@@ -47,6 +47,34 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.Domain"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -58,6 +86,107 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "required field error,bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "this function deletes the domain if it does already exist.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "domain"
+                ],
+                "summary": "deletes the domain.",
+                "parameters": [
+                    {
+                        "description": "delete domain request body",
+                        "name": "deletedomain",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteDomain"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully deletes the service",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "service not found",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -272,6 +401,34 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.Request"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -288,13 +445,13 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "unauthorized service",
+                        "description": "service is not active",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
-                        "description": "service is not active",
+                        "description": "unauthorized",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -564,6 +721,19 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.DeleteDomain": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the domain",
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service which own the domain.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.Domain": {
             "type": "object",
             "properties": {
@@ -712,7 +882,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
-	Host:             "localhost:8000",
+	Host:             "206.189.54.235:5184",
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Authorization API",
