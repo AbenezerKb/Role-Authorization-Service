@@ -32,7 +32,7 @@ func Init(log logger.Logger, domainModule module.Domain) rest.Domain {
 // @Tags         domain
 // @Accept       json
 // @Produce      json
-// @param 		 createdomain body dto.Domain true "create domain request body"
+// @param 		 createdomain body dto.CreateDomain true "create domain request body"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"

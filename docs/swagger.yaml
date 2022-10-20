@@ -1,5 +1,14 @@
 basePath: /v1
 definitions:
+  dto.CreateDomain:
+    properties:
+      name:
+        description: Name is the name of the domain
+        type: string
+      service_id:
+        description: ServiceID is the id of the service which own the domain.
+        type: string
+    type: object
   dto.CreatePermission:
     properties:
       action:
@@ -193,29 +202,6 @@ definitions:
         description: Name is the name of the field that caused the error.
         type: string
     type: object
-  model.Request:
-    properties:
-      action:
-        description: Action  is the urn of the action the user is taking on the resource.
-        type: string
-      resource:
-        description: Resource is the urn for the resource the user is trying to take
-          action on.
-        type: string
-      service:
-        description: |-
-          Service is the id of the service.
-          It is set by the server after authenticating the service.
-        type: string
-      subject:
-        description: Subject is the user id who is trying to take action on the resource.
-        type: string
-      tenant:
-        description: |-
-          Tenant is the scope the user is operating.
-          It is set to "administrator" if it is not provided.
-        type: string
-    type: object
 host: 206.189.54.235:5184
 info:
   contact:
@@ -295,7 +281,7 @@ paths:
         name: createdomain
         required: true
         schema:
-          $ref: '#/definitions/dto.Domain'
+          $ref: '#/definitions/dto.CreateDomain'
       - description: user id
         in: header
         name: x-subject
@@ -441,12 +427,6 @@ paths:
       - application/json
       description: this function deletes the service if it does already exist.
       parameters:
-      - description: delete service request body
-        in: body
-        name: deleteservice
-        required: true
-        schema:
-          $ref: '#/definitions/model.Request'
       - description: user id
         in: header
         name: x-subject

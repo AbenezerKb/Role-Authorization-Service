@@ -61,7 +61,6 @@ func (s *service) CreateService(ctx *gin.Context) {
 // @Tags         service
 // @Accept       json
 // @Produce      json
-// @param 		 deleteservice body model.Request true "delete service request body"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"

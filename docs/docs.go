@@ -45,7 +45,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Domain"
+                            "$ref": "#/definitions/dto.CreateDomain"
                         }
                     },
                     {
@@ -394,15 +394,6 @@ const docTemplate = `{
                 "summary": "deletes the service.",
                 "parameters": [
                     {
-                        "description": "delete service request body",
-                        "name": "deleteservice",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Request"
-                        }
-                    },
-                    {
                         "type": "string",
                         "description": "user id",
                         "name": "x-subject",
@@ -603,6 +594,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CreateDomain": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the domain",
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service which own the domain.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreatePermission": {
             "type": "object",
             "properties": {
@@ -842,31 +846,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "Name is the name of the field that caused the error.",
-                    "type": "string"
-                }
-            }
-        },
-        "model.Request": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "description": "Action  is the urn of the action the user is taking on the resource.",
-                    "type": "string"
-                },
-                "resource": {
-                    "description": "Resource is the urn for the resource the user is trying to take action on.",
-                    "type": "string"
-                },
-                "service": {
-                    "description": "Service is the id of the service.\nIt is set by the server after authenticating the service.",
-                    "type": "string"
-                },
-                "subject": {
-                    "description": "Subject is the user id who is trying to take action on the resource.",
-                    "type": "string"
-                },
-                "tenant": {
-                    "description": "Tenant is the scope the user is operating.\nIt is set to \"administrator\" if it is not provided.",
                     "type": "string"
                 }
             }
