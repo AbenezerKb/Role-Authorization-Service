@@ -314,6 +314,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenants": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "this function create tenant if it is not exist in the service.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tenant"
+                ],
+                "summary": "create tenant.",
+                "parameters": [
+                    {
+                        "description": "create tenant request body",
+                        "name": "createtenant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTenent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successfully create new tenant",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error,bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "security": [
@@ -495,10 +540,26 @@ const docTemplate = `{
                 },
                 "service_status": {
                     "description": "ServiceStatus is the status of the service.\nIt is set to false when the service is created.",
-                    "type": "boolean"
+                    "type": "string"
                 },
                 "tenant": {
                     "description": "Tenant is the domain the super admin is in.\nIt is automatically created upon the creation of the service.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateTenent": {
+            "type": "object",
+            "properties": {
+                "domain_id": {
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID  is the service id of service.",
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "description": "TenantName is the name of the tenant",
                     "type": "string"
                 }
             }
@@ -553,7 +614,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deleted_at": {
-                    "description": "CreatedAt is the time this service was created.",
+                    "description": "DeletedAt is the time this service was created.",
                     "type": "string"
                 },
                 "id": {
@@ -566,7 +627,7 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "Status is the status of the role.",
-                    "type": "boolean"
+                    "type": "string"
                 },
                 "updated_at": {
                     "description": "UpdatedAt is the time this service was last updated.",

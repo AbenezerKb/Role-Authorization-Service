@@ -79,11 +79,22 @@ definitions:
         description: |-
           ServiceStatus is the status of the service.
           It is set to false when the service is created.
-        type: boolean
+        type: string
       tenant:
         description: |-
           Tenant is the domain the super admin is in.
           It is automatically created upon the creation of the service.
+        type: string
+    type: object
+  dto.CreateTenent:
+    properties:
+      domain_id:
+        type: string
+      service_id:
+        description: ServiceID  is the service id of service.
+        type: string
+      tenant_name:
+        description: TenantName is the name of the tenant
         type: string
     type: object
   dto.Domain:
@@ -124,7 +135,7 @@ definitions:
         description: CreatedAt is the time this service was created.
         type: string
       deleted_at:
-        description: CreatedAt is the time this service was created.
+        description: DeletedAt is the time this service was created.
         type: string
       id:
         description: |-
@@ -136,7 +147,7 @@ definitions:
         type: string
       status:
         description: Status is the status of the role.
-        type: boolean
+        type: string
       updated_at:
         description: UpdatedAt is the time this service was last updated.
         type: string
@@ -397,6 +408,34 @@ paths:
       summary: create new service.
       tags:
       - service
+  /tenants:
+    post:
+      consumes:
+      - application/json
+      description: this function create tenant if it is not exist in the service.
+      parameters:
+      - description: create tenant request body
+        in: body
+        name: createtenant
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTenent'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: successfully create new tenant
+          schema:
+            type: boolean
+        "400":
+          description: required field error,bad request error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: create tenant.
+      tags:
+      - tenant
   /users:
     post:
       consumes:
