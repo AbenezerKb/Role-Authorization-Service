@@ -20,7 +20,7 @@ func InitRoute(group *gin.RouterGroup, domain rest.Domain, log logger.Logger, au
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
 				authMiddleware.BasicAuth(),
-				// authMiddleware.Authorize(),
+				authMiddleware.Authorize(),
 			},
 		},
 		{
@@ -30,7 +30,7 @@ func InitRoute(group *gin.RouterGroup, domain rest.Domain, log logger.Logger, au
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
 				authMiddleware.BasicAuth(),
-				// authMiddleware.Authorize(),
+				authMiddleware.Authorize(),
 			},
 		},
 	}
