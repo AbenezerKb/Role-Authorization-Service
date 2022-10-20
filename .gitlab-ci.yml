@@ -1,5 +1,8 @@
 image: golang:1.18
 
+variables:
+  TAG: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_PIPELINE_ID
+
 .go-cache:
   variables:
     GOPATH: $CI_PROJECT_DIR/.go
@@ -11,7 +14,8 @@ image: golang:1.18
 
 stages:
   - test
-
+  - publish
+  - deploy
 test:
   extends: .go-cache
   stage: test
@@ -36,3 +40,42 @@ test:
 
   script:
     - CONFIG_NAME=$CONFIG_NAME go test ./... -p=1 -count=1 -v
+
+publish:
+  image: docker:latest
+  stage: publish
+  tags:
+    - gitlab-runner
+  services:
+    - docker:dind
+  script:
+    - docker build -t $TAG .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $TAG
+    - docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc) || clean_up_status=$?
+  only:
+    refs:
+      - main
+
+deploy-for-main:
+  image: alpine:latest
+  stage: deploy
+  tags:
+    - gitlab-runner
+  before_script:
+    - apk update && apk add openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SERVERIP_MAIN >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+  script:
+    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
+    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker pull $TAG"
+    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker service update --image $TAG --force authz"
+
+  only:
+    refs:
+      - main
