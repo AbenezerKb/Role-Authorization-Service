@@ -6,6 +6,7 @@ import (
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -54,7 +55,9 @@ func (c *createTestDomain) iHaveServiceWith(service *godog.Table) error {
 	if err != nil {
 		return err
 	}
-
+	if err := c.Opa.Refresh(context.Background(), fmt.Sprintf("Created service with name - [%v]", c.servicemodel.Name)); err != nil {
+		return err
+	}
 	c.serviceId = result.ServiceID
 
 	return nil
@@ -68,6 +71,11 @@ func (c *createTestDomain) iSendTheRequest(domain *godog.Table) error {
 
 	c.apiTest.Body = body
 	c.apiTest.SetHeader("Authorization", "Basic "+basicAuth(c.serviceId.String(), "password"))
+	c.apiTest.SetHeader("x-subject", c.servicemodel.UserID.String())
+	c.apiTest.SetHeader("x-action", "*")
+	c.apiTest.SetHeader("x-resource", "*")
+	c.apiTest.SetHeader("x-tenant", "administrator")
+
 	c.apiTest.SendRequest()
 	return nil
 }

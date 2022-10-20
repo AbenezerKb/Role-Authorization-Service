@@ -7,6 +7,7 @@ import (
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -63,7 +64,9 @@ func (d *deleteDomainTest) iHaveDomain(domainName *godog.Table) error {
 		return err
 
 	}
-
+	if err := d.Opa.Refresh(context.Background(), fmt.Sprintf("Created service with name - [%v]", d.servicemodel.Name)); err != nil {
+		return err
+	}
 	_, err = d.DB.CreateDomain(context.Background(), db.CreateDomainParams{Name: d.domainrequest.Name, ServiceID: d.createdService.ServiceID})
 	if err != nil {
 		return err
@@ -80,6 +83,11 @@ func (d *deleteDomainTest) iSendTheRequest(domain *godog.Table) error {
 
 	d.apiTest.Body = body
 	d.apiTest.SetHeader("Authorization", "Basic "+basicAuth(d.createdService.ServiceID.String(), "password"))
+	d.apiTest.SetHeader("x-subject", d.servicemodel.UserID.String())
+	d.apiTest.SetHeader("x-action", "*")
+	d.apiTest.SetHeader("x-resource", "*")
+	d.apiTest.SetHeader("x-tenant", "administrator")
+
 	d.apiTest.SendRequest()
 	return nil
 }
