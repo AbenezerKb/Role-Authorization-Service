@@ -35,7 +35,7 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service", ctx.Value("x-service-id")))
 		return nil, err
 	}
-	
+
 	var ok bool
 	param.TenantName, ok = ctx.Value("x-tenant").(string)
 	if !ok {
@@ -61,4 +61,28 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 	}
 
 	return r.rolePersistence.CreateRole(ctx, param)
+}
+
+func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error {
+
+	var err error
+	param.TenantName = ctx.Value("x-tenant").(string)
+
+	if err = param.Validate(); err != nil {
+
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
+	if err != nil {
+		return err
+	}
+
+	if isExist {
+		r.log.Info(ctx, "role already exists", zap.String("name", param.RoleID.String()))
+		return errors.ErrDataExists.Wrap(err, "user  with this role  already exists")
+	}
+
+	return r.rolePersistence.AssignRole(ctx, param)
 }

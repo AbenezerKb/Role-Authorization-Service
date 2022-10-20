@@ -28,4 +28,5 @@ type User interface {
 
 type Role interface {
 	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
+	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
 }
