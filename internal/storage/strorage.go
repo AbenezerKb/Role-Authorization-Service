@@ -21,7 +21,7 @@ type Service interface {
 type Domain interface {
 	CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto.Domain, error)
 	IsDomainExist(ctx context.Context, param dto.CreateDomain) (bool, error)
-	SoftDeleteDomain(ctx context.Context, param dto.Domain) error
+	SoftDeleteDomain(ctx context.Context, param dto.DeleteDomain) error
 }
 
 type Permission interface {

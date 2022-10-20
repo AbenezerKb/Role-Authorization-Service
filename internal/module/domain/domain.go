@@ -54,7 +54,7 @@ func (d *domain) CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto
 	return domain, nil
 
 }
-func (d *domain) DeleteDomain(ctx context.Context, param dto.Domain) error {
+func (d *domain) DeleteDomain(ctx context.Context, param dto.DeleteDomain) error {
 	var err error
 	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
 	if err != nil {

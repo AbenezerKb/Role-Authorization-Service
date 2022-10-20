@@ -12,7 +12,7 @@ type Service interface {
 
 type Domain interface {
 	CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto.Domain, error)
-	DeleteDomain(ctx context.Context, param dto.Domain) error
+	DeleteDomain(ctx context.Context, param dto.DeleteDomain) error
 }
 
 type Permission interface {

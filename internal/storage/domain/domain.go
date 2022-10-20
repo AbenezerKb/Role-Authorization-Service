@@ -45,7 +45,7 @@ func (d *domain) CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto
 
 }
 
-func (d *domain) SoftDeleteDomain(ctx context.Context, param dto.Domain) error {
+func (d *domain) SoftDeleteDomain(ctx context.Context, param dto.DeleteDomain) error {
 
 	if _, err := d.db.SoftDeleteDomain(ctx, db.SoftDeleteDomainParams{
 		Name:      param.Name,
@@ -53,11 +53,11 @@ func (d *domain) SoftDeleteDomain(ctx context.Context, param dto.Domain) error {
 	}); err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "no record of domain found")
-			d.log.Info(ctx, "Domain  not found with this name in this service", zap.Error(err), zap.String("service-id", param.Name))
+			d.log.Info(ctx, "Domain  not found with this name in this service", zap.Error(err), zap.String("service-id", param.ServiceID.String()), zap.String("domain", param.Name))
 			return err
 		}
 		err = errors.ErrDBDelError.Wrap(err, "error deleting service")
-		d.log.Error(ctx, "error deleting domain", zap.Error(err), zap.String("service-id", param.ID.String()))
+		d.log.Error(ctx, "error deleting domain", zap.Error(err), zap.String("service-id", param.ServiceID.String()), zap.String("domain", param.Name))
 		return err
 	}
 
