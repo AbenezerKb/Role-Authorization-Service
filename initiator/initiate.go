@@ -26,7 +26,7 @@ import (
 // @contact.url    http://www.2fcapital.com
 // @contact.email  info@1f-capital.com
 //
-// @host localhost:8000
+// @host 206.189.54.235:5184
 // @BasePath  /v1
 // @securityDefinitions.basic BasicAuth
 func Initiator(ctx context.Context) {
