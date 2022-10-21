@@ -170,6 +170,20 @@ definitions:
         description: UpdatedAt is the time this service was last updated.
         type: string
     type: object
+  dto.TenantUsersRole:
+    properties:
+      role_id:
+        description: RoleID is id of the role which is going to be assigned to the
+          user.
+        type: string
+      tenant_name:
+        description: TenantName The Name of the tenante which is given when the tenant
+          is created
+        type: string
+      user_id:
+        description: UserID is the user identifier which going to get the the role
+        type: string
+    type: object
   model.ErrorResponse:
     properties:
       code:
@@ -419,6 +433,62 @@ paths:
       security:
       - BasicAuth: []
       summary: add new role.
+      tags:
+      - roles
+  /roles/{roleid}/users/{userid}:
+    post:
+      consumes:
+      - application/json
+      description: This function assign new role if the role  dosen't assigned.
+      parameters:
+      - description: assign role request body
+        in: body
+        name: assignrole
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TenantUsersRole'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully assigned role
+          schema:
+            $ref: '#/definitions/dto.Role'
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: assign role to a user.
       tags:
       - roles
   /services:

@@ -328,6 +328,91 @@
                 }
             }
         },
+        "/roles/{roleid}/users/{userid}": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function assign new role if the role  dosen't assigned.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roles"
+                ],
+                "summary": "assign role to a user.",
+                "parameters": [
+                    {
+                        "description": "assign role request body",
+                        "name": "assignrole",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TenantUsersRole"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully assigned role",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Role"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/services": {
             "post": {
                 "description": "this function creates new service if it does not already exist.",
@@ -797,6 +882,23 @@
                 },
                 "updated_at": {
                     "description": "UpdatedAt is the time this service was last updated.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TenantUsersRole": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "description": "RoleID is id of the role which is going to be assigned to the user.",
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "description": "TenantName The Name of the tenante which is given when the tenant is created",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserID is the user identifier which going to get the the role",
                     "type": "string"
                 }
             }
