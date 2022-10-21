@@ -37,10 +37,10 @@ var (
 // only. Custom parameters should be set for production applications depending on
 // available memory/CPU resources and business requirements.
 var DefaultParams = &Params{
-	Memory:      128 * 1024,
+	Memory:      64 * 1024,
 	Iterations:  4,
 	Parallelism: 8,
-	SaltLength:  16,
+	SaltLength:  10,
 	KeyLength:   32,
 }
 

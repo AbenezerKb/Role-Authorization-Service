@@ -77,22 +77,33 @@ func (r *role) CreateRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{user_id}/{role_id} [post]
+// @Router       /roles/{roleid}/users/{userid} [post]
 // @security 	 BasicAuth
-func (t *role) AssignRole(ctx *gin.Context) {
+func (r *role) AssignRole(ctx *gin.Context) {
+	var err error
+	role := dto.TenantUsersRole{}
 
-	user_id, _ := uuid.Parse(ctx.Param("userid"))
-	role_id, _ := uuid.Parse(ctx.Param("roleid"))
-	role := dto.TenantUsersRole{
-		UserID: user_id,
-		RoleID: role_id,
+	role.UserID, err = uuid.Parse(ctx.Param("userid"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("user id", ctx.Param("userid")))
+		_ = ctx.Error(err)
+		return
 	}
 
-	err := t.roleModule.AssignRole(ctx, role)
+	role.RoleID, err = uuid.Parse(ctx.Param("roleid"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("roleid")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	err = r.roleModule.AssignRole(ctx, role)
 	if err != nil {
 		_ = ctx.Error(err)
 		return
 	}
-	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
