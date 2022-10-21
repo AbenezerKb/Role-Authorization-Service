@@ -13,22 +13,20 @@ import (
 )
 
 const assignRole = `-- name: AssignRole :exec
-with _tenant as(
-    select tenants.id as tenant_id from tenants where tenants.tenant_name=$1
-), _user as (
-    select users.id as user_id from users where users.user_id =$2
-) INSERT INTO tenant_users_roles(tenant_id,user_id,role_id)
- select _tenant.tenant_id,_user.user_id,$3 from _tenant,_user
+insert into tenant_users_roles(tenant_id, user_id, role_id)
+select tenants.id,users.id,$1
+from tenants,users  where tenants.tenant_name=$2
+and users.user_id=$3
 `
 
 type AssignRoleParams struct {
+	RoleID     uuid.UUID `json:"role_id"`
 	TenantName string    `json:"tenant_name"`
 	UserID     uuid.UUID `json:"user_id"`
-	RoleID     uuid.UUID `json:"role_id"`
 }
 
 func (q *Queries) AssignRole(ctx context.Context, arg AssignRoleParams) error {
-	_, err := q.db.Exec(ctx, assignRole, arg.TenantName, arg.UserID, arg.RoleID)
+	_, err := q.db.Exec(ctx, assignRole, arg.RoleID, arg.TenantName, arg.UserID)
 	return err
 }
 
@@ -93,7 +91,7 @@ func (q *Queries) GetRoleByNameAndTenantName(ctx context.Context, arg GetRoleByN
 }
 
 const isRoleAssigned = `-- name: IsRoleAssigned :one
-SELECT id, tenant_id, user_id, role_id, status, deleted_at, created_at, updated_at FROM tenant_users_roles 
+SELECT count_rows() FROM tenant_users_roles 
 WHERE tenant_users_roles.tenant_id in (
     SELECT tenants.id FROM 
     tenants where tenants.tenant_name = $1
@@ -110,18 +108,9 @@ type IsRoleAssignedParams struct {
 	RoleID     uuid.UUID `json:"role_id"`
 }
 
-func (q *Queries) IsRoleAssigned(ctx context.Context, arg IsRoleAssignedParams) (TenantUsersRole, error) {
+func (q *Queries) IsRoleAssigned(ctx context.Context, arg IsRoleAssignedParams) (interface{}, error) {
 	row := q.db.QueryRow(ctx, isRoleAssigned, arg.TenantName, arg.UserID, arg.RoleID)
-	var i TenantUsersRole
-	err := row.Scan(
-		&i.ID,
-		&i.TenantID,
-		&i.UserID,
-		&i.RoleID,
-		&i.Status,
-		&i.DeletedAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	var count_rows interface{}
+	err := row.Scan(&count_rows)
+	return count_rows, err
 }

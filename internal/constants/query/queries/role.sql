@@ -15,15 +15,13 @@ roles.name = $1 AND tenants.tenant_name = $2;
 
 
 -- name: AssignRole :exec
-with _tenant as(
-    select tenants.id as tenant_id from tenants where tenants.tenant_name=$1
-), _user as (
-    select users.id as user_id from users where users.user_id =$2
-) INSERT INTO tenant_users_roles(tenant_id,user_id,role_id)
- select _tenant.tenant_id,_user.user_id,$3 from _tenant,_user; 
+insert into tenant_users_roles(tenant_id, user_id, role_id)
+select tenants.id,users.id,$1
+from tenants,users  where tenants.tenant_name=$2
+and users.user_id=$3;
 
 -- name: IsRoleAssigned :one 
-SELECT * FROM tenant_users_roles 
+SELECT count_rows() FROM tenant_users_roles 
 WHERE tenant_users_roles.tenant_id in (
     SELECT tenants.id FROM 
     tenants where tenants.tenant_name = $1
