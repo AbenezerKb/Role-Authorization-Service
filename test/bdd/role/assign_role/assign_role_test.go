@@ -203,23 +203,15 @@ func (r *assignRoleTest) iHaveRole(role *godog.Table) error {
 }
 
 func (r *assignRoleTest) iRequestToAssignRoleToUser(user_id_role_name *godog.Table) error {
-	useridrolename := UserIdRoleName{}
-	body, err := r.apiTest.ReadRow(user_id_role_name, nil, false)
+	user_id, err := r.apiTest.ReadCellString(user_id_role_name, "user_id")
 	if err != nil {
 		return err
 	}
-	json.Unmarshal([]byte(body), &useridrolename)
 
-	requestRoleId := uuid.Nil
-	requestUserId := uuid.Nil
-	if useridrolename.RoleName != "" {
-		requestRoleId = r.createdRoleResponseId
-	}
-	if useridrolename.UserId != uuid.MustParse("00000000-0000-0000-0000-000000000000") {
-		requestUserId = r.createdUser.UserId
-	}
+	requestRoleId := r.createdRoleResponseId
+	requestUserId := user_id
 
-	r.apiTest.URL = fmt.Sprintf("/v1/roles/%s/%s", requestUserId, requestRoleId)
+	r.apiTest.URL = fmt.Sprintf("/v1/roles/%s/users/%s", requestRoleId, requestUserId)
 	r.apiTest.SetHeader("Authorization", "Basic "+r.BasicAuth(r.createdService.ServiceID.String(), "123456"))
 	r.apiTest.SetHeader("x-subject", r.service.UserId)
 	r.apiTest.SetHeader("x-action", "*")
@@ -247,7 +239,7 @@ func (r *assignRoleTest) iRequestToAssignRoleToUserWhileFieldsAreMissing(userIdR
 	if useridrolename.UserId != uuid.MustParse("00000000-0000-0000-0000-000000000000") {
 		requestUserId = r.createdUser.UserId
 	}
-	r.apiTest.URL = fmt.Sprintf("/v1/roles/%s/%s", requestUserId, requestRoleId)
+	r.apiTest.URL = fmt.Sprintf("/v1/roles/%s/users/%s", requestRoleId, requestUserId)
 	r.apiTest.SetHeader("Authorization", "Basic "+r.BasicAuth(r.createdService.ServiceID.String(), "123456"))
 	r.apiTest.SetHeader("x-subject", r.service.UserId)
 	r.apiTest.SetHeader("x-action", "*")
