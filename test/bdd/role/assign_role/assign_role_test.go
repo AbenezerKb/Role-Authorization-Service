@@ -28,7 +28,7 @@ type assignRoleTest struct {
 	createdService        dto.CreateServiceResponse
 	domain                dto.Domain
 	createdUser           dto.RegisterUser
-	tenant                dto.TenantResponse
+	tenant                string
 	createRole            dto.CreateRole
 	permission            dto.CreatePermission
 	createdRoleResponseId uuid.UUID
@@ -119,7 +119,7 @@ func (r *assignRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table
 	if err != nil {
 		return err
 	}
-	r.tenant.TenantName = tenant
+	r.tenant = tenant
 
 	return nil
 }
@@ -190,7 +190,7 @@ func (r *assignRoleTest) iHaveRole(role *godog.Table) error {
 	r.createRole.PermissionID = []uuid.UUID{r.createdPermissionId}
 
 	createdRoleResponse, err := r.DB.CreateRole(context.Background(), db.CreateRoleParams{
-		TenantName: r.tenant.TenantName,
+		TenantName: r.tenant,
 		ServiceID:  r.createdService.ServiceID,
 		Column4:    r.createRole.PermissionID,
 		Name:       r.createRole.Name,

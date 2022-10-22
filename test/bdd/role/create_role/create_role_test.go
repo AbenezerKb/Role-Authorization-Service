@@ -23,7 +23,7 @@ type createRoleTest struct {
 	service             dto.CreateService
 	createdService      dto.CreateServiceResponse
 	domain              dto.Domain
-	tenant              dto.TenantResponse
+	tenant              string
 	permission          dto.CreatePermission
 	createdPermissionId uuid.UUID
 	role                dto.CreateRole
@@ -111,7 +111,7 @@ func (c *createRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table
 	}); err != nil {
 		return err
 	}
-	c.tenant.TenantName = tenant
+	c.tenant = tenant
 
 	return nil
 }
@@ -157,7 +157,7 @@ func (c *createRoleTest) iRequestToCreateARoleWithThePermissions(permission stri
 		c.createdPermissionId,
 	}
 	c.role.ServiceID = c.createdService.ServiceID
-	c.role.TenantName = c.tenant.TenantName
+	c.role.TenantName = c.tenant
 	data, err := json.Marshal(c.role)
 	if err != nil {
 		return err
