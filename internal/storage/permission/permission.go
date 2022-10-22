@@ -3,6 +3,7 @@ package permission
 import (
 	"2f-authorization/internal/constants/dbinstance"
 	errors "2f-authorization/internal/constants/error"
+	"2f-authorization/internal/constants/error/sqlcerr"
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/storage"
@@ -58,4 +59,23 @@ func (p *permission) AddToDomain(ctx context.Context, permissionId, domain uuid.
 		return err
 	}
 	return nil
+}
+
+func (p *permission) ListAllPermission(ctx context.Context, param dto.GetAllPermissionsReq) ([]dto.Permission, error) {
+	permission, err := p.db.ListPermissions(ctx, dbinstance.ListPermissionsParams{
+		TenantName: param.TenantName,
+		ServiceID:  param.ServiceID,
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no permisisons found")
+			p.log.Info(ctx, "no permissions were found", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
+			return []dto.Permission{}, nil
+		} else {
+			err = errors.ErrReadError.Wrap(err, "error reading permissions")
+			p.log.Error(ctx, "error reading permissions", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
+			return []dto.Permission{}, nil
+		}
+	}
+	return permission, nil
 }
