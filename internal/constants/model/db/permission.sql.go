@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgtype"
@@ -36,10 +37,13 @@ WITH new_row AS (
         SELECT $1,$2,$3,$4
         WHERE NOT EXISTS (SELECT id FROM permissions WHERE name = $1 and service_id=$4)
         RETURNING id
+),_permission as(
+    SELECT id FROM new_row
+    UNION
+    SELECT id FROM permissions WHERE name = $1 and service_id=$4
 )
-SELECT id FROM new_row
-UNION
-SELECT id FROM permissions WHERE name = $1 and service_id=$4
+insert into permission_domains (domain_id,permission_id)
+select domains.id,_permission.id from domains,_permission where domains.id =ANY($5::uuid[]) returning id
 `
 
 type CreateOrGetPermissionParams struct {
@@ -47,6 +51,7 @@ type CreateOrGetPermissionParams struct {
 	Description string      `json:"description"`
 	Statment    pgtype.JSON `json:"statment"`
 	ServiceID   uuid.UUID   `json:"service_id"`
+	Column5     []uuid.UUID `json:"column_5"`
 }
 
 func (q *Queries) CreateOrGetPermission(ctx context.Context, arg CreateOrGetPermissionParams) (uuid.UUID, error) {
@@ -55,8 +60,61 @@ func (q *Queries) CreateOrGetPermission(ctx context.Context, arg CreateOrGetPerm
 		arg.Description,
 		arg.Statment,
 		arg.ServiceID,
+		arg.Column5,
 	)
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
+}
+
+const listPermissions = `-- name: ListPermissions :many
+with _tenant as (
+    select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2
+)
+select p.name,p.status,p.description,p.statment,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id
+UNION
+select p.name,p.status,p.description,p.statment,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id
+`
+
+type ListPermissionsParams struct {
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+}
+
+type ListPermissionsRow struct {
+	Name        string      `json:"name"`
+	Status      Status      `json:"status"`
+	Description string      `json:"description"`
+	Statment    pgtype.JSON `json:"statment"`
+	CreatedAt   time.Time   `json:"created_at"`
+	ServiceID   uuid.UUID   `json:"service_id"`
+	ID          uuid.UUID   `json:"id"`
+}
+
+func (q *Queries) ListPermissions(ctx context.Context, arg ListPermissionsParams) ([]ListPermissionsRow, error) {
+	rows, err := q.db.Query(ctx, listPermissions, arg.TenantName, arg.ServiceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPermissionsRow
+	for rows.Next() {
+		var i ListPermissionsRow
+		if err := rows.Scan(
+			&i.Name,
+			&i.Status,
+			&i.Description,
+			&i.Statment,
+			&i.CreatedAt,
+			&i.ServiceID,
+			&i.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

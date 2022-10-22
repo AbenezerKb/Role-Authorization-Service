@@ -132,7 +132,7 @@ type Tenant struct {
 	CreatedAt  time.Time    `json:"created_at"`
 	UpdatedAt  time.Time    `json:"updated_at"`
 	DomainID   uuid.UUID    `json:"domain_id"`
-	Inherit    sql.NullBool `json:"inherit"`
+	Inherit    bool         `json:"inherit"`
 }
 
 type TenantUsersRole struct {
