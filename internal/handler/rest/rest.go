@@ -14,6 +14,7 @@ type Domain interface {
 }
 type Permission interface {
 	CreatePermission(ctx *gin.Context)
+	ListPermissions(ctx *gin.Context)
 }
 
 type Tenant interface {

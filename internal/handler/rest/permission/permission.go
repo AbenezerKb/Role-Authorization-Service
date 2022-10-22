@@ -58,3 +58,29 @@ func (p *permission) CreatePermission(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusCreated, nil, nil)
 }
+
+// ListPermissions is used to list new permissions.
+// @Summary      returns a list of permission.
+// @Description  this function return a list of permissions that are under my domin.
+// @Tags         permissions
+// @Accept       json
+// @Produce      json
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  {object} []dto.Permission
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /permissions [get]
+// @security 	 BasicAuth
+func (p *permission) ListPermissions(ctx *gin.Context) {
+	result, err := p.permissionModule.ListPermissions(ctx)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
+}
