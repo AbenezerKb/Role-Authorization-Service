@@ -68,7 +68,8 @@ func (r *role) CreateRole(ctx *gin.Context) {
 // @Tags         roles
 // @Accept       json
 // @Produce      json
-// @param 		 assignrole body dto.TenantUsersRole true "assign role request body"
+// @param 		 userid path string true "user id"
+// @param 		 roleid path string true "role id"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"
