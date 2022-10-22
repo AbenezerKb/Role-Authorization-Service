@@ -195,6 +195,83 @@ const docTemplate = `{
             }
         },
         "/permissions": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "this function return a list of permissions that are under my domin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "permissions"
+                ],
+                "summary": "returns a list of permission.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Permission"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -356,13 +433,18 @@ const docTemplate = `{
                 "summary": "assign role to a user.",
                 "parameters": [
                     {
-                        "description": "assign role request body",
-                        "name": "assignrole",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.TenantUsersRole"
-                        }
+                        "type": "string",
+                        "description": "user id",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "role id",
+                        "name": "roleid",
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -695,10 +777,6 @@ const docTemplate = `{
         "dto.CreatePermission": {
             "type": "object",
             "properties": {
-                "action": {
-                    "description": "Action is the urn for the action(method) the user is taking on the resource",
-                    "type": "string"
-                },
                 "description": {
                     "description": "Description is the description of the permission being created",
                     "type": "string"
@@ -710,21 +788,17 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "effect": {
-                    "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
-                    "type": "string"
-                },
                 "name": {
                     "description": "Name is the name of the permission being created",
-                    "type": "string"
-                },
-                "resource": {
-                    "description": "Resource is the urn for the path that is being accessed",
                     "type": "string"
                 },
                 "service_id": {
                     "description": "ServiceID is the id of the service the permission belongs to",
                     "type": "string"
+                },
+                "statement": {
+                    "description": "Statement is an object that holds the action, resource and effect of the permission being created",
+                    "$ref": "#/definitions/dto.Statement"
                 }
             }
         },
@@ -798,6 +872,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "domain_id": {
+                    "description": "DomainID is the id of the domain the tenant is in.",
                     "type": "string"
                 },
                 "service_id": {
@@ -852,6 +927,58 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Permission": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "Action is the urn for the action(method) the user is taking on the resource",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "CreatedAt is the time this permission was created.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description is the description of the permission being created",
+                    "type": "string"
+                },
+                "domains": {
+                    "description": "Domain is an array that holds the id of the domains the permission is accessible at",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "effect": {
+                    "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the unique identifier for the service.\nIt is automatically generated when the permission is registered.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the name of the permission being created",
+                    "type": "string"
+                },
+                "resource": {
+                    "description": "Resource is the urn for the path that is being accessed",
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service the permission belongs to",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status is the status of the permission.",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is the time this permission was last updated.",
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterUser": {
             "type": "object",
             "properties": {
@@ -894,19 +1021,19 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.TenantUsersRole": {
+        "dto.Statement": {
             "type": "object",
             "properties": {
-                "role_id": {
-                    "description": "RoleID is id of the role which is going to be assigned to the user.",
+                "action": {
+                    "description": "Action is the urn for the action(method) the user is taking on the resource",
                     "type": "string"
                 },
-                "tenant_name": {
-                    "description": "TenantName The Name of the tenante which is given when the tenant is created",
+                "effect": {
+                    "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
                     "type": "string"
                 },
-                "user_id": {
-                    "description": "UserID is the user identifier which going to get the the role",
+                "resource": {
+                    "description": "Resource is the urn for the path that is being accessed",
                     "type": "string"
                 }
             }
