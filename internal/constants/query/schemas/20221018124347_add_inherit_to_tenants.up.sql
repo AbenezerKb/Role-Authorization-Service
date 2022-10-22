@@ -1,1 +1,1 @@
-ALTER TABLE tenants ADD "inherit" boolean DEFAULT true;
+ALTER TABLE tenants ADD "inherit" boolean NOT NULL DEFAULT true;
