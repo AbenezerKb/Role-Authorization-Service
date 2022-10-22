@@ -17,6 +17,7 @@ type Domain interface {
 
 type Permission interface {
 	CreatePermission(ctx context.Context, param dto.CreatePermission) error
+	ListPermissions(ctx context.Context) ([]dto.Permission, error)
 }
 
 type Tenant interface {
