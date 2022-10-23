@@ -2,6 +2,7 @@ package dto
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -21,7 +22,7 @@ type Permission struct {
 	// ServiceID is the id of the service the permission belongs to
 	ServiceID uuid.UUID `json:"service_id,omitempty"`
 	// Domain is an array that holds the id of the domains the permission is accessible at
-	Domain []string `json:"domains,omitempty"`
+	Domain []uuid.UUID `json:"domains,omitempty"`
 	// Status is the status of the permission.
 	Status string `json:"status,omitempty"`
 	// DeletedAt is the time this permission was deleted.
@@ -42,7 +43,7 @@ type CreatePermission struct {
 	// ServiceID is the id of the service the permission belongs to
 	ServiceID uuid.UUID `json:"service_id"`
 	// Domain is an array that holds the id of the domains the permission is accessible at
-	Domain []string `json:"domains"`
+	Domain []uuid.UUID `json:"domains"`
 }
 
 type Statement struct {
@@ -63,6 +64,7 @@ func (c CreatePermission) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.Name, validation.Required.Error("permission name is required")),
 		validation.Field(&c.Description, validation.Required.Error("permission description is required")),
+		validation.Field(&c.Domain, validation.By(validateDomain)),
 		validation.Field(&c.Statement),
 	)
 }
@@ -86,4 +88,19 @@ func (g GetAllPermissionsReq) Validate() error {
 	return validation.ValidateStruct(&g,
 		validation.Field(&g.TenantName, validation.Required.Error("tenant name can not be blank")),
 		validation.Field(&g.ServiceID, validation.NotIn(uuid.Nil.String()).Error("service id is required")))
+}
+
+func validateDomain(id interface{}) error {
+	p_id := id.([]uuid.UUID)
+	if len(p_id) == 0 {
+		return fmt.Errorf("atleast one domain is required")
+	}
+
+	for _, id := range p_id {
+		if err := id == uuid.Nil; err {
+			return fmt.Errorf("domain-id is required")
+		}
+	}
+
+	return nil
 }
