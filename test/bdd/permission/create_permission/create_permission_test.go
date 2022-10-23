@@ -70,22 +70,14 @@ func (c *createTestPermission) iCreateAPermmissionInTheDomain(permission *godog.
 			Columns:  []string{"action", "resource", "effect"},
 			Kind:     src.Object,
 		},
-		{
-			Column: "domains",
-			Kind:   src.Array,
-		},
 	},
 		true)
 	if err != nil {
 		return err
 	}
+	json.Unmarshal([]byte(body), &c.permission)
 
-	err = c.apiTest.UnmarshalJSON([]byte(body), &c.permission)
-	if err != nil {
-		return err
-	}
-
-	c.permission.Domain = []string{c.domainrequest.ID.String()}
+	c.permission.Domain = []uuid.UUID{c.domainrequest.ID}
 	requestBody, err := json.Marshal(c.permission)
 	if err != nil {
 		return err
