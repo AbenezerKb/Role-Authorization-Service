@@ -1,0 +1,1 @@
+ALTER TABLE permission_domains ADD CONSTRAINT permission_domains_unique UNIQUE (permission_id,domain_id);
