@@ -38,6 +38,7 @@ func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermi
 			Bytes:  statement,
 			Status: pgtype.Present,
 		},
+		Column5: param.Domain,
 	})
 
 	if err != nil {

@@ -42,21 +42,11 @@ func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermi
 		p.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
-	permissionId, err := p.permissionPersistence.CreatePermission(ctx, param)
+	_, err = p.permissionPersistence.CreatePermission(ctx, param)
 	if err != nil {
 		return err
 	}
-	for _, domain := range param.Domain {
-		id, err := uuid.Parse(domain)
-		if err != nil {
-			err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-			p.log.Info(ctx, "invalid input", zap.Error(err), zap.String("domain", domain))
-			return err
-		}
-		if err := p.permissionPersistence.AddToDomain(ctx, permissionId, id); err != nil {
-			return err
-		}
-	}
+	
 	return nil
 }
 
