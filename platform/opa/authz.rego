@@ -35,6 +35,7 @@ check_tenant = tenant {
 }
 
 check_tenant = tenant {
+	not check_service.tenants[input.tenant]
 	tenant := check_service.tenants.administrator
 	tenant.status = "ACTIVE"
 }

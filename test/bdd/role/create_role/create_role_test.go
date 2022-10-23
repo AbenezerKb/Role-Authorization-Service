@@ -64,9 +64,8 @@ func (c *createRoleTest) aPermissionsRegisteredOnTheDomain(permission *godog.Tab
 	if err != nil {
 		return err
 	}
-	if err = c.apiTest.UnmarshalJSON([]byte(body), &c.permission); err != nil {
-		return err
-	}
+	c.apiTest.UnmarshalJSON([]byte(body), &c.permission)
+
 	statment, _ := c.permission.Statement.Value()
 	var result uuid.UUID
 	result, err = c.DB.CreateOrGetPermission(context.Background(), db.CreateOrGetPermissionParams{

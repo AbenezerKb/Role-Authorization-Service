@@ -53,18 +53,12 @@ func (l *ListPermission) aPermissionsRegisteredOnTheDomain(permission *godog.Tab
 			Columns:  []string{"action", "resource", "effect"},
 			Kind:     src.Object,
 		},
-		{
-			Column: "domains",
-			Kind:   src.Array,
-		},
 	},
 		true)
 	if err != nil {
 		return err
 	}
-	if err = l.apiTest.UnmarshalJSON([]byte(body), &l.permission); err != nil {
-		return err
-	}
+	l.apiTest.UnmarshalJSON([]byte(body), &l.permission)
 	statment, _ := l.permission.Statement.Value()
 	var result uuid.UUID
 	result, err = l.DB.CreateOrGetPermission(context.Background(), db.CreateOrGetPermissionParams{
