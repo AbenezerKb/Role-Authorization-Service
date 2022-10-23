@@ -35,15 +35,17 @@ const createOrGetPermission = `-- name: CreateOrGetPermission :one
 WITH new_row AS (
     INSERT INTO permissions (name,description,statment,service_id)
         SELECT $1,$2,$3,$4
-        WHERE NOT EXISTS (SELECT id FROM permissions WHERE name = $1 and service_id=$4)
+        WHERE NOT EXISTS (SELECT id FROM permissions WHERE name =$1 and service_id=$4)
         RETURNING id
 ),_permission as(
     SELECT id FROM new_row
     UNION
     SELECT id FROM permissions WHERE name = $1 and service_id=$4
 )
-insert into permission_domains (domain_id,permission_id)
-select domains.id,_permission.id from domains,_permission where domains.id =ANY($5::uuid[]) returning id
+,pd as (insert into permission_domains (domain_id,permission_id)
+select domains.id,_permission.id from domains,_permission where domains.id =ANY($5::uuid[]) ON CONFLICT DO NOTHING returning permission_domains.id
+)
+select id from _permission
 `
 
 type CreateOrGetPermissionParams struct {
