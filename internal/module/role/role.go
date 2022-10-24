@@ -8,6 +8,7 @@ import (
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -83,6 +84,8 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "role already exists", zap.String("name", param.RoleID.String()))
 		return errors.ErrDataExists.Wrap(err, "user  with this role  already exists")
 	}
-
+	if err := r.opa.Refresh(ctx, fmt.Sprintf("Assigning [%v]  role  to user  - [%v]", param.RoleID, param.UserID)); err != nil {
+		return err
+	}
 	return r.rolePersistence.AssignRole(ctx, param)
 }
