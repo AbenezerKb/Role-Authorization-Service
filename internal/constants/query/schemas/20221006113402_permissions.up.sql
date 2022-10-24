@@ -3,7 +3,7 @@ CREATE TABLE "permissions" (
     "status" status NOT NULL DEFAULT 'ACTIVE',
     "name" varchar NOT NULL,
     "description" varchar NOT NULL,
-    "statment" JSON NOT NULL,
+    "statement" JSON NOT NULL,
     "created_at" timestamptz NOT NULL default now(),
     "updated_at" timestamptz NOT NULL default now()
 );

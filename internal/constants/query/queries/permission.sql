@@ -25,6 +25,6 @@ WHERE NOT exists(select permission_id from permission_domains where permission_i
 with _tenant as (
     select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2
 )
-select p.name,p.status,p.description,p.statment,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id
+select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id
 UNION
-select p.name,p.status,p.description,p.statment,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id;
+select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id;

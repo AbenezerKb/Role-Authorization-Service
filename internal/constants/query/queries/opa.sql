@@ -44,7 +44,7 @@ from
                                             role_permissions.role_id ,
                                             p.name,
                                             p.description,
-                                            p.statment,
+                                            p.statement,
                                             p.status,
                                             coalesce(json_agg(ph) filter (where ph.id is not null), '[]') as child
                                         from
@@ -56,7 +56,7 @@ from
                                                     p2.name,
                                                     p2.id,
                                                     ph.parent,
-                                                    p2.statment,
+                                                    p2.statement,
                                                     p2.status
                                                 from
                                                     permissions_hierarchy ph
@@ -69,7 +69,7 @@ from
                                             role_permissions.role_id ,
                                             p.name,
                                             p.description,
-                                            p.statment,
+                                            p.statement,
                                             p.status
                                     )as rp on
                                             r.id = rp.role_id

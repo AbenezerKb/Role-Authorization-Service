@@ -67,7 +67,7 @@ with _service as (
              into
                  permissions(name,
                              description,
-                             statment,service_id)
+                             statement,service_id)
                  select 'manage-all',
                         'super admin can perform any action on any domain',
                         json_build_object('action', '*', 'resource', '*', 'effect', 'allow'),service_id from _service

@@ -33,7 +33,7 @@ func (q *Queries) AssignDomain(ctx context.Context, arg AssignDomainParams) erro
 
 const createOrGetPermission = `-- name: CreateOrGetPermission :one
 WITH new_row AS (
-    INSERT INTO permissions (name,description,statment,service_id)
+    INSERT INTO permissions (name,description,statement,service_id)
         SELECT $1,$2,$3,$4
         WHERE NOT EXISTS (SELECT id FROM permissions WHERE name =$1 and service_id=$4)
         RETURNING id
@@ -51,7 +51,7 @@ select id from _permission
 type CreateOrGetPermissionParams struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
-	Statment    pgtype.JSON `json:"statment"`
+	Statement   pgtype.JSON `json:"statement"`
 	ServiceID   uuid.UUID   `json:"service_id"`
 	Column5     []uuid.UUID `json:"column_5"`
 }
@@ -60,7 +60,7 @@ func (q *Queries) CreateOrGetPermission(ctx context.Context, arg CreateOrGetPerm
 	row := q.db.QueryRow(ctx, createOrGetPermission,
 		arg.Name,
 		arg.Description,
-		arg.Statment,
+		arg.Statement,
 		arg.ServiceID,
 		arg.Column5,
 	)
@@ -73,9 +73,9 @@ const listPermissions = `-- name: ListPermissions :many
 with _tenant as (
     select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2
 )
-select p.name,p.status,p.description,p.statment,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id
+select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id
 UNION
-select p.name,p.status,p.description,p.statment,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id
+select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id
 `
 
 type ListPermissionsParams struct {
@@ -87,7 +87,7 @@ type ListPermissionsRow struct {
 	Name        string      `json:"name"`
 	Status      Status      `json:"status"`
 	Description string      `json:"description"`
-	Statment    pgtype.JSON `json:"statment"`
+	Statement   pgtype.JSON `json:"statement"`
 	CreatedAt   time.Time   `json:"created_at"`
 	ServiceID   uuid.UUID   `json:"service_id"`
 	ID          uuid.UUID   `json:"id"`
@@ -106,7 +106,7 @@ func (q *Queries) ListPermissions(ctx context.Context, arg ListPermissionsParams
 			&i.Name,
 			&i.Status,
 			&i.Description,
-			&i.Statment,
+			&i.Statement,
 			&i.CreatedAt,
 			&i.ServiceID,
 			&i.ID,

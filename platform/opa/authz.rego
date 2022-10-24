@@ -19,7 +19,7 @@ match(permission) {
 match(permission) {
 	pc := permission.child[_]
 	pc.status = "ACTIVE"
-	pc.statment.effect = "allow"
+	pc.statement.effect = "allow"
 	has_resource(pc)
 	has_action(pc)
 }
@@ -54,7 +54,7 @@ check_user_role[role] {
 check_user_permissions[permission] {
 	permission := check_user_role[role].permissions[_]
 	permission.status = "ACTIVE"
-	permission.statment.effect == "allow"
+	permission.statement.effect == "allow"
 }
 
 #
@@ -133,8 +133,8 @@ resource_matches(in, stored) {
 resource_matches(_, "*") = true
 
 has_resource(permission) {
-	statment_resource := permission.statment.resource
-	resource_matches(input.resource, statment_resource)
+	statement_resource := permission.statement.resource
+	resource_matches(input.resource, statement_resource)
 }
 
 action_matches(in, stored) {
@@ -155,7 +155,7 @@ action_match(["*", verb], [_, _, verb]) = true
 action_match(["*"], _) = true
 
 has_action(permission) {
-	statement_action := permission.statment.action
+	statement_action := permission.statement.action
 	action_matches(input.action, statement_action)
 }
 
@@ -170,5 +170,5 @@ matchedPermissions[permission] {
 
 matchedPermissions[child] {
 	child := check_user_permissions[_].child[_]
-	child.statment.effect == "allow"
+	child.statement.effect == "allow"
 }

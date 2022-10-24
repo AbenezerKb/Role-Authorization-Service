@@ -70,16 +70,16 @@ func (r *assignRoleTest) aPermissionsRegisteredOnTheDomain(permission *godog.Tab
 	if err != nil {
 		return err
 	}
-	 r.apiTest.UnmarshalJSON([]byte(body), &r.permission)
-	
-	statment, _ := r.permission.Statement.Value()
+	r.apiTest.UnmarshalJSON([]byte(body), &r.permission)
+
+	statement, _ := r.permission.Statement.Value()
 	var result uuid.UUID
 	result, err = r.DB.CreateOrGetPermission(context.Background(), db.CreateOrGetPermissionParams{
 		Name:        r.permission.Name,
 		Description: r.permission.Description,
 		ServiceID:   r.createdService.ServiceID,
-		Statment: pgtype.JSON{
-			Bytes:  statment,
+		Statement: pgtype.JSON{
+			Bytes:  statement,
 			Status: pgtype.Present,
 		},
 	})

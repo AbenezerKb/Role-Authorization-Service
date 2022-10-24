@@ -72,7 +72,7 @@ type Permission struct {
 	Status      Status        `json:"status"`
 	Name        string        `json:"name"`
 	Description string        `json:"description"`
-	Statment    pgtype.JSON   `json:"statment"`
+	Statement   pgtype.JSON   `json:"statement"`
 	CreatedAt   time.Time     `json:"created_at"`
 	UpdatedAt   time.Time     `json:"updated_at"`
 	ServiceID   uuid.UUID     `json:"service_id"`

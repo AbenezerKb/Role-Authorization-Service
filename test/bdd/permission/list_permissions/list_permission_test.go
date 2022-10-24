@@ -59,14 +59,14 @@ func (l *ListPermission) aPermissionsRegisteredOnTheDomain(permission *godog.Tab
 		return err
 	}
 	l.apiTest.UnmarshalJSON([]byte(body), &l.permission)
-	statment, _ := l.permission.Statement.Value()
+	statement, _ := l.permission.Statement.Value()
 	var result uuid.UUID
 	result, err = l.DB.CreateOrGetPermission(context.Background(), db.CreateOrGetPermissionParams{
 		Name:        l.permission.Name,
 		Description: l.permission.Description,
 		ServiceID:   l.createdService.ServiceID,
-		Statment: pgtype.JSON{
-			Bytes:  statment,
+		Statement: pgtype.JSON{
+			Bytes:  statement,
 			Status: pgtype.Present,
 		},
 		Column5: []uuid.UUID{

@@ -6,7 +6,7 @@ with _tenant as(
     returning  id as role_id,name,created_at,status
 ),_rp as(
 insert into role_permissions (role_id,permission_id)
-    select role_id,permissions.id from _role, permissions where permissions.id =ANY($4::uuid[])returning id
+    select role_id,permissions.id from _role, permissions where permissions.id =ANY($4::uuid[])ON CONFLICT DO NOTHING returning id
 )select _role.* from _role;
 
 -- name: GetRoleByNameAndTenantName :one 

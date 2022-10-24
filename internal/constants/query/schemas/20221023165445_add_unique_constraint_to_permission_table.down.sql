@@ -1,1 +1,1 @@
-DROP INDEX permission_domains_uni cascade;
+DROP INDEX permission_domains_unique cascade;

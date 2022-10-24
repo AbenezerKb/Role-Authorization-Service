@@ -1,4 +1,4 @@
-CREATE TYPE status AS ENUM ('PENDING', 'ACTIVE', 'INACTIVE');
+CREATE TYPE  status AS ENUM ('PENDING', 'ACTIVE', 'INACTIVE');
 
 CREATE TABLE "services" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -34,7 +34,7 @@ func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermi
 		Name:        param.Name,
 		ServiceID:   param.ServiceID,
 		Description: param.Description,
-		Statment: pgtype.JSON{
+		Statement: pgtype.JSON{
 			Bytes:  statement,
 			Status: pgtype.Present,
 		},
