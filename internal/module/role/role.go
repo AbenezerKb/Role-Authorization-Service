@@ -89,3 +89,26 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 	}
 	return r.rolePersistence.AssignRole(ctx, param)
 }
+
+func (r *role) UpdateRole(ctx context.Context, param dto.UpdateRole) error {
+
+	if err := param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
+	if err := r.rolePersistence.RemovePermissionsFromRole(ctx, param); err != nil {
+		return err
+	}
+
+	if err := r.rolePersistence.UpdateRole(ctx, param); err != nil {
+		return err
+	}
+
+	if err := r.opa.Refresh(ctx, fmt.Sprintf("Updating [%v]  role", param.RoleID)); err != nil {
+		return err
+	}
+
+	return nil
+}
