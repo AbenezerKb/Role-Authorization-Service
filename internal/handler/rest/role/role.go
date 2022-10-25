@@ -108,3 +108,47 @@ func (r *role) AssignRole(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
+
+// UpdateRole is used to update the existing role.
+// @Summary      update role.
+// @Description  This function updates the given role.
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 role id path string true "role id"
+// @param 		 updaterolepermissionslist body dto.UpdateRole true "update role request body"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  boolean true "successfully updated role"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /roles/{id} [put]
+// @security 	 BasicAuth
+func (r *role) UpdateRole(ctx *gin.Context) {
+	role := dto.UpdateRole{}
+	err := ctx.ShouldBind(&role)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "couldn't bind to dto.UpdateRole body", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	role.RoleID, err = uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := r.roleModule.UpdateRole(ctx, role); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}

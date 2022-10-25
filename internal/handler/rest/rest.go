@@ -28,4 +28,5 @@ type User interface {
 type Role interface {
 	CreateRole(ctx *gin.Context)
 	AssignRole(ctx *gin.Context)
+	UpdateRole(ctx *gin.Context)
 }
