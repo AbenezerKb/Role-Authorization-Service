@@ -94,3 +94,27 @@ func (r *role) IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (b
 	}
 	return false, nil
 }
+
+func (r *role) UpdateRole(ctx context.Context, param dto.UpdateRole) error {
+	if err := r.db.UpdateRole(ctx, db.UpdateRoleParams{
+		RoleID:  param.RoleID,
+		Column2: param.PermissionsID,
+	}); err != nil {
+		err := errors.ErrWriteError.Wrap(err, "error updating the role")
+		r.log.Error(ctx, "unable to update the role", zap.Error(err), zap.String("role-id", param.RoleID.String()), zap.Any("permissions", param.PermissionsID))
+		return err
+	}
+	return nil
+}
+
+func (r *role) RemovePermissionsFromRole(ctx context.Context, param dto.UpdateRole) error {
+	if err := r.db.RemovePermissionsFromRole(ctx, db.RemovePermissionsFromRoleParams{
+		RoleID:  param.RoleID,
+		Column2: param.PermissionsID,
+	}); err != nil {
+		err := errors.ErrDBDelError.Wrap(err, "error removing the permissions from the role")
+		r.log.Error(ctx, "unable to remove the permissions", zap.Error(err), zap.String("role-id", param.RoleID.String()), zap.Any("permissions", param.PermissionsID))
+		return err
+	}
+	return nil
+}

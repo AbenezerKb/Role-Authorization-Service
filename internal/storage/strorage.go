@@ -41,6 +41,8 @@ type User interface {
 
 type Role interface {
 	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
+	UpdateRole(ctx context.Context, param dto.UpdateRole) error
+	RemovePermissionsFromRole(ctx context.Context, param dto.UpdateRole) error
 	IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, error)
 	IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (bool, error)
 	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
