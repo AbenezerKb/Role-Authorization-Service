@@ -30,3 +30,11 @@ and tenant_users_roles.user_id in (
     SELECT users.id from users 
     where users.user_id = $2
 ) and tenant_users_roles.role_id = $3;
+
+-- name: RemovePermissionsFromRole :exec
+DELETE FROM role_permissions WHERE role_id=$1 AND NOT permission_id=any($2::uuid[]);
+
+-- name: UpdateRole :exec
+INSERT INTO role_permissions (role_id,permission_id)
+SELECT $1,permissions.id FROM permissions WHERE permissions.id =ANY($2::uuid[])ON conflict do nothing;
+

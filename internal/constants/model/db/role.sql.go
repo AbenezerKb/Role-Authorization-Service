@@ -114,3 +114,32 @@ func (q *Queries) IsRoleAssigned(ctx context.Context, arg IsRoleAssignedParams) 
 	err := row.Scan(&count_rows)
 	return count_rows, err
 }
+
+const removePermissionsFromRole = `-- name: RemovePermissionsFromRole :exec
+DELETE FROM role_permissions WHERE role_id=$1 AND NOT permission_id=any($2::uuid[])
+`
+
+type RemovePermissionsFromRoleParams struct {
+	RoleID  uuid.UUID   `json:"role_id"`
+	Column2 []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) RemovePermissionsFromRole(ctx context.Context, arg RemovePermissionsFromRoleParams) error {
+	_, err := q.db.Exec(ctx, removePermissionsFromRole, arg.RoleID, arg.Column2)
+	return err
+}
+
+const updateRole = `-- name: UpdateRole :exec
+INSERT INTO role_permissions (role_id,permission_id)
+SELECT $1,permissions.id FROM permissions WHERE permissions.id =ANY($2::uuid[])ON conflict do nothing
+`
+
+type UpdateRoleParams struct {
+	RoleID  uuid.UUID   `json:"role_id"`
+	Column2 []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) error {
+	_, err := q.db.Exec(ctx, updateRole, arg.RoleID, arg.Column2)
+	return err
+}
