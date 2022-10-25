@@ -1,0 +1,1 @@
+ALTER TABLE role_permissions ADD CONSTRAINT role_permission_unique UNIQUE (permission_id,role_id);
