@@ -9,6 +9,20 @@ import (
 	"github.com/google/uuid"
 )
 
+type UpdateRole struct {
+	// RoleID is the name of the role.
+	RoleID uuid.UUID `json:"role_id"`
+	// PermissionID is the list of permissions id's.
+	PermissionsID []uuid.UUID `json:"permissions_id"`
+}
+
+func (r UpdateRole) Validate() error {
+	return validation.ValidateStruct(&r,
+		validation.Field(&r.RoleID, validation.NotIn(uuid.Nil.String()).Error("role id is required")),
+		validation.Field(&r.PermissionsID, validation.By(validatePermissions)),
+	)
+}
+
 type CreateRole struct {
 	// Name is the name of the role.
 	Name string `json:"name"`
