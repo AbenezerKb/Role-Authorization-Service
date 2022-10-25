@@ -14,7 +14,7 @@ Feature: Create Domain
         When I create a permmission in the domain:
             | name   | description   | effect   | action   | resource   | domains   |
             | <name> | <description> | <effect> | <action> | <resource> | <domains> |
-        Then The service should be deleted
+        Then The permission should be created
         Examples:
             | name           | description    | effect | action                 | resource                      | domains |
             | delete service | delete service | allow  | "admin:service:delete" | "admin:service:deleteservice" | system  |
@@ -25,9 +25,9 @@ Feature: Create Domain
             | <name> | <description> | <effect> | <action> | <resource> | <domains> |
         Then The request should fail with error "<message>"
         Examples:
-            | name           | description    | effect | action               | resource                    | domains | message                                  |
-            |                | delete service | allow  | admin:service:delete | admin:service:deleteservice | system  | permission name is required              |
-            | delete service |                | allow  | admin:service:delete | admin:service:deleteservice | system  | permission description is required       |
-            | delete service | delete service |        | admin:service:delete | admin:service:deleteservice | system  | effect: statement effect is required.    |
-            | delete service | delete service | allow  |                      | admin:service:deleteservice | system  | action: statement action is required.    |
+            | name           | description    | effect | action               | resource                    | domains | message                                   |
+            |                | delete service | allow  | admin:service:delete | admin:service:deleteservice | system  | permission name is required               |
+            | delete service |                | allow  | admin:service:delete | admin:service:deleteservice | system  | permission description is required        |
+            | delete service | delete service |        | admin:service:delete | admin:service:deleteservice | system  | effect: statement effect is required.     |
+            | delete service | delete service | allow  |                      | admin:service:deleteservice | system  | action: statement action is required.     |
             | delete service | delete service | allow  | admin:service:delete |                             | system  | resource: statement resource is required. |

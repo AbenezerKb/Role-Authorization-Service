@@ -131,7 +131,7 @@ func (c *createTestPermission) theRequestShouldFailWithError(message string) err
 	return nil
 }
 
-func (c *createTestPermission) theServiceShouldBeDeleted() error {
+func (c *createTestPermission) thePermissionShouldBeCreated() error {
 	if err := c.apiTest.AssertStatusCode(http.StatusCreated); err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func (c *createTestPermission) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^I create a permmission in the domain:$`, c.iCreateAPermmissionInTheDomain)
 	ctx.Step(`^I have a registered service$`, c.iHaveARegisteredService)
 	ctx.Step(`^The request should fail with error "([^"]*)"$`, c.theRequestShouldFailWithError)
-	ctx.Step(`^The service should be deleted$`, c.theServiceShouldBeDeleted)
+	ctx.Step(`^The permission should be created$`, c.thePermissionShouldBeCreated)
 }
 
 func basicAuth(username, password string) string {
