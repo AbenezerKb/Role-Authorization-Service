@@ -222,6 +222,17 @@ definitions:
         description: Resource is the urn for the path that is being accessed
         type: string
     type: object
+  dto.UpdateRole:
+    properties:
+      permissions_id:
+        description: PermissionID is the list of permissions id's.
+        items:
+          type: string
+        type: array
+      role_id:
+        description: RoleID is the name of the role.
+        type: string
+    type: object
   model.ErrorResponse:
     properties:
       code:
@@ -522,6 +533,67 @@ paths:
       security:
       - BasicAuth: []
       summary: add new role.
+      tags:
+      - roles
+  /roles/{id}:
+    put:
+      consumes:
+      - application/json
+      description: This function updates the given role.
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: update role request body
+        in: body
+        name: updaterolepermissionslist
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRole'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updated role
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: update role.
       tags:
       - roles
   /roles/{roleid}/users/{userid}:

@@ -413,6 +413,98 @@ const docTemplate = `{
                 }
             }
         },
+        "/roles/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function updates the given role.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roles"
+                ],
+                "summary": "update role.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "role id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update role request body",
+                        "name": "updaterolepermissionslist",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateRole"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully updated role",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/roles/{roleid}/users/{userid}": {
             "post": {
                 "security": [
@@ -1034,6 +1126,22 @@ const docTemplate = `{
                 },
                 "resource": {
                     "description": "Resource is the urn for the path that is being accessed",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateRole": {
+            "type": "object",
+            "properties": {
+                "permissions_id": {
+                    "description": "PermissionID is the list of permissions id's.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "role_id": {
+                    "description": "RoleID is the name of the role.",
                     "type": "string"
                 }
             }
