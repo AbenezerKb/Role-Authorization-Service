@@ -43,7 +43,7 @@ func TestAssignRole(t *testing.T) {
 	c := &assignRoleTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)
-	c.apiTest.InitializeTest(t, "create role test", "feature/assign_role.feature", c.InitializeScenario)
+	c.apiTest.InitializeTest(t, "assign role test", "feature/assign_role.feature", c.InitializeScenario)
 }
 
 func (r *assignRoleTest) aPermissionsRegisteredOnTheDomain(permission *godog.Table) error {

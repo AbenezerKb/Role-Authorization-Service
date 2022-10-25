@@ -40,7 +40,7 @@ func TestUpdateRole(t *testing.T) {
 	c := &updateRoleTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)
-	c.apiTest.InitializeTest(t, "create role test", "feature/update_role.feature", c.InitializeScenario)
+	c.apiTest.InitializeTest(t, "update role test", "feature/update_role.feature", c.InitializeScenario)
 }
 
 func (u *updateRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table) error {
