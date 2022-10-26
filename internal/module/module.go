@@ -1,6 +1,7 @@
 package module
 
 import (
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"context"
 )
@@ -31,4 +32,8 @@ type Role interface {
 	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
 	UpdateRole(ctx context.Context, param dto.UpdateRole) error
 	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
+}
+
+type Opa interface {
+	Authorize(ctx context.Context, req model.Request) (bool, error)
 }
