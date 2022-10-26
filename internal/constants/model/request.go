@@ -14,7 +14,7 @@ type Request struct {
 	// It is set by the server after authenticating the service.
 	Service string `json:"service"`
 	// Action  is the urn of the action the user is taking on the resource.
-	Action  string `json:"action"`
+	Action string `json:"action"`
 }
 
 func (r Request) Validate() error {
@@ -22,5 +22,6 @@ func (r Request) Validate() error {
 		validation.Field(&r.Subject, validation.Required.Error("subject is required")),
 		validation.Field(&r.Action, validation.Required.Error("action is required")),
 		validation.Field(&r.Resource, validation.Required.Error("resource is required")),
+		validation.Field(&r.Tenant, validation.Required.Error("tenant is required")),
 	)
 }
