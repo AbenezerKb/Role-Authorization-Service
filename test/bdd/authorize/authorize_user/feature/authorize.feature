@@ -20,7 +20,7 @@ Feature: Authorize user
     @success
     Scenario: I successfully authorize the user
         Given The user is granted with the "admin" role
-        And I  want to authorize the user to perform the belowe action on the resource:
+        And I  want to authorize the user to perform the below action on the resource:
             | subject                              | action | resource                    | tenant   |
             | 4a2650b5-1c1c-437b-adc5-7d5d24a91126 | Post   | admin:service:deleteservice | vendor_1 |
         When i send a request to authorize the user
@@ -28,7 +28,7 @@ Feature: Authorize user
     @failer
     Scenario: The user should be denied
         Given the user is not granted any role
-        And I  want to authorize the user to perform the belowe action on the resource:
+        And I  want to authorize the user to perform the below action on the resource:
             | subject                              | action | resource                    | tenant   |
             | 765650b5-1c1c-437b-adc5-7d5d24a91126 | Post   | admin:service:deleteservice | vendor_1 |
         When i send a request to authorize the user
