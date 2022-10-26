@@ -30,3 +30,7 @@ type Role interface {
 	AssignRole(ctx *gin.Context)
 	UpdateRole(ctx *gin.Context)
 }
+
+type Opa interface {
+	Authorize(ctx *gin.Context)
+}
