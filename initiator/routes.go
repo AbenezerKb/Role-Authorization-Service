@@ -2,6 +2,7 @@ package initiator
 
 import (
 	"2f-authorization/internal/glue/routing/domain"
+	"2f-authorization/internal/glue/routing/oparoutes"
 	"2f-authorization/internal/glue/routing/permission"
 	"2f-authorization/internal/glue/routing/role"
 	"2f-authorization/internal/glue/routing/services"
@@ -31,5 +32,5 @@ func InitRouter(group *gin.RouterGroup, handler Handler, persistence Persistence
 	tenant.InitRoute(group, handler.tenant, log, authmiddleware)
 	user.InitRoute(group, handler.user, log, authmiddleware)
 	role.InitRoute(group, handler.role, log, authmiddleware)
-
+	oparoutes.InitRoute(group, handler.opa, authmiddleware)
 }

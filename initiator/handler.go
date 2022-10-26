@@ -3,6 +3,7 @@ package initiator
 import (
 	"2f-authorization/internal/handler/rest"
 	"2f-authorization/internal/handler/rest/domain"
+	"2f-authorization/internal/handler/rest/opa"
 	"2f-authorization/internal/handler/rest/permission"
 	"2f-authorization/internal/handler/rest/role"
 	"2f-authorization/internal/handler/rest/service"
@@ -18,6 +19,7 @@ type Handler struct {
 	tenant     rest.Tenant
 	user       rest.User
 	role       rest.Role
+	opa        rest.Opa
 }
 
 func InitHandler(module Module, log logger.Logger) Handler {
@@ -28,5 +30,6 @@ func InitHandler(module Module, log logger.Logger) Handler {
 		tenant:     tenant.Init(log.Named("tenant-handler"), module.tenant),
 		user:       user.Init(log.Named("user-handler"), module.user),
 		role:       role.Init(log.Named("role-handler"), module.role),
+		opa:        opa.Init(log.Named("opa-handler"), module.opa),
 	}
 }
