@@ -265,6 +265,29 @@ definitions:
         description: Name is the name of the field that caused the error.
         type: string
     type: object
+  model.Request:
+    properties:
+      action:
+        description: Action  is the urn of the action the user is taking on the resource.
+        type: string
+      resource:
+        description: Resource is the urn for the resource the user is trying to take
+          action on.
+        type: string
+      service:
+        description: |-
+          Service is the id of the service.
+          It is set by the server after authenticating the service.
+        type: string
+      subject:
+        description: Subject is the user id who is trying to take action on the resource.
+        type: string
+      tenant:
+        description: |-
+          Tenant is the scope the user is operating.
+          It is set to "administrator" if it is not provided.
+        type: string
+    type: object
 host: 206.189.54.235:5184
 info:
   contact:
@@ -274,6 +297,43 @@ info:
   title: Authorization API
   version: "0.1"
 paths:
+  /authorize:
+    post:
+      consumes:
+      - application/json
+      description: This function check whether the user is authorized or not to perform
+        the action on the resource within the given tenant and service.
+      parameters:
+      - description: authorization request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully authorize the user
+          schema:
+            type: boolean
+        "400":
+          description: required field error,bad request error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: authorize user.
+      tags:
+      - authorize
   /domains:
     delete:
       consumes:

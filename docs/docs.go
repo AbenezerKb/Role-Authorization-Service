@@ -20,6 +20,63 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/authorize": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function check whether the user is authorized or not to perform the action on the resource within the given tenant and service.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authorize"
+                ],
+                "summary": "authorize user.",
+                "parameters": [
+                    {
+                        "description": "authorization request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully authorize the user",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error,bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/domains": {
             "post": {
                 "security": [
@@ -1183,6 +1240,31 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "Name is the name of the field that caused the error.",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Request": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "Action  is the urn of the action the user is taking on the resource.",
+                    "type": "string"
+                },
+                "resource": {
+                    "description": "Resource is the urn for the resource the user is trying to take action on.",
+                    "type": "string"
+                },
+                "service": {
+                    "description": "Service is the id of the service.\nIt is set by the server after authenticating the service.",
+                    "type": "string"
+                },
+                "subject": {
+                    "description": "Subject is the user id who is trying to take action on the resource.",
+                    "type": "string"
+                },
+                "tenant": {
+                    "description": "Tenant is the scope the user is operating.\nIt is set to \"administrator\" if it is not provided.",
                     "type": "string"
                 }
             }
