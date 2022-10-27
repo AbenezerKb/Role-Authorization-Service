@@ -88,6 +88,37 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		return err
 	}
 	return r.rolePersistence.AssignRole(ctx, param)
+
+}
+
+func (r *role) RevokeRole(ctx context.Context, param dto.TenantUsersRole) error {
+
+	var err error
+	param.TenantName = ctx.Value("x-tenant").(string)
+
+	if err = param.Validate(); err != nil {
+
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
+	if err != nil {
+		return err
+	}
+
+	if !isExist {
+		r.log.Info(ctx, "role does not exists", zap.String("role id ", param.RoleID.String()))
+		return errors.ErrDataExists.Wrap(err, "user  with this role  does not  exists")
+	}
+	err = r.rolePersistence.RevokeRole(ctx, param)
+	if err != nil {
+		return err
+	}
+	if err := r.opa.Refresh(ctx, fmt.Sprintf("Revoking user role with role id  [%v]  and user id  - [%v]", param.RoleID, param.UserID)); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *role) UpdateRole(ctx context.Context, param dto.UpdateRole) error {
