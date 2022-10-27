@@ -4,6 +4,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/google/uuid"
 )
 
@@ -55,6 +56,6 @@ type CreateServiceResponse struct {
 func (s CreateService) Validate() error {
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.Name, validation.Required.Error("service name is required"), validation.Length(3, 32).Error("name must be between 3 and 32 characters")),
-		validation.Field(&s.UserId, validation.Required.Error("user id is required")),
+		validation.Field(&s.UserId, validation.Required.Error("user id is required"), is.UUID.Error("invalid user id")),
 	)
 }
