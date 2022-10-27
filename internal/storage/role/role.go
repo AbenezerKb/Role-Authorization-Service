@@ -118,3 +118,18 @@ func (r *role) RemovePermissionsFromRole(ctx context.Context, param dto.UpdateRo
 	}
 	return nil
 }
+func (r *role) RevokeRole(ctx context.Context, param dto.TenantUsersRole) error {
+
+	err := r.db.RevokeUserRole(ctx, db.RevokeUserRoleParams{
+		TenantName: param.TenantName,
+		UserID:     param.UserID,
+		RoleID:     param.RoleID,
+	})
+	if err != nil {
+		err := errors.ErrWriteError.Wrap(err, "could not revoke role")
+		r.log.Error(ctx, "unable to revoke role", zap.Error(err), zap.Any("role", param))
+		return err
+	}
+	return nil
+
+}

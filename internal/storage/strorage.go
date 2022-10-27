@@ -46,4 +46,5 @@ type Role interface {
 	IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, error)
 	IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (bool, error)
 	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
+	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 }
