@@ -9,7 +9,6 @@ import (
 	"2f-authorization/platform/argon"
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -41,7 +40,7 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			err := errors.ErrInternalServerError.Wrap(nil, "could not extract service credentials")
 			a.logger.Error(ctx, "extract error", zap.Error(err))
 			_ = ctx.Error(err)
-			ctx.AbortWithStatus(http.StatusBadRequest)
+			ctx.Abort()
 			return
 		}
 
