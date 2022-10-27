@@ -78,7 +78,7 @@ func (r *role) CreateRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{roleid}/users/{userid} [post]
+// @Router       /roles/{id}/users/{id} [post]
 // @security 	 BasicAuth
 func (r *role) AssignRole(ctx *gin.Context) {
 	var err error
@@ -101,6 +101,53 @@ func (r *role) AssignRole(ctx *gin.Context) {
 	}
 
 	err = r.roleModule.AssignRole(ctx, role)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
+
+// RevokeRole is used to delete user role.
+// @Summary      revoke user role.
+// @Description  This function revoke user's role if it is given.
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 userid path string true "user id"
+// @param 		 roleid path string true "role id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  {object} dto.Role "successfully assigned role"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /roles/{id}/users/{id} [post]
+// @security 	 BasicAuth
+func (r *role) RevokeRole(ctx *gin.Context) {
+	var err error
+	role := dto.TenantUsersRole{}
+
+	role.UserID, err = uuid.Parse(ctx.Param("userid"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("user id", ctx.Param("userid")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	role.RoleID, err = uuid.Parse(ctx.Param("roleid"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("roleid")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	err = r.roleModule.RevokeRole(ctx, role)
 	if err != nil {
 		_ = ctx.Error(err)
 		return
