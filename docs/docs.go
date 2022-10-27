@@ -562,14 +562,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/roles/{roleid}/users/{userid}": {
+        "/roles/{id}/users/{id}": {
             "post": {
                 "security": [
                     {
                         "BasicAuth": []
                     }
                 ],
-                "description": "This function assign new role if the role  dosen't assigned.",
+                "description": "This function revoke user's role if it is given.",
                 "consumes": [
                     "application/json"
                 ],
@@ -579,7 +579,7 @@ const docTemplate = `{
                 "tags": [
                     "roles"
                 ],
-                "summary": "assign role to a user.",
+                "summary": "revoke user role.",
                 "parameters": [
                     {
                         "type": "string",
