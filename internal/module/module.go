@@ -32,6 +32,7 @@ type Role interface {
 	CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role, error)
 	UpdateRole(ctx context.Context, param dto.UpdateRole) error
 	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
+	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 }
 
 type Opa interface {
