@@ -36,8 +36,8 @@ func (q *DBInstance) ListPermissions(ctx context.Context, arg ListPermissionsPar
 			&i.Description,
 			&i.Statement,
 			&i.CreatedAt,
-			&i.ID,
 			&i.ServiceID,
+			&i.ID,
 		); err != nil {
 			return nil, err
 		}
