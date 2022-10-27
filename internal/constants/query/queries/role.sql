@@ -38,3 +38,13 @@ DELETE FROM role_permissions WHERE role_id=$1 AND NOT permission_id=any($2::uuid
 INSERT INTO role_permissions (role_id,permission_id)
 SELECT $1,permissions.id FROM permissions WHERE permissions.id =ANY($2::uuid[])ON conflict do nothing;
 
+-- name: RevokeUserRole :exec 
+UPDATE tenant_users_roles 
+SET deleted_at= now() WHERE tenant_users_roles.tenant_id = (
+    SELECT tenants.id FROM 
+    tenants where tenants.tenant_name = $1
+)
+and tenant_users_roles.user_id = (
+    SELECT users.id from users 
+    where users.user_id = $2
+) and tenant_users_roles.role_id = $3;
