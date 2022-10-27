@@ -129,6 +129,29 @@ func (q *Queries) RemovePermissionsFromRole(ctx context.Context, arg RemovePermi
 	return err
 }
 
+const revokeUserRole = `-- name: RevokeUserRole :exec
+UPDATE tenant_users_roles 
+SET deleted_at= now() WHERE tenant_users_roles.tenant_id = (
+    SELECT tenants.id FROM 
+    tenants where tenants.tenant_name = $1
+)
+and tenant_users_roles.user_id = (
+    SELECT users.id from users 
+    where users.user_id = $2
+) and tenant_users_roles.role_id = $3
+`
+
+type RevokeUserRoleParams struct {
+	TenantName string    `json:"tenant_name"`
+	UserID     uuid.UUID `json:"user_id"`
+	RoleID     uuid.UUID `json:"role_id"`
+}
+
+func (q *Queries) RevokeUserRole(ctx context.Context, arg RevokeUserRoleParams) error {
+	_, err := q.db.Exec(ctx, revokeUserRole, arg.TenantName, arg.UserID, arg.RoleID)
+	return err
+}
+
 const updateRole = `-- name: UpdateRole :exec
 INSERT INTO role_permissions (role_id,permission_id)
 SELECT $1,permissions.id FROM permissions WHERE permissions.id =ANY($2::uuid[])ON conflict do nothing
