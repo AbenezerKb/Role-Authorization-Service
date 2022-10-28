@@ -656,8 +656,67 @@ paths:
       summary: update role.
       tags:
       - roles
-  /roles/{id}/users/{id}:
+  /roles/{roleid}/users/{userid}:
     post:
+      consumes:
+      - application/json
+      description: This function assign new role if the role  dosen't assigned.
+      parameters:
+      - description: user id
+        in: path
+        name: userid
+        required: true
+        type: string
+      - description: role id
+        in: path
+        name: roleid
+        required: true
+        type: string
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully assigned role
+          schema:
+            $ref: '#/definitions/dto.Role'
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: assign role to a user.
+      tags:
+      - roles
+    put:
       consumes:
       - application/json
       description: This function revoke user's role if it is given.
