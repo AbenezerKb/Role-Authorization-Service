@@ -78,7 +78,7 @@ func (r *role) CreateRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{id}/users/{id} [post]
+// @Router       /roles/{roleid}/users/{userid} [post]
 // @security 	 BasicAuth
 func (r *role) AssignRole(ctx *gin.Context) {
 	var err error
@@ -109,7 +109,7 @@ func (r *role) AssignRole(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
 
-// RevokeRole is used to delete user role.
+// RevokeRole is used to revoke user role.
 // @Summary      revoke user role.
 // @Description  This function revoke user's role if it is given.
 // @Tags         roles
@@ -125,7 +125,7 @@ func (r *role) AssignRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{id}/users/{id} [post]
+// @Router       /roles/{roleid}/users/{userid} [put]
 // @security 	 BasicAuth
 func (r *role) RevokeRole(ctx *gin.Context) {
 	var err error
