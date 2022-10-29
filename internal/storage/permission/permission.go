@@ -71,11 +71,11 @@ func (p *permission) ListAllPermission(ctx context.Context, param dto.GetAllPerm
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "no permisisons found")
 			p.log.Info(ctx, "no permissions were found", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
-			return []dto.Permission{}, nil
+			return []dto.Permission{}, err
 		} else {
 			err = errors.ErrReadError.Wrap(err, "error reading permissions")
 			p.log.Error(ctx, "error reading permissions", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
-			return []dto.Permission{}, nil
+			return []dto.Permission{}, err
 		}
 	}
 	return permission, nil
