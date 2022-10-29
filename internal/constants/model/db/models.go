@@ -77,6 +77,7 @@ type Permission struct {
 	UpdatedAt   time.Time     `json:"updated_at"`
 	ServiceID   uuid.UUID     `json:"service_id"`
 	TenantID    uuid.NullUUID `json:"tenant_id"`
+	DeletedAt   sql.NullTime  `json:"deleted_at"`
 }
 
 type PermissionDomain struct {

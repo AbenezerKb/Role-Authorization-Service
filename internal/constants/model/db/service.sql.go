@@ -177,7 +177,7 @@ func (q *Queries) GetServiceById(ctx context.Context, id uuid.UUID) (Service, er
 }
 
 const getServiceByName = `-- name: GetServiceByName :one
-SELECT id, status, name, password, deleted_at, created_at, updated_at FROM services WHERE name = $1
+SELECT id, status, name, password, deleted_at, created_at, updated_at FROM services WHERE name = $1 and deleted_at IS NULL
 `
 
 func (q *Queries) GetServiceByName(ctx context.Context, name string) (Service, error) {

@@ -42,7 +42,7 @@ func (q *Queries) CreateDomain(ctx context.Context, arg CreateDomainParams) (Dom
 
 const deleteDomain = `-- name: DeleteDomain :exec
 DELETE from domains 
-WHERE id = $1
+WHERE id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) DeleteDomain(ctx context.Context, id uuid.UUID) error {
@@ -52,7 +52,7 @@ func (q *Queries) DeleteDomain(ctx context.Context, id uuid.UUID) error {
 
 const getDomainByServiceId = `-- name: GetDomainByServiceId :many
 SELECT id, name, status, deleted_at, service_id, created_at, updated_at FROM domains 
-WHERE service_id = $1
+WHERE service_id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetDomainByServiceId(ctx context.Context, serviceID uuid.UUID) ([]Domain, error) {
@@ -85,7 +85,7 @@ func (q *Queries) GetDomainByServiceId(ctx context.Context, serviceID uuid.UUID)
 
 const isDomainExist = `-- name: IsDomainExist :one
 SELECT id, name, status, deleted_at, service_id, created_at, updated_at FROM domains 
-WHERE service_id = $1 AND name = $2
+WHERE service_id = $1 AND name = $2 AND deleted_at IS NULL
 `
 
 type IsDomainExistParams struct {
@@ -110,7 +110,7 @@ func (q *Queries) IsDomainExist(ctx context.Context, arg IsDomainExistParams) (D
 
 const softDeleteDomain = `-- name: SoftDeleteDomain :one
 UPDATE domains set deleted_at = now() 
-WHERE name = $1 AND service_id = $2
+WHERE name = $1 AND service_id = $2 AND deleted_at IS NULL
 RETURNING id, name, status, deleted_at, service_id, created_at, updated_at
 `
 

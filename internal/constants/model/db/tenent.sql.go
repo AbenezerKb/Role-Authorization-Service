@@ -35,7 +35,7 @@ func (q *Queries) CreateTenent(ctx context.Context, arg CreateTenentParams) erro
 
 const getTenentWithNameAndServiceId = `-- name: GetTenentWithNameAndServiceId :one
 SELECT id, status, tenant_name, service_id, deleted_at, created_at, updated_at, domain_id, inherit FROM tenants WHERE 
-tenant_name = $1 AND service_id = $2
+tenant_name = $1 AND service_id = $2 AND deleted_at IS NULL
 `
 
 type GetTenentWithNameAndServiceIdParams struct {

@@ -9,11 +9,11 @@ import (
 
 const listPermissions = `-- name: ListPermissions :many
 with _tenant as (
-    select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2
+    select tenants.domain_id,tenants.id,tenants.inherit from tenants where tenant_name =$1 and tenants.service_id=$2 and deleted_at IS NULL
 )
-select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id
+select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id and _tenant.inherit = true
 UNION
-select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id
+select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id and deleted_at IS NULL
 `
 
 type ListPermissionsParams struct {

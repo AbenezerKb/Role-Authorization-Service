@@ -10,5 +10,5 @@ service_id
 
 -- name: GetTenentWithNameAndServiceId :one 
 SELECT * FROM tenants WHERE 
-tenant_name = $1 AND service_id = $2;
+tenant_name = $1 AND service_id = $2 AND deleted_at IS NULL;
 

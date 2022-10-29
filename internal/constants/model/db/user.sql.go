@@ -13,7 +13,7 @@ import (
 
 const getUserWithUserIdAndServiceId = `-- name: GetUserWithUserIdAndServiceId :one
 SELECT id, user_id, status, deleted_at, created_at, updated_at, service_id FROM users WHERE 
-user_id = $1 AND service_id = $2
+user_id = $1 AND service_id = $2 AND deleted_at IS NULL
 `
 
 type GetUserWithUserIdAndServiceIdParams struct {

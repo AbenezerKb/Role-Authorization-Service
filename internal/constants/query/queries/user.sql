@@ -8,5 +8,5 @@ service_id
 
 -- name: GetUserWithUserIdAndServiceId :one 
 SELECT * FROM users WHERE 
-user_id = $1 AND service_id = $2;
+user_id = $1 AND service_id = $2 AND deleted_at IS NULL;
 

@@ -1,5 +1,5 @@
 -- name: GetServiceByName :one
-SELECT * FROM services WHERE name = $1;
+SELECT * FROM services WHERE name = $1 and deleted_at IS NULL;
 
 -- name: GetServiceById :one
 SELECT * FROM services WHERE id = $1 AND deleted_at IS NULL;
