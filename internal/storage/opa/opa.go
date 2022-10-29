@@ -6,6 +6,7 @@ import (
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
 	"context"
+	"encoding/json"
 
 	"go.uber.org/zap"
 )
@@ -29,6 +30,12 @@ func (o *opa) GetOpaData(ctx context.Context) ([]byte, error) {
 		o.log.Error(ctx, "error getting opa data", zap.Error(err))
 		return nil, err
 	}
-
-	return data.Bytes, nil
+	
+	opaData, err := json.Marshal(data)
+	if err != nil {
+		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "can not update opa policy data")
+		o.log.Error(ctx, "error getting opa data", zap.Error(err))
+		return nil, err
+	}
+	return opaData, nil
 }
