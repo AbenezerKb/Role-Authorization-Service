@@ -1,0 +1,1 @@
+drop index tenants_tenant_name_service_id_deleted_at_key cascade;

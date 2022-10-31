@@ -1,0 +1,1 @@
+create unique index permissions_name_service_id_tenant_id_deleted_at_key on permissions(name,service_id,tenant_id,deleted_at)where deleted_at IS NULL;

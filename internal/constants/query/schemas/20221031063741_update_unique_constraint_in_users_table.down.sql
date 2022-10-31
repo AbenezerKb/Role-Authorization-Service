@@ -1,0 +1,1 @@
+drop index users_user_id_service_id_deleted_at_key cascade;

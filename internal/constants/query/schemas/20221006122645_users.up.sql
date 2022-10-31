@@ -16,7 +16,7 @@ CREATE TABLE "tenant_users_roles" (
     "deleted_at" timestamptz,
     "created_at" timestamptz NOT NULL default now(),
     "updated_at" timestamptz NOT NULL default now(),
-    UNIQUE("user_id","role_id","tenant_id")
+    UNIQUE("user_id","role_id","tenant_id","deleted_at") where deleted_at IS NULL
 );
 ALTER TABLE "tenant_users_roles" ADD FOREIGN KEY ("tenant_id") REFERENCES "tenants" ("id") ON DELETE CASCADE;
 

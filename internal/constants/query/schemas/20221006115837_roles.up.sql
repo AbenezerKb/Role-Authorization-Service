@@ -5,7 +5,8 @@ CREATE TABLE "roles" (
     "tenant_id" UUID NOT NULL,
     "deleted_at" timestamptz,
     "created_at" timestamptz NOT NULL default now(),
-    "updated_at" timestamptz NOT NULL default now()
+    "updated_at" timestamptz NOT NULL default now(),
+    UNIQUE("name","tenant_id","deleted_at") where deleted_at IS NULL
 );
 
 ALTER TABLE "roles" add FOREIGN KEY ("tenant_id") REFERENCES "tenants"  ("id") ON DELETE CASCADE;

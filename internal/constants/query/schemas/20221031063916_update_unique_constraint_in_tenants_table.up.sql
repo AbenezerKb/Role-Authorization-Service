@@ -1,0 +1,2 @@
+drop index tenants_tenant_name_service_id_key cascade;
+create unique index tenants_tenant_name_service_id_deleted_at_key on tenants(tenant_name,service_id,deleted_at) where deleted_at IS NULL;
