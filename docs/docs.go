@@ -560,16 +560,14 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/roles/{roleid}/users/{userid}": {
-            "put": {
+            },
+            "delete": {
                 "security": [
                     {
                         "BasicAuth": []
                     }
                 ],
-                "description": "This function revoke user's role if it is given.",
+                "description": "This function deletes the given role.",
                 "consumes": [
                     "application/json"
                 ],
@@ -579,7 +577,96 @@ const docTemplate = `{
                 "tags": [
                     "roles"
                 ],
-                "summary": "revoke user role.",
+                "summary": "delete role.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "role id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully deletes role",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid input error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "role not found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/roles/{roleid}/users/{userid}": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function assign new role if the role  dosen't assigned.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roles"
+                ],
+                "summary": "assign role to a user.",
                 "parameters": [
                     {
                         "type": "string",
@@ -651,13 +738,13 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "BasicAuth": []
                     }
                 ],
-                "description": "This function assign new role if the role  dosen't assigned.",
+                "description": "This function revoke user's role if it is given.",
                 "consumes": [
                     "application/json"
                 ],
@@ -667,7 +754,7 @@ const docTemplate = `{
                 "tags": [
                     "roles"
                 ],
-                "summary": "assign role to a user.",
+                "summary": "revoke user role.",
                 "parameters": [
                     {
                         "type": "string",
@@ -1234,10 +1321,6 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "description": "CreatedAt is the time this service was created.",
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "description": "DeletedAt is the time this service was created.",
                     "type": "string"
                 },
                 "id": {
