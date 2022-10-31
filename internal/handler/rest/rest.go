@@ -30,6 +30,7 @@ type Role interface {
 	AssignRole(ctx *gin.Context)
 	UpdateRole(ctx *gin.Context)
 	RevokeRole(ctx *gin.Context)
+	DeleteRole(ctx *gin.Context)
 }
 
 type Opa interface {

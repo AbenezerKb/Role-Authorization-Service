@@ -125,7 +125,7 @@ func (r *role) AssignRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{roleid}/users/{userid} [put]
+// @Router       /roles/{roleid}/users/{userid} [patch]
 // @security 	 BasicAuth
 func (r *role) RevokeRole(ctx *gin.Context) {
 	var err error
@@ -198,4 +198,33 @@ func (r *role) UpdateRole(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
+
+// DeleteRole is used to delete the existing role.
+// @Summary      delete role.
+// @Description  This function deletes the given role.
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 role id path string true "role id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  string role deleted successfully "successfully deletes role"
+// @Failure      400  {object}  model.ErrorResponse "invalid input error"
+// @Failure      404  {object}  model.ErrorResponse "role not found"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /roles/{id} [delete]
+// @security 	 BasicAuth
+func (r *role) DeleteRole(ctx *gin.Context) {
+	roleId := ctx.Param("id")
+
+	role, err := r.roleModule.DeleteRole(ctx, roleId)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	constants.SuccessResponse(ctx, http.StatusOK, role, nil)
 }
