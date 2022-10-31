@@ -73,6 +73,29 @@ func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (CreateR
 	return i, err
 }
 
+const deleteRole = `-- name: DeleteRole :one
+Update roles set deleted_at=now() where roles.id=$1 AND deleted_at IS NULL returning name,id,created_at,updated_at
+`
+
+type DeleteRoleRow struct {
+	Name      string    `json:"name"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) DeleteRole(ctx context.Context, id uuid.UUID) (DeleteRoleRow, error) {
+	row := q.db.QueryRow(ctx, deleteRole, id)
+	var i DeleteRoleRow
+	err := row.Scan(
+		&i.Name,
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getRoleByNameAndTenantName = `-- name: GetRoleByNameAndTenantName :one
 SELECT roles.id FROM roles join tenants on roles.tenant_id =tenants.id WHERE 
 roles.name = $1 AND tenants.tenant_name = $2 and roles.deleted_at IS NULL and tenants.deleted_at IS NULL

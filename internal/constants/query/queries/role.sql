@@ -48,3 +48,6 @@ and tenant_users_roles.user_id = (
     SELECT users.id from users 
     where users.user_id = $2 and users.deleted_at IS NULL
 ) and tenant_users_roles.role_id = $3;
+
+-- name: DeleteRole :one
+Update roles set deleted_at=now() where roles.id=$1 AND deleted_at IS NULL returning name,id,created_at,updated_at;
