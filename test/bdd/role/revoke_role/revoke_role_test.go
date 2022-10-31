@@ -45,7 +45,7 @@ func TestRevokeRole(t *testing.T) {
 	c := &revokeRoleTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)
-	c.apiTest.InitializeTest(t, "create role test", "feature/revoke_role.feature", c.InitializeScenario)
+	c.apiTest.InitializeTest(t, "revoke role test", "feature/revoke_role.feature", c.InitializeScenario)
 }
 
 func (r *revokeRoleTest) aPermissionsRegisteredOnTheDomain(permission *godog.Table) error {
@@ -297,7 +297,7 @@ func (r *revokeRoleTest) theRoleShouldSuccessfullyRevoked() error {
 
 func (r *revokeRoleTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
-		r.apiTest.Method = http.MethodDelete
+		r.apiTest.Method = http.MethodPatch
 		return ctx, nil
 	})
 	ctx.After(func(ctx context.Context, sc *godog.Scenario, err error) (context.Context, error) {

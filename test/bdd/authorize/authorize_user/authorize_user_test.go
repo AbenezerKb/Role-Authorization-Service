@@ -166,7 +166,7 @@ func (a *authorizeUserTest) iSendARequestToAuthorizeTheUser() error {
 	return nil
 }
 
-func (a *authorizeUserTest) iWantToAuthorizeTheUserToPerformTheBeloweActionOnTheResource(req *godog.Table) error {
+func (a *authorizeUserTest) iWantToAuthorizeTheUserToPerformTheBelowActionOnTheResource(req *godog.Table) error {
 	body, err := a.apiTest.ReadRow(req, nil, false)
 	if err != nil {
 		return err
@@ -262,7 +262,7 @@ func (a *authorizeUserTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^the user is not granted any role$`, a.theUserIsNotGrantedAnyRole)
 	ctx.Step(`^the user should be denied$`, a.theUserShouldBeDenied)
 	ctx.Step(`^i send a request to authorize the user$`, a.iSendARequestToAuthorizeTheUser)
-	ctx.Step(`^I  want to authorize the user to perform the belowe action on the resource:$`, a.iWantToAuthorizeTheUserToPerformTheBeloweActionOnTheResource)
+	ctx.Step(`^I  want to authorize the user to perform the below action on the resource:$`, a.iWantToAuthorizeTheUserToPerformTheBelowActionOnTheResource)
 	ctx.Step(`^The user is granted with the "([^"]*)" role$`, a.theUserIsGrantedWithTheRole)
 	ctx.Step(`^the user should be allowed$`, a.theUserShouldBeAllowed)
 	ctx.Step(`^There is a user registered on the system:$`, a.thereIsAUserRegisteredOnTheSystem)
