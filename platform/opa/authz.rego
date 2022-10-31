@@ -6,8 +6,18 @@ allow {
 	authorize
 }
 
+allow {
+	IsAdmin
+}
+
 authorize {
 	check_user_permissions[permission]
+	match(permission)
+}
+
+IsAdmin {
+	not authorize
+	check_admin_permissions[permission]
 	match(permission)
 }
 
@@ -34,14 +44,22 @@ check_tenant = tenant {
 	tenant.status = "ACTIVE"
 }
 
-check_tenant = tenant {
-	not check_service.tenants[input.tenant]
+check_admin_tenant = tenant {
 	tenant := check_service.tenants.administrator
 	tenant.status = "ACTIVE"
 }
 
 check_user = user {
 	user := check_tenant.users[input.subject]
+	user_check(user)
+}
+
+check_admin_user = user {
+	user := check_admin_tenant.users[input.subject]
+	user_check(user)
+}
+
+user_check(user) {
 	user.status = "ACTIVE"
 	user.user_role_status
 }
@@ -51,8 +69,22 @@ check_user_role[role] {
 	role.status = "ACTIVE"
 }
 
+check_admin_role[role] {
+	role := check_admin_user.role[_]
+	role.status = "ACTIVE"
+}
+
 check_user_permissions[permission] {
 	permission := check_user_role[role].permissions[_]
+	check_permission(permission)
+}
+
+check_admin_permissions[permission] {
+	permission := check_admin_role[role].permissions[_]
+	check_permission(permission)
+}
+
+check_permission(permission) {
 	permission.status = "ACTIVE"
 	permission.statement.effect == "allow"
 }
