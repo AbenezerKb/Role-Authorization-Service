@@ -47,4 +47,5 @@ type Role interface {
 	IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (bool, error)
 	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
 	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
+	DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, error)
 }

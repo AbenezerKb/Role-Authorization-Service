@@ -10,6 +10,7 @@ import (
 	"2f-authorization/platform/logger"
 	"context"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -132,4 +133,24 @@ func (r *role) RevokeRole(ctx context.Context, param dto.TenantUsersRole) error 
 	}
 	return nil
 
+}
+
+func (r *role) DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, error) {
+	role, err := r.db.DeleteRole(ctx, roleId)
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "role does not exists")
+			r.log.Warn(ctx, "unable to find the role", zap.Error(err), zap.String(("role-id"), roleId.String()))
+			return nil, err
+		}
+		err := errors.ErrDBDelError.Wrap(err, "unable to delete the role")
+		r.log.Warn(ctx, "unable to delete the role", zap.Error(err), zap.String("role-id", roleId.String()))
+		return nil, err
+	}
+	return &dto.Role{
+		ID:        role.ID,
+		Name:      role.Name,
+		CreatedAt: role.CreatedAt,
+		UpdatedAt: role.UpdatedAt,
+	}, nil
 }
