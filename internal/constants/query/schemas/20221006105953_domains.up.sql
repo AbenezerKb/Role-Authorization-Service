@@ -5,8 +5,7 @@ CREATE TABLE "domains" (
     "deleted_at" timestamptz,
     "service_id" UUID NOT NULL,
     "created_at" timestamptz NOT NULL default now(),
-    "updated_at" timestamptz NOT NULL default now(),
-    UNIQUE("name","service_id","deleted_at") where deleted_at IS NULL
+    "updated_at" timestamptz NOT NULL default now()
 );
 
 ALTER TABLE "domains" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id") ON DELETE CASCADE;
