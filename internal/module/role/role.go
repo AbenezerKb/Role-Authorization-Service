@@ -143,3 +143,15 @@ func (r *role) UpdateRole(ctx context.Context, param dto.UpdateRole) error {
 
 	return nil
 }
+
+func (r *role) DeleteRole(ctx context.Context, param string) (*dto.Role, error) {
+	roleId, err := uuid.Parse(param)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid id")
+		r.log.Warn(ctx, "invalid input", zap.Error(err), zap.String("role-id", param))
+		return nil, err
+	}
+
+	return r.rolePersistence.DeleteRole(ctx, roleId)
+
+}
