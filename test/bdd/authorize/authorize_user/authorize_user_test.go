@@ -85,7 +85,7 @@ func (a *authorizeUserTest) iHaveARoleInTenantWithThePermissionsBelow(role, tena
 		},
 		{
 			WithName: "statement",
-			Columns:  []string{"action", "resource", "effect"},
+			Columns:  []string{"action", "resource", "effect", "fields"},
 			Kind:     src.Object,
 		},
 	},
@@ -93,9 +93,33 @@ func (a *authorizeUserTest) iHaveARoleInTenantWithThePermissionsBelow(role, tena
 	if err != nil {
 		return err
 	}
+	stbody, err := a.apiTest.ReadRow(permissions, []src.Type{
+		{
+			Column: "action",
+			Kind:   src.Any,
+		},
+		{
+			Column: "resource",
+			Kind:   src.Any,
+		},
+		{
+			Column: "effect",
+			Kind:   src.Any,
+		},
+		{
+			Column: "fields",
+			Kind:   src.Array,
+		},
+	},
+		true)
+	if err != nil {
+		return err
+	}
 	a.apiTest.UnmarshalJSON([]byte(body), &a.permission)
+	st := dto.Statement{}
+	a.apiTest.UnmarshalJSON([]byte(stbody), &st)
 
-	statement, _ := a.permission.Statement.Value()
+	statement, _ := st.Value()
 	var result uuid.UUID
 	result, err = a.DB.CreateOrGetPermission(context.Background(), db.CreateOrGetPermissionParams{
 		Name:        a.permission.Name,

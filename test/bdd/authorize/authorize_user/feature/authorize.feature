@@ -11,8 +11,8 @@ Feature: Authorize user
             | domain | tenant_name |
             | vendor | vendor_1    |
         And i have a role "admin" in tenant "vendor_1" with the permissions below
-            | name           | description    | effect | action | resource                    | domains |
-            | delete service | delete service | allow  | Post   | admin:service:deleteservice | vendor  |
+            | name           | description    | effect | action | resource                    | fields  | domains |
+            | delete service | delete service | allow  | Post   | admin:service:deleteservice | * | vendor  |
         And There is a user registered on the system:
             | user_id                              |
             | 4a2650b5-1c1c-437b-adc5-7d5d24a91126 |
