@@ -43,7 +43,7 @@ func (o *opa) Authorize(ctx *gin.Context) {
 	err := ctx.ShouldBind(&req)
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		o.logger.Info(ctx, "couldn't bind to dto.CreateRole body", zap.Error(err))
+		o.logger.Info(ctx, "couldn't bind to dto.Request body", zap.Error(err))
 		_ = ctx.Error(err)
 		return
 	}
