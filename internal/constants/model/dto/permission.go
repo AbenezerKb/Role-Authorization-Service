@@ -54,6 +54,8 @@ type Statement struct {
 	Resource string `json:"resource"`
 	// Action is the urn for the action(method) the user is taking on the resource
 	Action string `json:"action"`
+	// Fields are the attributes of the resource
+	Fields []string `json:"fields"`
 }
 
 func (a Statement) Value() ([]byte, error) {

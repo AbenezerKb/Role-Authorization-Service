@@ -15,6 +15,8 @@ type Request struct {
 	Service string `json:"service"`
 	// Action  is the urn of the action the user is taking on the resource.
 	Action string `json:"action"`
+	// Fields are the attributes of the entity.
+	Fields []string `json:"fields"`
 }
 
 func (r Request) Validate() error {
