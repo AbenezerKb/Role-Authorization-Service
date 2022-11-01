@@ -154,6 +154,11 @@ definitions:
           Effect is the effect that's taken on the permission
           It is either allow or deny
         type: string
+      fields:
+        description: Fields are the attributes of the resource
+        items:
+          type: string
+        type: array
       id:
         description: |-
           ID is the unique identifier for the service.
@@ -215,6 +220,11 @@ definitions:
           Effect is the effect that's taken on the permission
           It is either allow or deny
         type: string
+      fields:
+        description: Fields are the attributes of the resource
+        items:
+          type: string
+        type: array
       resource:
         description: Resource is the urn for the path that is being accessed
         type: string
@@ -267,6 +277,11 @@ definitions:
       action:
         description: Action  is the urn of the action the user is taking on the resource.
         type: string
+      fields:
+        description: Fields are the attributes of the entity.
+        items:
+          type: string
+        type: array
       resource:
         description: Resource is the urn for the resource the user is trying to take
           action on.

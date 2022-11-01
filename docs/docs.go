@@ -1277,6 +1277,13 @@ const docTemplate = `{
                     "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
                     "type": "string"
                 },
+                "fields": {
+                    "description": "Fields are the attributes of the resource",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "id": {
                     "description": "ID is the unique identifier for the service.\nIt is automatically generated when the permission is registered.",
                     "type": "string"
@@ -1352,6 +1359,13 @@ const docTemplate = `{
                     "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
                     "type": "string"
                 },
+                "fields": {
+                    "description": "Fields are the attributes of the resource",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "resource": {
                     "description": "Resource is the urn for the path that is being accessed",
                     "type": "string"
@@ -1421,6 +1435,13 @@ const docTemplate = `{
                 "action": {
                     "description": "Action  is the urn of the action the user is taking on the resource.",
                     "type": "string"
+                },
+                "fields": {
+                    "description": "Fields are the attributes of the entity.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "resource": {
                     "description": "Resource is the urn for the resource the user is trying to take action on.",
