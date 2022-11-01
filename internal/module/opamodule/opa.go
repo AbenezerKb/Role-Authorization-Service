@@ -33,6 +33,10 @@ func (o *opamodule) Authorize(ctx context.Context, req model.Request) (bool, err
 		return false, err
 	}
 
+	if len(req.Fields) == 0 {
+		req.Fields = []string{"*"}
+	}
+
 	if err := req.Validate(); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		o.logger.Info(ctx, "invalid input", zap.Error(err))

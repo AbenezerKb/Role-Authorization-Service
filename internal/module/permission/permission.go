@@ -37,6 +37,10 @@ func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermi
 		return err
 	}
 
+	if len(param.Statement.Fields) == 0 {
+		param.Statement.Fields = []string{"*"}
+	}
+
 	if err = param.Validate(); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		p.log.Info(ctx, "invalid input", zap.Error(err))
@@ -46,7 +50,7 @@ func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermi
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
