@@ -9,6 +9,7 @@ import (
 	"2f-authorization/platform/argon"
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -105,6 +106,11 @@ func (a *authMiddeleware) Authorize() gin.HandlerFunc {
 			Action:   ctx.GetHeader("x-action"),
 			Resource: ctx.GetHeader("x-resource"),
 			Service:  ctx.GetString("x-service-id"),
+			Fields:   strings.Split(ctx.GetHeader("x-fields"), ","),
+		}
+
+		if len(req.Fields) == 0 {
+			req.Fields = []string{"*"}
 		}
 
 		if err := req.Validate(); err != nil {
