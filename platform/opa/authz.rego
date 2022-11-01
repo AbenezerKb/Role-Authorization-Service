@@ -1,5 +1,7 @@
 package authz
 
+import future.keywords.every
+
 default allow := false
 
 allow {
@@ -24,6 +26,7 @@ IsAdmin {
 match(permission) {
 	has_action(permission)
 	has_resource(permission)
+	has_fields(permission)
 }
 
 match(permission) {
@@ -138,28 +141,28 @@ wildcard_match(a, b) {
 #
 # Resource matching
 #
-resource_matches(in, stored) {
+resource_matches(inp, stored) {
 	no_variables(stored)
 	not_wildcard(stored)
-	in == stored
+	inp == stored
 }
 
-resource_matches(in, stored) {
+resource_matches(inp, stored) {
 	no_variables(stored)
 	wildcard(stored)
-	wildcard_match(in, stored)
+	wildcard_match(inp, stored)
 }
 
-resource_matches(in, stored) {
+resource_matches(inp, stored) {
 	variables(stored)
 	not_wildcard(stored)
-	in == expand(stored)
+	inp == expand(stored)
 }
 
-resource_matches(in, stored) {
+resource_matches(inp, stored) {
 	variables(stored)
 	wildcard(stored)
-	wildcard_match(in, expand(stored))
+	wildcard_match(inp, expand(stored))
 }
 
 resource_matches(_, "*") = true
@@ -169,12 +172,25 @@ has_resource(permission) {
 	resource_matches(input.resource, statement_resource)
 }
 
-action_matches(in, stored) {
-	no_wildcard(stored)
-	in == stored
+fields_matches(_, ["*"]) = true
+
+fields_matches(inp, stored) {
+	every i in inp {
+		i = stored[_]
+	}
 }
 
-action_matches(in, stored) = action_match(split(stored, ":"), split(in, ":"))
+has_fields(permission) {
+	statement_fields := permission.statement.fields
+	fields_matches(input.fields, statement_fields)
+}
+
+action_matches(inp, stored) {
+	no_wildcard(stored)
+	inp == stored
+}
+
+action_matches(inp, stored) = action_match(split(stored, ":"), split(inp, ":"))
 
 action_match([service, "*"], [service, _, _]) = true
 

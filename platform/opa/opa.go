@@ -62,6 +62,7 @@ func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
 		"action":   req.Action,
 		"service":  req.Service,
 		"tenant":   req.Tenant,
+		"fields":   req.Fields,
 	}
 
 	query, err := o.prepare(ctx, "data.authz.allow")
