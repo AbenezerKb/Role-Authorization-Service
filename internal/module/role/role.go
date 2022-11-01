@@ -84,11 +84,11 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "role already exists", zap.String("name", param.RoleID.String()))
 		return errors.ErrDataExists.Wrap(err, "user  with this role  already exists")
 	}
-	if err := r.opa.Refresh(ctx, fmt.Sprintf("Assigning [%v]  role  to user  - [%v]", param.RoleID, param.UserID)); err != nil {
+	if err := r.rolePersistence.AssignRole(ctx, param); err != nil {
 		return err
 	}
-	return r.rolePersistence.AssignRole(ctx, param)
 
+	return r.opa.Refresh(ctx, fmt.Sprintf("Assigning [%v]  role  to user  - [%v]", param.RoleID, param.UserID))
 }
 
 func (r *role) RevokeRole(ctx context.Context, param dto.TenantUsersRole) error {
@@ -152,6 +152,14 @@ func (r *role) DeleteRole(ctx context.Context, param string) (*dto.Role, error) 
 		return nil, err
 	}
 
-	return r.rolePersistence.DeleteRole(ctx, roleId)
+	role, err := r.rolePersistence.DeleteRole(ctx, roleId)
+	if err != nil {
+		return nil, err
+	}
 
+	if err := r.opa.Refresh(ctx, fmt.Sprintf("Deleting role with id [%v]", param)); err != nil {
+		return nil, err
+	}
+
+	return role, nil
 }
