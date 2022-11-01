@@ -70,7 +70,7 @@ with _service as (
                              statement,service_id)
                  select 'manage-all',
                         'super admin can perform any action on any domain',
-                        json_build_object('action', '*', 'resource', '*', 'effect', 'allow'),service_id from _service
+                        '{"action":"*","resource":"*","effect":"allow","fields":["*"]}',service_id from _service
                  returning id as permission_id
      ),
      _user as(
