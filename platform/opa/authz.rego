@@ -107,8 +107,8 @@ variables(a) {
 # 'expanded'.
 # Note: currently, only expands the one variable we know: ${a2:username}.
 expand(orig) = expanded {
-	split(input.subjects[_], ":", ["user", _, username])
-	expanded := replace(orig, "${a2:username}", username)
+	# split(input.subjects[_], ":", ["user", _, username])
+	expanded := replace(orig, "${a2:username}", input.subject)
 }
 
 no_wildcard(a) {
