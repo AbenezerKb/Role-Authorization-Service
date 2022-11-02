@@ -51,3 +51,6 @@ and tenant_users_roles.user_id = (
 
 -- name: DeleteRole :one
 Update roles set deleted_at=now() where roles.id=$1 AND deleted_at IS NULL returning name,id,created_at,updated_at;
+
+-- name: ListRoles :many
+select r.name,r.created_at,r.id,r.status from roles r join tenants t on r.tenant_id=t.id where t.tenant_name=$1 AND t.service_id=$2 AND t.deleted_at IS NULL AND r.deleted_at IS NULL;

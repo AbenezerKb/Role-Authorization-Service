@@ -138,6 +138,47 @@ func (q *Queries) IsRoleAssigned(ctx context.Context, arg IsRoleAssignedParams) 
 	return count_rows, err
 }
 
+const listRoles = `-- name: ListRoles :many
+select r.name,r.created_at,r.id,r.status from roles r join tenants t on r.tenant_id=t.id where t.tenant_name=$1 AND t.service_id=$2 AND t.deleted_at IS NULL AND r.deleted_at IS NULL
+`
+
+type ListRolesParams struct {
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+}
+
+type ListRolesRow struct {
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	ID        uuid.UUID `json:"id"`
+	Status    Status    `json:"status"`
+}
+
+func (q *Queries) ListRoles(ctx context.Context, arg ListRolesParams) ([]ListRolesRow, error) {
+	rows, err := q.db.Query(ctx, listRoles, arg.TenantName, arg.ServiceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListRolesRow
+	for rows.Next() {
+		var i ListRolesRow
+		if err := rows.Scan(
+			&i.Name,
+			&i.CreatedAt,
+			&i.ID,
+			&i.Status,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removePermissionsFromRole = `-- name: RemovePermissionsFromRole :exec
 DELETE FROM role_permissions WHERE role_id=$1 AND NOT permission_id=any($2::uuid[])
 `
