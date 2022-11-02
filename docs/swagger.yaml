@@ -321,7 +321,7 @@ definitions:
           It is set to "administrator" if it is not provided.
         type: string
     type: object
-host: localhost:8000
+host: 206.189.54.235:5184
 info:
   contact:
     email: info@1f-capital.com
@@ -1027,7 +1027,7 @@ paths:
       - BasicAuth: []
       summary: create tenant.
       tags:
-      - tenant
+      - tenants
   /tenants/permissions:
     post:
       consumes:
