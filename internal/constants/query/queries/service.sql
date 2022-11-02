@@ -119,3 +119,5 @@ DELETE FROM services WHERE id = $1;
 -- name: SoftDeleteService :one
 UPDATE services set deleted_at = now() WHERE id = $1 AND deleted_at IS NULL returning *;
 
+-- name: UpdateServiceStatus :one
+UPDATE services SET status = $1 WHERE id = $2 AND deleted_at IS NULL RETURNING name;
