@@ -154,3 +154,22 @@ func (r *role) DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, err
 		UpdatedAt: role.UpdatedAt,
 	}, nil
 }
+
+func (r *role) ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dto.Role, error) {
+	roles, err := r.db.ListRoles(ctx, dbinstance.ListRolesParams{
+		ServiceID:  param.ServiceID,
+		TenantName: param.TenantName,
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no roles found")
+			r.log.Info(ctx, "no roles were found", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
+			return []dto.Role{}, err
+		} else {
+			err = errors.ErrReadError.Wrap(err, "error reading roles")
+			r.log.Error(ctx, "error reading roles", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
+			return []dto.Role{}, err
+		}
+	}
+	return roles, nil
+}
