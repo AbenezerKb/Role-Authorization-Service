@@ -23,7 +23,6 @@ type getRoleTest struct {
 	createdService        dto.CreateServiceResponse
 	domain                dto.Domain
 	tenant                string
-	createRole            dto.CreateRole
 	permission            dto.CreatePermission
 	createdRoleResponseId uuid.UUID
 	createdPermissionId   uuid.UUID
