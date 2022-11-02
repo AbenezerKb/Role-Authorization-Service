@@ -29,7 +29,7 @@ Feature: Create service
         Given i am a system user
         When i send the request:
             | name   | user_id  |
-            | <name> | <user_id |
+            | <name> | <user_id> |
         Then the request should fail with error message "<message>"
         Examples:
             | name | user_id                              | message                                  |
