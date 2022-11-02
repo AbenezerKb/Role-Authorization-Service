@@ -7,6 +7,7 @@ import (
 type Service interface {
 	CreateService(ctx *gin.Context)
 	DeletService(ctx *gin.Context)
+	UpdateServiceStatus(ctx *gin.Context)
 }
 type Domain interface {
 	CreateDomain(ctx *gin.Context)

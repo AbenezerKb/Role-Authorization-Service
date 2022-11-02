@@ -90,3 +90,31 @@ func (s *service) DeletService(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
+
+// UpdateServiceStatus updates service status
+// @Summary      changes service status
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @param status body dto.UpdateServiceStatus true "status"
+// @Success      200 boolean true "successfully updates the service status"
+// @Failure      400  {object}  model.ErrorResponse
+// @Router       /services/status [patch]
+// @Security	 BasicAuth
+func (s *service) UpdateServiceStatus(ctx *gin.Context) {
+	updateStatusParam := dto.UpdateServiceStatus{}
+	err := ctx.ShouldBind(&updateStatusParam)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		s.logger.Info(ctx, "unable to bind service status", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := s.serviceModule.UpdateServiceStatus(ctx, updateStatusParam); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
