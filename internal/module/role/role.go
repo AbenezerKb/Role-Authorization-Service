@@ -163,3 +163,33 @@ func (r *role) DeleteRole(ctx context.Context, param string) (*dto.Role, error) 
 
 	return role, nil
 }
+
+func (r *role) ListRoles(ctx context.Context) ([]dto.Role, error) {
+	var err error
+	param := dto.GetAllRolesReq{}
+	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
+		return nil, err
+	}
+	var ok bool
+	param.TenantName, ok = ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return nil, err
+	}
+
+	if err = param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err))
+		return nil, err
+	}
+
+	roles, err := r.rolePersistence.ListAllRoles(ctx, param)
+	if err != nil {
+		return nil, err
+	}
+	return roles, nil
+}
