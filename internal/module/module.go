@@ -23,6 +23,7 @@ type Permission interface {
 
 type Tenant interface {
 	CreateTenant(ctx context.Context, param dto.CreateTenent) error
+	RegsiterTenantPermission(ctx context.Context, param dto.RegisterTenantPermission) (*dto.Permission, error)
 }
 type User interface {
 	RegisterUser(ctx context.Context, param dto.RegisterUser) error
