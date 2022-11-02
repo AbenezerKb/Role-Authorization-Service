@@ -93,3 +93,23 @@ func (s *service) GetServiceById(ctx context.Context, param dto.Service) (*dto.S
 		Password: service.Password,
 	}, nil
 }
+
+func (s *service) UpdateServicePersistence(ctx context.Context, param dto.UpdateServiceStatus) error {
+	_, err := s.db.UpdateServiceStatus(ctx, db.UpdateServiceStatusParams{
+		Status: db.Status(param.Status),
+		ID:     param.ServiceID,
+	})
+
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "service not found")
+			s.log.Error(ctx, "error changing service's status", zap.Error(err), zap.String("service", param.ServiceID.String()), zap.String("service-status", param.Status))
+			return err
+		} else {
+			err = errors.ErrUpdateError.Wrap(err, "error changing service status")
+			s.log.Error(ctx, "error changing service's status", zap.Error(err), zap.String("service", param.ServiceID.String()), zap.String("service-status", param.Status))
+			return err
+		}
+	}
+	return nil
+}

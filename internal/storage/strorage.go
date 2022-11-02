@@ -16,6 +16,7 @@ type Service interface {
 	IsServiceExist(ctx context.Context, param dto.CreateService) (bool, error)
 	SoftDeleteService(ctx context.Context, param dto.Service) error
 	GetServiceById(ctx context.Context, param dto.Service) (*dto.Service, error)
+	UpdateServicePersistence(ctx context.Context, param dto.UpdateServiceStatus) error
 }
 
 type Domain interface {
