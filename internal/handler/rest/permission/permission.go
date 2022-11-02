@@ -58,7 +58,7 @@ func (p *permission) CreatePermission(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusCreated, nil, nil)
 }
 
-// ListPermissions is used to list new permissions.
+// ListPermissions is used to get the list of permissions under the tenant.
 // @Summary      returns a list of permission.
 // @Description  this function return a list of permissions that are under my domin.
 // @Tags         permissions
