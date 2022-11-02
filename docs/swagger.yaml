@@ -176,9 +176,30 @@ definitions:
       status:
         description: Status is the status of the permission.
         type: string
+      tenant:
+        description: |-
+          Tenant is the scope the permissions is registred in.
+          It is set to null unless it's created by a tenant
+        type: string
       updated_at:
         description: UpdatedAt is the time this permission was last updated.
         type: string
+    type: object
+  dto.RegisterTenantPermission:
+    properties:
+      description:
+        description: Description is the description of the permission being created
+        type: string
+      name:
+        description: Name is the name of the permission being created
+        type: string
+      service_id:
+        description: ServiceID is the id of the service the permission belongs to
+        type: string
+      statement:
+        $ref: '#/definitions/dto.Statement'
+        description: Statement is an object that holds the action, resource and effect
+          of the permission being created
     type: object
   dto.RegisterUser:
     properties:
@@ -956,6 +977,61 @@ paths:
       summary: create tenant.
       tags:
       - tenant
+  /tenants/permissions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: new permission request body
+        in: body
+        name: creatnewpermission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterTenantPermission'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: successfully register the permission
+          schema:
+            $ref: '#/definitions/dto.Permission'
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized service
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: service is not active
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: register a new permission.
+      tags:
+      - tenants
   /users:
     post:
       consumes:

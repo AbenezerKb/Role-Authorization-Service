@@ -990,6 +990,90 @@
                 }
             }
         },
+        "/tenants/permissions": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tenants"
+                ],
+                "summary": "register a new permission.",
+                "parameters": [
+                    {
+                        "description": "new permission request body",
+                        "name": "creatnewpermission",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterTenantPermission"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successfully register the permission",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Permission"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized service",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "service is not active",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "security": [
@@ -1296,9 +1380,34 @@
                     "description": "Status is the status of the permission.",
                     "type": "string"
                 },
+                "tenant": {
+                    "description": "Tenant is the scope the permissions is registred in.\nIt is set to null unless it's created by a tenant",
+                    "type": "string"
+                },
                 "updated_at": {
                     "description": "UpdatedAt is the time this permission was last updated.",
                     "type": "string"
+                }
+            }
+        },
+        "dto.RegisterTenantPermission": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Description is the description of the permission being created",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the name of the permission being created",
+                    "type": "string"
+                },
+                "service_id": {
+                    "description": "ServiceID is the id of the service the permission belongs to",
+                    "type": "string"
+                },
+                "statement": {
+                    "description": "Statement is an object that holds the action, resource and effect of the permission being created",
+                    "$ref": "#/definitions/dto.Statement"
                 }
             }
         },
