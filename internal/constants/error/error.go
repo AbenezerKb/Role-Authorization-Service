@@ -60,6 +60,10 @@ var Error = []ErrorType{
 		ErrorCode: http.StatusInternalServerError,
 		ErrorType: ErrInternalServerError,
 	},
+	{
+		ErrorCode: http.StatusInternalServerError,
+		ErrorType: ErrUpdateError,
+	},
 }
 
 var (
@@ -87,4 +91,5 @@ var (
 	ErrAuthError            = errorx.NewType(unauthorized, "you are not authorized.")
 	ErrAcessError           = errorx.NewType(unauthorized, "Unauthorized", AccessDenied)
 	ErrInternalServerError  = errorx.NewType(serverError, "internal server error")
+	ErrUpdateError          = errorx.NewType(dbError, "could not update db")
 )
