@@ -54,3 +54,38 @@ func (t *tenant) CreateTenant(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusCreated, nil, nil)
 
 }
+
+// RegisterTenantPermission is used to register new permissions under the tenant.
+// @Summary      register a new permission.
+// @Tags         tenants
+// @Accept       json
+// @Produce      json
+// @param 		 creatnewpermission body dto.RegisterTenantPermission true "new permission request body"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      201  {object} dto.Permission "successfully register the permission"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized service"
+// @Failure      403  {object}  model.ErrorResponse "service is not active"
+// @Router       /tenants/permissions [post]
+// @security 	 BasicAuth
+func (t *tenant) RegisterTenantPermission(ctx *gin.Context) {
+	permission := dto.RegisterTenantPermission{}
+	err := ctx.ShouldBind(&permission)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		t.logger.Info(ctx, "couldn't bind to dto.Service body", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	result, err := t.tenantModule.RegsiterTenantPermission(ctx, permission)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusCreated, result, nil)
+}
