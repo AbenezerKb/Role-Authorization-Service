@@ -28,7 +28,7 @@ func Init(log logger.Logger, tenantModule module.Tenant) rest.Tenant {
 // CreateTenant is used to create tenant.
 // @Summary      create tenant.
 // @Description  this function create tenant if it is not exist in the service.
-// @Tags         tenant
+// @Tags         tenants
 // @Accept       json
 // @Produce      json
 // @param 		 createtenant body dto.CreateTenent true "create tenant request body"
