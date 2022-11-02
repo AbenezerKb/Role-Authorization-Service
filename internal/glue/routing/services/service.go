@@ -29,6 +29,12 @@ func InitRoute(group *gin.RouterGroup, service rest.Service, log logger.Logger, 
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodPatch,
+			Path:        "/status",
+			Handler:     service.UpdateServiceStatus,
+			UnAuthorize: true,
+		},
 	}
 	routing.RegisterRoutes(services, servicesRoutes)
 }
