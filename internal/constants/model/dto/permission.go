@@ -2,6 +2,7 @@ package dto
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -21,6 +22,9 @@ type Permission struct {
 	Statement `json:"statement,omitempty"`
 	// ServiceID is the id of the service the permission belongs to
 	ServiceID uuid.UUID `json:"service_id,omitempty"`
+	// Tenant is the scope the permissions is registred in.
+	// It is set to null unless it's created by a tenant
+	Tenant string `json:"tenant,omitempty"`
 	// Domain is an array that holds the id of the domains the permission is accessible at
 	Domain []uuid.UUID `json:"domains,omitempty"`
 	// Status is the status of the permission.
@@ -60,6 +64,15 @@ type Statement struct {
 
 func (a Statement) Value() ([]byte, error) {
 	return json.Marshal(a)
+}
+
+func (a *Statement) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &a)
 }
 
 func (c CreatePermission) Validate() error {
@@ -105,4 +118,23 @@ func validateDomain(id interface{}) error {
 	}
 
 	return nil
+}
+
+type RegisterTenantPermission struct {
+	// Name is the name of the permission being created
+	Name string `json:"name"`
+	// Description is the description of the permission being created
+	Description string `json:"description"`
+	// Statement is an object that holds the action, resource and effect of the permission being created
+	Statement Statement `json:"statement"`
+	// ServiceID is the id of the service the permission belongs to
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
+func (c RegisterTenantPermission) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.Name, validation.Required.Error("permission name is required")),
+		validation.Field(&c.Description, validation.Required.Error("permission description is required")),
+		validation.Field(&c.Statement),
+	)
 }
