@@ -90,3 +90,16 @@ func (t TenantUsersRole) Validate() error {
 		validation.Field(&t.RoleID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("Role id required")),
 	)
 }
+
+type GetAllRolesReq struct {
+	//TenantName is the name of the tenant
+	TenantName string `json:"tenant_name"`
+	//ServiceID  is the service id of service.
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
+func (g GetAllRolesReq) Validate() error {
+	return validation.ValidateStruct(&g,
+		validation.Field(&g.TenantName, validation.Required.Error("tenant name can not be blank")),
+		validation.Field(&g.ServiceID, validation.NotIn(uuid.Nil.String()).Error("service id is required")))
+}
