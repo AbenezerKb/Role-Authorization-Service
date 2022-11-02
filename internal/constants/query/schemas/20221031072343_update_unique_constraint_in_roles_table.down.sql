@@ -1,1 +1,1 @@
-drop index roles_name_tenant_id_deleted_at cascade;
+drop index roles_name_tenant_id_key cascade;

@@ -1,2 +1,2 @@
-drop index users_user_id_service_id_deleted_at_key cascade;
-drop index tenant_users_roles_user_id_role_id_tenant_id_deleted_at_key cascade;
+drop index users_user_id_service_id_at_key cascade;
+drop index tenant_users_roles_user_id_role_id_tenant_id_key cascade;
