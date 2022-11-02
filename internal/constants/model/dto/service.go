@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"2f-authorization/internal/constants"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -57,5 +58,19 @@ func (s CreateService) Validate() error {
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.Name, validation.Required.Error("service name is required"), validation.Length(3, 32).Error("name must be between 3 and 32 characters")),
 		validation.Field(&s.UserId, validation.Required.Error("user id is required"), is.UUID.Error("invalid user id")),
+	)
+}
+
+type UpdateServiceStatus struct {
+	// Status is new status that will replace old status of the service
+	Status string `json:"status"`
+	// ServiceID is the unique identifier for the service.
+	ServiceID uuid.UUID `json:"service"`
+}
+
+func (u UpdateServiceStatus) Validate() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Status, validation.Required.Error("status is required"), validation.In(constants.Active, constants.InActive).Error("invalid status")),
+		validation.Field(&u.ServiceID, validation.NotIn(uuid.Nil.String()).Error("service id is required")),
 	)
 }
