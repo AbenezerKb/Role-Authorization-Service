@@ -228,3 +228,29 @@ func (r *role) DeleteRole(ctx *gin.Context) {
 	}
 	constants.SuccessResponse(ctx, http.StatusOK, role, nil)
 }
+
+// ListRoles is used to get the list of roles under the tenant.
+// @Summary      returns a list of roles.
+// @Description  this function return a list of roles.
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  {object} []dto.Role
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /roles [get]
+// @security 	 BasicAuth
+func (r *role) ListRoles(ctx *gin.Context) {
+	result, err := r.roleModule.ListRoles(ctx)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
+}
