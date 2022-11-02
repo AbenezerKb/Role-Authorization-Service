@@ -321,7 +321,7 @@ definitions:
           It is set to "administrator" if it is not provided.
         type: string
     type: object
-host: 206.189.54.235:5184
+host: localhost:8000
 info:
   contact:
     email: info@1f-capital.com
@@ -573,6 +573,57 @@ paths:
       tags:
       - permissions
   /roles:
+    get:
+      consumes:
+      - application/json
+      description: this function return a list of roles.
+      parameters:
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Role'
+            type: array
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: returns a list of roles.
+      tags:
+      - roles
     post:
       consumes:
       - application/json
