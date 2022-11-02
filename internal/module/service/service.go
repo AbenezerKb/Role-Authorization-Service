@@ -71,3 +71,22 @@ func (s *service) DeleteService(ctx context.Context, param dto.Service) error {
 
 	return nil
 }
+
+func (s *service) UpdateServiceStatus(ctx context.Context, param dto.UpdateServiceStatus) error {
+
+	if err := param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		s.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
+	if err := s.servicePersistence.UpdateServicePersistence(ctx, param); err != nil {
+		return err
+	}
+
+	if err := s.opa.Refresh(ctx, fmt.Sprintf("Updating service [%v] with status [%v]", param.ServiceID.String(), param.Status)); err != nil {
+		return err
+	}
+
+	return nil
+}
