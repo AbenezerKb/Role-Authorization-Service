@@ -33,6 +33,8 @@ type Permission interface {
 type Tenant interface {
 	CreateTenant(ctx context.Context, param dto.CreateTenent) error
 	IsTenantExist(ctx context.Context, param dto.CreateTenent) (bool, error)
+	IsPermissionExistsInTenant(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (bool, error)
+	RegsiterTenantPermission(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (*dto.Permission, error)
 }
 type User interface {
 	RegiseterUser(ctx context.Context, param dto.RegisterUser) error
