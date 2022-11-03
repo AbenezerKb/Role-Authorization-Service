@@ -32,6 +32,15 @@ func InitRoute(group *gin.RouterGroup, permission rest.Permission, log logger.Lo
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodPost,
+			Path:        "/inherit",
+			Handler:     permission.CreatePermissionDependency,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+			},
+		},
 	}
 	routing.RegisterRoutes(permissions, permissionRoutes)
 }
