@@ -84,3 +84,31 @@ func (p *permission) ListPermissions(ctx context.Context) ([]dto.Permission, err
 	}
 	return permission, nil
 }
+
+func (p *permission) CreatePermissionDependency(ctx context.Context, param []dto.CreatePermissionDependency) error {
+	var err error
+	serviceId, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	for _, v := range param {
+		if err = v.Validate(); err != nil {
+			err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+			p.log.Info(ctx, "invalid input", zap.Error(err))
+			return err
+		}
+
+		if err := p.permissionPersistence.CreatePermissionDependency(ctx, v, serviceId); err != nil {
+			return err
+		}
+	}
+
+	if err := p.opa.Refresh(ctx, "Created an inheritance between permissions"); err != nil {
+		return err
+	}
+
+	return nil
+}
