@@ -83,3 +83,33 @@ func (p *permission) ListPermissions(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
 }
+
+// CreatePermissionDependency is used to create dependency between permissions.
+// @Summary      create permission dependency.
+// @Description  This function creates a dependency between permission.
+// @Description  If a permission inherites a permission and a user is granted the hair permission then the user implicitly granted the inherited permission
+// @Tags         permissions
+// @Accept       json
+// @Produce      json
+// @Success      200  boolean true "successfully created dependency"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /permissions/inherit [post]
+// @security 	 BasicAuth
+func (p *permission) CreatePermissionDependency(ctx *gin.Context) {
+	createPermissionInheritance := []dto.CreatePermissionDependency{}
+	err := ctx.ShouldBind(&createPermissionInheritance)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.logger.Info(ctx, "couldn't bind to CreatePermissionInherit  body", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := p.permissionModule.CreatePermissionDependency(ctx, createPermissionInheritance); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
