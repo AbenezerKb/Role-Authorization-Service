@@ -138,3 +138,25 @@ func (c RegisterTenantPermission) Validate() error {
 		validation.Field(&c.Statement),
 	)
 }
+
+type CreatePermissionDependency struct {
+	// PermissionName is the name of the permission.
+	PermissionName string `json:"permission"`
+	// InheritedPermissions is the list of permissions' name the permission is inheriting.
+	InheritedPermissions []string `json:"inherited_permissions"`
+}
+
+func (c CreatePermissionDependency) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.PermissionName, validation.Required.Error("permission is required")),
+		validation.Field(&c.InheritedPermissions, validation.By(validatePermissionsName), validation.Required.Error("permission description is required")),
+	)
+}
+func validatePermissionsName(value interface{}) error {
+	p_id := value.([]string)
+	if len(p_id) == 0 {
+		return fmt.Errorf("inherited permissions are required")
+	}
+
+	return nil
+}
