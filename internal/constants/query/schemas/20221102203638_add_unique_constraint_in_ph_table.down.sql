@@ -1,0 +1,1 @@
+drop index permissions_hierarchy_parent_child_key cascade;
