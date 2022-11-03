@@ -215,7 +215,7 @@ func (q *Queries) SoftDeleteService(ctx context.Context, id uuid.UUID) (Service,
 }
 
 const updateServiceStatus = `-- name: UpdateServiceStatus :one
-UPDATE services SET status = $1 WHERE id = $2 AND deleted_at IS NULL RETURNING name,status
+UPDATE services SET status = $1 WHERE id = $2 AND deleted_at IS NULL RETURNING name
 `
 
 type UpdateServiceStatusParams struct {
@@ -223,14 +223,9 @@ type UpdateServiceStatusParams struct {
 	ID     uuid.UUID `json:"id"`
 }
 
-type UpdateServiceStatusRow struct {
-	Name   string `json:"name"`
-	Status Status `json:"status"`
-}
-
-func (q *Queries) UpdateServiceStatus(ctx context.Context, arg UpdateServiceStatusParams) (UpdateServiceStatusRow, error) {
+func (q *Queries) UpdateServiceStatus(ctx context.Context, arg UpdateServiceStatusParams) (string, error) {
 	row := q.db.QueryRow(ctx, updateServiceStatus, arg.Status, arg.ID)
-	var i UpdateServiceStatusRow
-	err := row.Scan(&i.Name, &i.Status)
-	return i, err
+	var name string
+	err := row.Scan(&name)
+	return name, err
 }

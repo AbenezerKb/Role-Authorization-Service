@@ -28,3 +28,9 @@ with _tenant as (
 select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from _tenant,permissions p  join permission_domains pd on p.id = pd.permission_id where pd.domain_id = _tenant.domain_id and _tenant.inherit = true
 UNION
 select p.name,p.status,p.description,p.statement,p.created_at,p.service_id,p.id  from permissions p,_tenant where p.tenant_id =_tenant.id and deleted_at IS NULL;
+
+-- name: CreatePermissionDependency :exec
+with _parent as(
+    select id as parant_id from permissions where permissions.name=$1 and permissions.service_id=$2 and permissions.deleted_at IS NULL
+)
+insert into permissions_hierarchy(parent, child) select _parent.parant_id,p.id from _parent,permissions p where p.name=ANY($3::string[]) and p.service_id=$2  and p.deleted_at IS NULl ON conflict  do nothing;

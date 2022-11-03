@@ -69,6 +69,24 @@ func (q *Queries) CreateOrGetPermission(ctx context.Context, arg CreateOrGetPerm
 	return id, err
 }
 
+const createPermissionDependency = `-- name: CreatePermissionDependency :exec
+with _parent as(
+    select id as parant_id from permissions where permissions.name=$1 and permissions.service_id=$2 and permissions.deleted_at IS NULL
+)
+insert into permissions_hierarchy(parent, child) select _parent.parant_id,p.id from _parent,permissions p where p.name=ANY($3::string[]) and p.service_id=$2  and p.deleted_at IS NULl ON conflict  do nothing
+`
+
+type CreatePermissionDependencyParams struct {
+	Name      string    `json:"name"`
+	ServiceID uuid.UUID `json:"service_id"`
+	Column3   []string  `json:"column_3"`
+}
+
+func (q *Queries) CreatePermissionDependency(ctx context.Context, arg CreatePermissionDependencyParams) error {
+	_, err := q.db.Exec(ctx, createPermissionDependency, arg.Name, arg.ServiceID, arg.Column3)
+	return err
+}
+
 const listPermissions = `-- name: ListPermissions :many
 with _tenant as (
     select tenants.domain_id,tenants.id,tenants.inherit from tenants where tenant_name =$1 and tenants.service_id=$2 and deleted_at IS NULL
