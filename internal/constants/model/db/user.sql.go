@@ -54,3 +54,20 @@ func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) erro
 	_, err := q.db.Exec(ctx, registerUser, arg.UserID, arg.ServiceID)
 	return err
 }
+
+const updateUserStatus = `-- name: UpdateUserStatus :one
+UPDATE users SET status = $1 WHERE user_id = $2 AND service_id=$3 AND deleted_at IS NULL RETURNING id
+`
+
+type UpdateUserStatusParams struct {
+	Status    Status    `json:"status"`
+	UserID    uuid.UUID `json:"user_id"`
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
+func (q *Queries) UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, updateUserStatus, arg.Status, arg.UserID, arg.ServiceID)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
+}
