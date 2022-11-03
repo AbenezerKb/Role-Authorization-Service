@@ -1347,6 +1347,62 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "changes user status",
+                "parameters": [
+                    {
+                        "description": "status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully updates the user status",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1703,6 +1759,23 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "Status is new status that will replace old status of the service",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateUserStatus": {
+            "type": "object",
+            "properties": {
+                "service": {
+                    "description": "ServiceID is the unique identifier for the service.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status is new status that will replace old status of the service",
+                    "type": "string"
+                },
+                "user": {
+                    "description": "UserId is the id of the user.",
                     "type": "string"
                 }
             }

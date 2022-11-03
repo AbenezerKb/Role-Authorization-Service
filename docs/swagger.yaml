@@ -282,6 +282,18 @@ definitions:
         description: Status is new status that will replace old status of the service
         type: string
     type: object
+  dto.UpdateUserStatus:
+    properties:
+      service:
+        description: ServiceID is the unique identifier for the service.
+        type: string
+      status:
+        description: Status is new status that will replace old status of the service
+        type: string
+      user:
+        description: UserId is the id of the user.
+        type: string
+    type: object
   model.ErrorResponse:
     properties:
       code:
@@ -1227,6 +1239,41 @@ paths:
       security:
       - BasicAuth: []
       summary: add new user to the system.
+      tags:
+      - users
+  /users/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updates the user status
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: changes user status
       tags:
       - users
 securityDefinitions:
