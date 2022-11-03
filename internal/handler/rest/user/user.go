@@ -58,3 +58,33 @@ func (u *user) RegisterUser(ctx *gin.Context) {
 	}
 	constants.SuccessResponse(ctx, http.StatusCreated, nil, nil)
 }
+
+// UpdateUserStatus updates user status
+// @Summary      changes user status
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @param status body dto.UpdateUserStatus true "status"
+// @Success      200 boolean true "successfully updates the user status"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /users/status [patch]
+// @Security	 BasicAuth
+func (u *user) UpdateUserStatus(ctx *gin.Context) {
+	updateStatusParam := dto.UpdateUserStatus{}
+	err := ctx.ShouldBind(&updateStatusParam)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		u.logger.Info(ctx, "unable to bind user status", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := u.userModule.UpdateUserStatus(ctx, updateStatusParam); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
