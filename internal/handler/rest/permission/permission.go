@@ -91,6 +91,7 @@ func (p *permission) ListPermissions(ctx *gin.Context) {
 // @Tags         permissions
 // @Accept       json
 // @Produce      json
+// @param 		 creatpermissiondependency body []dto.CreatePermissionDependency true "create permission dependency request body"
 // @Success      200  boolean true "successfully created dependency"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"

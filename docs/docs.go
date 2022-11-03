@@ -403,6 +403,20 @@ const docTemplate = `{
                     "permissions"
                 ],
                 "summary": "create permission dependency.",
+                "parameters": [
+                    {
+                        "description": "create permission dependency request body",
+                        "name": "creatpermissiondependency",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CreatePermissionDependency"
+                            }
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successfully created dependency",
@@ -1374,6 +1388,22 @@ const docTemplate = `{
                 "statement": {
                     "description": "Statement is an object that holds the action, resource and effect of the permission being created",
                     "$ref": "#/definitions/dto.Statement"
+                }
+            }
+        },
+        "dto.CreatePermissionDependency": {
+            "type": "object",
+            "properties": {
+                "inherited_permissions": {
+                    "description": "InheritedPermissions is the list of permissions' name the permission is inheriting.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "permission": {
+                    "description": "PermissionName is the name of the permission.",
+                    "type": "string"
                 }
             }
         },

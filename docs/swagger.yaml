@@ -31,6 +31,18 @@ definitions:
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
     type: object
+  dto.CreatePermissionDependency:
+    properties:
+      inherited_permissions:
+        description: InheritedPermissions is the list of permissions' name the permission
+          is inheriting.
+        items:
+          type: string
+        type: array
+      permission:
+        description: PermissionName is the name of the permission.
+        type: string
+    type: object
   dto.CreateRole:
     properties:
       name:
@@ -588,6 +600,15 @@ paths:
       description: |-
         This function creates a dependency between permission.
         If a permission inherites a permission and a user is granted the hair permission then the user implicitly granted the inherited permission
+      parameters:
+      - description: create permission dependency request body
+        in: body
+        name: creatpermissiondependency
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dto.CreatePermissionDependency'
+          type: array
       produces:
       - application/json
       responses:
