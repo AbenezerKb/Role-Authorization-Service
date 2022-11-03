@@ -29,6 +29,7 @@ type Permission interface {
 	CreatePermission(ctx context.Context, param dto.CreatePermission) (uuid.UUID, error)
 	AddToDomain(ctx context.Context, permissionId, domain uuid.UUID) error
 	ListAllPermission(ctx context.Context, param dto.GetAllPermissionsReq) ([]dto.Permission, error)
+	CreatePermissionDependency(ctx context.Context, param dto.CreatePermissionDependency, serviceId uuid.UUID) error
 }
 
 type Tenant interface {

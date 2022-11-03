@@ -80,3 +80,17 @@ func (p *permission) ListAllPermission(ctx context.Context, param dto.GetAllPerm
 	}
 	return permission, nil
 }
+
+func (p *permission) CreatePermissionDependency(ctx context.Context, param dto.CreatePermissionDependency, serviceId uuid.UUID) error {
+	if err := p.db.CreatePermissionDependency(ctx, db.CreatePermissionDependencyParams{
+		Name:      param.PermissionName,
+		Column3:   param.InheritedPermissions,
+		ServiceID: serviceId,
+	}); err != nil {
+		err = errors.ErrWriteError.Wrap(err, "could not create inheritance between permissions")
+		p.log.Error(ctx, "unable to create inheritance", zap.Error(err), zap.Any("parent-permission", param.PermissionName), zap.Any("child-permissions", param.InheritedPermissions))
+		return err
+	}
+
+	return nil
+}
