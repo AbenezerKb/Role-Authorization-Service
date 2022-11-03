@@ -6,7 +6,9 @@ import (
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
+	"2f-authorization/platform/opa"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -15,12 +17,14 @@ import (
 type user struct {
 	userPersistant storage.User
 	log            logger.Logger
+	opa            opa.Opa
 }
 
-func Init(log logger.Logger, userPersistant storage.User) module.User {
+func Init(log logger.Logger, userPersistant storage.User, opa opa.Opa) module.User {
 	return &user{
 		userPersistant: userPersistant,
 		log:            log,
+		opa:            opa,
 	}
 }
 
@@ -54,4 +58,26 @@ func (u *user) RegisterUser(ctx context.Context, param dto.RegisterUser) error {
 		return err
 	}
 	return nil
+}
+
+func (u *user) UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus) error {
+	var err error
+	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		u.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	if err = param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		u.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
+	if err = u.userPersistant.UpdateUserStatus(ctx, param); err != nil {
+		return err
+	}
+
+	return u.opa.Refresh(ctx, fmt.Sprintf("Updating user [%v] with status [%v]", param.UserID.String(), param.Status))
 }
