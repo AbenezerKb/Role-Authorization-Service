@@ -261,6 +261,15 @@ definitions:
         description: RoleID is the name of the role.
         type: string
     type: object
+  dto.UpdateServiceStatus:
+    properties:
+      service:
+        description: ServiceID is the unique identifier for the service.
+        type: string
+      status:
+        description: Status is new status that will replace old status of the service
+        type: string
+    type: object
   model.ErrorResponse:
     properties:
       code:
@@ -570,6 +579,37 @@ paths:
       security:
       - BasicAuth: []
       summary: register a new permission.
+      tags:
+      - permissions
+  /permissions/inherit:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        This function creates a dependency between permission.
+        If a permission inherites a permission and a user is granted the hair permission then the user implicitly granted the inherited permission
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully created dependency
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: create permission dependency.
       tags:
       - permissions
   /roles:
@@ -1000,6 +1040,33 @@ paths:
       summary: create new service.
       tags:
       - service
+  /services/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateServiceStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updates the service status
+          schema:
+            type: boolean
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: changes service status
+      tags:
+      - services
   /tenants:
     post:
       consumes:

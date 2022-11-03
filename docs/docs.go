@@ -385,6 +385,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/permissions/inherit": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function creates a dependency between permission.\nIf a permission inherites a permission and a user is granted the hair permission then the user implicitly granted the inherited permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "permissions"
+                ],
+                "summary": "create permission dependency.",
+                "responses": {
+                    "200": {
+                        "description": "successfully created dependency",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/roles": {
             "get": {
                 "security": [
@@ -1030,6 +1076,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/services/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "services"
+                ],
+                "summary": "changes service status",
+                "parameters": [
+                    {
+                        "description": "status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateServiceStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully updates the service status",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/tenants": {
             "post": {
                 "security": [
@@ -1570,6 +1660,19 @@ const docTemplate = `{
                 },
                 "role_id": {
                     "description": "RoleID is the name of the role.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateServiceStatus": {
+            "type": "object",
+            "properties": {
+                "service": {
+                    "description": "ServiceID is the unique identifier for the service.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status is new status that will replace old status of the service",
                     "type": "string"
                 }
             }
