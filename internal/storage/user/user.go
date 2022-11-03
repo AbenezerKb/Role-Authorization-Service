@@ -54,3 +54,24 @@ func (u *user) IsUserExist(ctx context.Context, param dto.RegisterUser) (bool, e
 	}
 	return true, nil
 }
+
+func (u *user) UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus) error {
+	_, err := u.db.UpdateUserStatus(ctx, db.UpdateUserStatusParams{
+		Status:    db.Status(param.Status),
+		UserID:    param.UserID,
+		ServiceID: param.ServiceID,
+	})
+
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "user not found")
+			u.log.Error(ctx, "error changing user's status", zap.Error(err), zap.String("service", param.ServiceID.String()), zap.String("user-status", param.Status), zap.String("user-id", param.UserID.String()))
+			return err
+		} else {
+			err = errors.ErrUpdateError.Wrap(err, "error changing user's status")
+			u.log.Error(ctx, "error changing user's status", zap.Error(err), zap.String("service", param.ServiceID.String()), zap.String("user-status", param.Status), zap.String("user-id", param.UserID.String()))
+			return err
+		}
+	}
+	return nil
+}

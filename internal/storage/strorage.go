@@ -41,6 +41,7 @@ type Tenant interface {
 type User interface {
 	RegiseterUser(ctx context.Context, param dto.RegisterUser) error
 	IsUserExist(ctx context.Context, param dto.RegisterUser) (bool, error)
+	UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus) error
 }
 
 type Role interface {
