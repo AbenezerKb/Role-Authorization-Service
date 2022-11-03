@@ -39,7 +39,7 @@ test:
     - printf '[user]\n\temail = 2ftimesgitlab@gmail.com\n\tname = Two F Times Trading PLC\n\n[url "ssh://git@gitlab.com/"]\n\tinsteadOf = https://gitlab.com/' > ~/.gitconfig
 
   script:
-    - CONFIG_NAME=$CONFIG_NAME go test ./... -p=1 -count=1 -v
+    - CONFIG_NAME=$CONFIG_NAME go test ./... -p=1 -count=1
 
 publish:
   image: docker:latest
