@@ -23,6 +23,16 @@ func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMi
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodPatch,
+			Path:        "/status",
+			Handler:     user.UpdateUserStatus,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
 	}
 	routing.RegisterRoutes(tenants, tenantRoutes)
 }
