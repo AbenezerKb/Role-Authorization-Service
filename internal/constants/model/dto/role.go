@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"2f-authorization/internal/constants"
 	"fmt"
 	"time"
 
@@ -102,4 +103,15 @@ func (g GetAllRolesReq) Validate() error {
 	return validation.ValidateStruct(&g,
 		validation.Field(&g.TenantName, validation.Required.Error("tenant name can not be blank")),
 		validation.Field(&g.ServiceID, validation.NotIn(uuid.Nil.String()).Error("service id is required")))
+}
+
+type UpdateRoleStatus struct {
+	// Status is new status of the role that is going to replace the old one
+	Status string `json:"status"`
+}
+
+func (u UpdateRoleStatus) Validate() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Status, validation.Required.Error("status is required"), validation.In(constants.Active, constants.InActive).Error("invalid status")),
+	)
 }
