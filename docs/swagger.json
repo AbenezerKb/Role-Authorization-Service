@@ -869,7 +869,7 @@
                 }
             }
         },
-        "/roles/{roleid}/users/{userid}": {
+        "/roles/{id}/users/{userid}": {
             "post": {
                 "security": [
                     {
@@ -898,7 +898,7 @@
                     {
                         "type": "string",
                         "description": "role id",
-                        "name": "roleid",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -986,7 +986,7 @@
                     {
                         "type": "string",
                         "description": "role id",
-                        "name": "roleid",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },

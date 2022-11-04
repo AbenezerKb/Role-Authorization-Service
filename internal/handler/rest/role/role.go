@@ -69,7 +69,7 @@ func (r *role) CreateRole(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @param 		 userid path string true "user id"
-// @param 		 roleid path string true "role id"
+// @param 		 id path string true "role id"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"
@@ -78,7 +78,7 @@ func (r *role) CreateRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{roleid}/users/{userid} [post]
+// @Router       /roles/{id}/users/{userid} [post]
 // @security 	 BasicAuth
 func (r *role) AssignRole(ctx *gin.Context) {
 	var err error
@@ -92,10 +92,10 @@ func (r *role) AssignRole(ctx *gin.Context) {
 		return
 	}
 
-	role.RoleID, err = uuid.Parse(ctx.Param("roleid"))
+	role.RoleID, err = uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("roleid")))
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("id")))
 		_ = ctx.Error(err)
 		return
 	}
@@ -116,7 +116,7 @@ func (r *role) AssignRole(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @param 		 userid path string true "user id"
-// @param 		 roleid path string true "role id"
+// @param 		 id path string true "role id"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"
@@ -125,7 +125,7 @@ func (r *role) AssignRole(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Router       /roles/{roleid}/users/{userid} [patch]
+// @Router       /roles/{id}/users/{userid} [patch]
 // @security 	 BasicAuth
 func (r *role) RevokeRole(ctx *gin.Context) {
 	var err error
@@ -139,10 +139,10 @@ func (r *role) RevokeRole(ctx *gin.Context) {
 		return
 	}
 
-	role.RoleID, err = uuid.Parse(ctx.Param("roleid"))
+	role.RoleID, err = uuid.Parse(ctx.Param("id"))
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("roleid")))
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", ctx.Param("id")))
 		_ = ctx.Error(err)
 		return
 	}

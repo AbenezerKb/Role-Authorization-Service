@@ -938,7 +938,7 @@ paths:
       summary: changes role status
       tags:
       - roles
-  /roles/{roleid}/users/{userid}:
+  /roles/{id}/users/{userid}:
     patch:
       consumes:
       - application/json
@@ -951,7 +951,7 @@ paths:
         type: string
       - description: role id
         in: path
-        name: roleid
+        name: id
         required: true
         type: string
       - description: user id
@@ -1010,7 +1010,7 @@ paths:
         type: string
       - description: role id
         in: path
-        name: roleid
+        name: id
         required: true
         type: string
       - description: user id

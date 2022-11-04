@@ -877,7 +877,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/roles/{roleid}/users/{userid}": {
+        "/roles/{id}/users/{userid}": {
             "post": {
                 "security": [
                     {
@@ -906,7 +906,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "role id",
-                        "name": "roleid",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -994,7 +994,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "role id",
-                        "name": "roleid",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
