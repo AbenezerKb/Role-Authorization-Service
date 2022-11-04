@@ -54,3 +54,9 @@ Update roles set deleted_at=now() where roles.id=$1 AND deleted_at IS NULL retur
 
 -- name: ListRoles :many
 select r.name,r.created_at,r.id,r.status from roles r join tenants t on r.tenant_id=t.id where t.tenant_name=$1 AND t.service_id=$2 AND t.deleted_at IS NULL AND r.deleted_at IS NULL;
+
+-- name: UpdateRoleStatus :one
+with _tenants as(
+    select id from tenants t where t.tenant_name=$1 and t.service_id=$2 and t.deleted_at IS NULL
+)
+update roles r set status =$3 from _tenants where r.id=$4 and r.deleted_at IS NULL and r.tenant_id=_tenants.id returning r.id;

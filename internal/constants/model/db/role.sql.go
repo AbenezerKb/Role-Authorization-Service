@@ -230,3 +230,29 @@ func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) error {
 	_, err := q.db.Exec(ctx, updateRole, arg.RoleID, arg.Column2)
 	return err
 }
+
+const updateRoleStatus = `-- name: UpdateRoleStatus :one
+with _tenants as(
+    select id from tenants t where t.tenant_name=$1 and t.service_id=$2 and t.deleted_at IS NULL
+)
+update roles r set status =$3 from _tenants where r.id=$4 and r.deleted_at IS NULL and r.tenant_id=_tenants.id returning r.id
+`
+
+type UpdateRoleStatusParams struct {
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+	Status     Status    `json:"status"`
+	ID         uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateRoleStatus(ctx context.Context, arg UpdateRoleStatusParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, updateRoleStatus,
+		arg.TenantName,
+		arg.ServiceID,
+		arg.Status,
+		arg.ID,
+	)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
+}
