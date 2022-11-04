@@ -32,7 +32,7 @@ func validateUUID(id interface{}) error {
 }
 
 type UpdateUserStatus struct {
-	// Status is new status that will replace old status of the service
+	// Status is new status that will replace old status of the user
 	Status string `json:"status"`
 	// ServiceID is the unique identifier for the service.
 	ServiceID uuid.UUID `json:"service"`

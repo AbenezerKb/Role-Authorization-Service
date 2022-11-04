@@ -255,6 +255,23 @@ func (r *role) ListRoles(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
 }
 
+// UpdateRoleStatus updates role status
+// @Summary      changes role status
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param status body dto.UpdateRoleStatus true "status"
+// @param 		 id 	path string true "role id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200 boolean true "successfully updates the role's status"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /roles/{id}/status [patch]
+// @Security	 BasicAuth
 func (r *role) UpdateRoleStatus(ctx *gin.Context) {
 	updateStatusParam := dto.UpdateRoleStatus{}
 	err := ctx.ShouldBind(&updateStatusParam)

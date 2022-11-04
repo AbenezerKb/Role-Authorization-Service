@@ -273,6 +273,13 @@ definitions:
         description: RoleID is the name of the role.
         type: string
     type: object
+  dto.UpdateRoleStatus:
+    properties:
+      status:
+        description: Status is new status of the role that is going to replace the
+          old one
+        type: string
+    type: object
   dto.UpdateServiceStatus:
     properties:
       service:
@@ -288,7 +295,7 @@ definitions:
         description: ServiceID is the unique identifier for the service.
         type: string
       status:
-        description: Status is new status that will replace old status of the service
+        description: Status is new status that will replace old status of the user
         type: string
       user:
         description: UserId is the id of the user.
@@ -869,6 +876,66 @@ paths:
       security:
       - BasicAuth: []
       summary: update role.
+      tags:
+      - roles
+  /roles/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoleStatus'
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updates the role's status
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: changes role status
       tags:
       - roles
   /roles/{roleid}/users/{userid}:
