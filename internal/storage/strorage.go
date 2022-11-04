@@ -54,4 +54,5 @@ type Role interface {
 	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 	DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, error)
 	ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dto.Role, error)
+	UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId, serviceId uuid.UUID, tenant string) error
 }

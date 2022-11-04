@@ -173,3 +173,24 @@ func (r *role) ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dt
 	}
 	return roles, nil
 }
+
+func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId, serviceId uuid.UUID, tenant string) error {
+	_, err := r.db.UpdateRoleStatus(ctx, db.UpdateRoleStatusParams{
+		ID:         roleId,
+		TenantName: tenant,
+		ServiceID:  serviceId,
+		Status:     db.Status(param.Status),
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "role not found")
+			r.log.Error(ctx, "error changing role's status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("role-status", param.Status), zap.String("role-id", roleId.String()), zap.String("tenant", tenant))
+			return err
+		}
+
+		err = errors.ErrUpdateError.Wrap(err, "error changing role's status")
+		r.log.Error(ctx, "error changing role's status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("role-status", param.Status), zap.String("role-id", roleId.String()), zap.String("tenant", tenant))
+		return err
+	}
+	return nil
+}
