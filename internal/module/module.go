@@ -4,6 +4,8 @@ import (
 	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Service interface {
@@ -39,6 +41,7 @@ type Role interface {
 	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 	DeleteRole(ctx context.Context, param string) (*dto.Role, error)
 	ListRoles(ctx context.Context) ([]dto.Role, error)
+	UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId uuid.UUID) error
 }
 
 type Opa interface {

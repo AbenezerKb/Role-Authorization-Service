@@ -193,3 +193,31 @@ func (r *role) ListRoles(ctx context.Context) ([]dto.Role, error) {
 	}
 	return roles, nil
 }
+
+func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId uuid.UUID) error {
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		r.log.Info(ctx, "invalid service id", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	tenant, ok := ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid tenant")
+		r.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+	}
+
+	if err = param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
+	if err = r.rolePersistence.UpdateRoleStatus(ctx, param, roleId, serviceID, tenant); err != nil {
+		return err
+	}
+
+	return r.opa.Refresh(ctx, fmt.Sprintf("Updating role [%v] in tenant [%v] with status [%v]", roleId.String(), tenant, param.Status))
+}
