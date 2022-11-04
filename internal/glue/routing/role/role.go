@@ -25,7 +25,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPost,
-			Path:        "/:roleid/users/:userid",
+			Path:        "/:id/users/:userid",
 			Handler:     role.AssignRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -35,7 +35,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPatch,
-			Path:        "/:roleid/users/:userid",
+			Path:        "/:id/users/:userid",
 			Handler:     role.RevokeRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -67,6 +67,16 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 			Method:      http.MethodGet,
 			Path:        "",
 			Handler:     role.ListRoles,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
+		{
+			Method:      http.MethodPatch,
+			Path:        "/:id/status",
+			Handler:     role.UpdateRoleStatus,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
 				authMiddleware.BasicAuth(),
