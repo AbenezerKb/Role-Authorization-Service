@@ -36,6 +36,7 @@ type Role interface {
 	RevokeRole(ctx *gin.Context)
 	DeleteRole(ctx *gin.Context)
 	ListRoles(ctx *gin.Context)
+	UpdateRoleStatus(ctx *gin.Context)
 }
 
 type Opa interface {

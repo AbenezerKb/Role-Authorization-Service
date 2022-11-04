@@ -254,3 +254,29 @@ func (r *role) ListRoles(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
 }
+
+func (r *role) UpdateRoleStatus(ctx *gin.Context) {
+	updateStatusParam := dto.UpdateRoleStatus{}
+	err := ctx.ShouldBind(&updateStatusParam)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "unable to bind role status", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	roleId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid role id")
+		r.logger.Info(ctx, "invalid role id", zap.Error(err), zap.Any("role id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := r.roleModule.UpdateRoleStatus(ctx, updateStatusParam, roleId); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
