@@ -80,9 +80,14 @@ func (q *Queries) IsPermissionExistsInTenant(ctx context.Context, arg IsPermissi
 }
 
 const tenantRegisterPermission = `-- name: TenantRegisterPermission :one
-INSERT INTO permissions (name,description,statement,service_id,tenant_id)
-SELECT $1,$2,$3,$4,t.id from tenants t where t.tenant_name=$5 and t.deleted_at is null
-RETURNING permissions.id,permissions.statement,permissions.description,permissions.name,permissions.created_at,permissions.service_id, $5::string as tenant
+with _permission as(
+    INSERT INTO permissions (name,description,statement,service_id,tenant_id)
+    SELECT $1,$2,$3,$4,t.id from tenants t where t.tenant_name=$5 and t.deleted_at is null
+    RETURNING permissions.id,permissions.statement,permissions.description,permissions.name,permissions.created_at,permissions.service_id, $5::string as tenant
+), _ph as(
+    insert into permissions_hierarchy(parent, child) select _permission.id,p.id from _permission,permissions p where p.name=ANY($6::string[])  and p.service_id=$4 and p.deleted_at IS NULl ON conflict  do nothing returning id
+)
+select id, statement, description, name, created_at, service_id, tenant from _permission
 `
 
 type TenantRegisterPermissionParams struct {
@@ -91,6 +96,7 @@ type TenantRegisterPermissionParams struct {
 	Statement   pgtype.JSON `json:"statement"`
 	ServiceID   uuid.UUID   `json:"service_id"`
 	TenantName  string      `json:"tenant_name"`
+	Column6     []string    `json:"column_6"`
 }
 
 type TenantRegisterPermissionRow struct {
@@ -110,6 +116,7 @@ func (q *Queries) TenantRegisterPermission(ctx context.Context, arg TenantRegist
 		arg.Statement,
 		arg.ServiceID,
 		arg.TenantName,
+		arg.Column6,
 	)
 	var i TenantRegisterPermissionRow
 	err := row.Scan(

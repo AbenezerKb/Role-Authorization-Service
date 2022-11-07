@@ -70,6 +70,7 @@ func (t *tenant) RegsiterTenantPermission(ctx context.Context, tenant string, pa
 			Bytes:  statement,
 			Status: pgtype.Present,
 		},
+		Column6: param.InheritedPermissions,
 	})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {

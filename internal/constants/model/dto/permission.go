@@ -129,6 +129,8 @@ type RegisterTenantPermission struct {
 	Statement Statement `json:"statement"`
 	// ServiceID is the id of the service the permission belongs to
 	ServiceID uuid.UUID `json:"service_id"`
+	// InheritedPermissions is the list of permissions name the permission is inheriting.
+	InheritedPermissions []string `json:"inherited_permissions"`
 }
 
 func (c RegisterTenantPermission) Validate() error {
@@ -149,7 +151,7 @@ type CreatePermissionDependency struct {
 func (c CreatePermissionDependency) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.PermissionName, validation.Required.Error("permission is required")),
-		validation.Field(&c.InheritedPermissions, validation.By(validatePermissionsName), validation.Required.Error("permission description is required")),
+		validation.Field(&c.InheritedPermissions, validation.By(validatePermissionsName)),
 	)
 }
 func validatePermissionsName(value interface{}) error {
