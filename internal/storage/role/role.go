@@ -194,3 +194,25 @@ func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus,
 	}
 	return nil
 }
+
+func (r *role) GetRole(ctx context.Context, param uuid.UUID) (*dto.Role, error) {
+	role, err := r.db.GetRoleById(ctx, param)
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "role not found")
+			r.log.Error(ctx, "error getting the role's data", zap.Error(err), zap.String("role-id", param.String()))
+			return nil, err
+		}
+
+		err = errors.ErrUpdateError.Wrap(err, "error getting the role's data")
+		r.log.Error(ctx, "error getting the role's data", zap.Error(err), zap.String("role-id", param.String()))
+	}
+	return &dto.Role{
+		Name:        role.Name,
+		Status:      string(role.Status),
+		ID:          role.ID,
+		CreatedAt:   role.CreatedAt,
+		Permissions: role.Permission,
+		UpdatedAt:   role.UpdatedAt,
+	}, nil
+}
