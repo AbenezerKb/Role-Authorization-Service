@@ -96,6 +96,33 @@ func (q *Queries) DeleteRole(ctx context.Context, id uuid.UUID) (DeleteRoleRow, 
 	return i, err
 }
 
+const getRoleById = `-- name: GetRoleById :one
+select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r where r.id=$1 and r.deleted_at is null
+`
+
+type GetRoleByIdRow struct {
+	Name       string    `json:"name"`
+	ID         uuid.UUID `json:"id"`
+	Status     Status    `json:"status"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	Permission []string  `json:"permission"`
+}
+
+func (q *Queries) GetRoleById(ctx context.Context, id uuid.UUID) (GetRoleByIdRow, error) {
+	row := q.db.QueryRow(ctx, getRoleById, id)
+	var i GetRoleByIdRow
+	err := row.Scan(
+		&i.Name,
+		&i.ID,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Permission,
+	)
+	return i, err
+}
+
 const getRoleByNameAndTenantName = `-- name: GetRoleByNameAndTenantName :one
 SELECT roles.id FROM roles join tenants on roles.tenant_id =tenants.id WHERE 
 roles.name = $1 AND tenants.tenant_name = $2 and roles.deleted_at IS NULL and tenants.deleted_at IS NULL

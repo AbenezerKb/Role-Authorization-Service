@@ -60,3 +60,6 @@ with _tenants as(
     select id from tenants t where t.tenant_name=$1 and t.service_id=$2 and t.deleted_at IS NULL
 )
 update roles r set status =$3 from _tenants where r.id=$4 and r.deleted_at IS NULL and r.tenant_id=_tenants.id returning r.id;
+
+-- name: GetRoleById :one
+select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r where r.id=$1 and r.deleted_at is null;
