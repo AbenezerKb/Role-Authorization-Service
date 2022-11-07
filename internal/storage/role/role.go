@@ -195,8 +195,11 @@ func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus,
 	return nil
 }
 
-func (r *role) GetRole(ctx context.Context, param uuid.UUID) (*dto.Role, error) {
-	role, err := r.db.GetRoleById(ctx, param)
+func (r *role) GetRole(ctx context.Context, param uuid.UUID, serviceId uuid.UUID) (*dto.Role, error) {
+	role, err := r.db.GetRoleById(ctx, db.GetRoleByIdParams{
+		ServiceID: serviceId,
+		ID:        param,
+	})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "role not found")

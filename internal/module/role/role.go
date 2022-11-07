@@ -223,5 +223,11 @@ func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus,
 }
 
 func (r *role) GetRole(ctx context.Context, param uuid.UUID) (*dto.Role, error) {
-	return r.rolePersistence.GetRole(ctx, param)
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		r.log.Info(ctx, "invalid service id", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return nil, err
+	}
+	return r.rolePersistence.GetRole(ctx, param, serviceID)
 }
