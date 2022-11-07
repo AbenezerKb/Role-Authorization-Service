@@ -15,7 +15,7 @@ import (
 	"gitlab.com/2ftimeplc/2fbackend/bdd-testing-framework/src"
 )
 
-type createTestDomain struct {
+type createDomainTest struct {
 	test.TestInstance
 	apiTest      src.ApiTest
 	servicemodel db.CreateServiceParams
@@ -23,17 +23,17 @@ type createTestDomain struct {
 }
 
 func TestCreateDomain(t *testing.T) {
-	c := &createTestDomain{}
+	c := &createDomainTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)
 	c.apiTest.InitializeTest(t, "create domain test", "feature/create_domain.feature", c.InitializeScenario)
 }
 
-func (c *createTestDomain) iAmASystemUser() error {
+func (c *createDomainTest) iAmASystemUser() error {
 	return nil
 }
 
-func (c *createTestDomain) iHaveServiceWith(service *godog.Table) error {
+func (c *createDomainTest) iHaveServiceWith(service *godog.Table) error {
 
 	body, err := c.apiTest.ReadRow(service, nil, false)
 	if err != nil {
@@ -62,7 +62,7 @@ func (c *createTestDomain) iHaveServiceWith(service *godog.Table) error {
 
 	return nil
 }
-func (c *createTestDomain) iSendTheRequest(domain *godog.Table) error {
+func (c *createDomainTest) iSendTheRequest(domain *godog.Table) error {
 
 	body, err := c.apiTest.ReadRow(domain, nil, false)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *createTestDomain) iSendTheRequest(domain *godog.Table) error {
 	return nil
 }
 
-func (c *createTestDomain) theResultShouldBeSuccessfull(message string) error {
+func (c *createDomainTest) theResultShouldBeSuccessfull(message string) error {
 	if err := c.apiTest.AssertStatusCode(http.StatusCreated); err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func (c *createTestDomain) theResultShouldBeSuccessfull(message string) error {
 	return nil
 }
 
-func (c *createTestDomain) theResultShouldBeEmptyError(message string) error {
+func (c *createDomainTest) theResultShouldBeEmptyError(message string) error {
 	if err := c.apiTest.AssertStatusCode(http.StatusBadRequest); err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func (c *createTestDomain) theResultShouldBeEmptyError(message string) error {
 	return nil
 }
 
-func (c *createTestDomain) InitializeScenario(ctx *godog.ScenarioContext) {
+func (c *createDomainTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		c.apiTest.URL = "/v1/domains"
 		c.apiTest.Method = http.MethodPost

@@ -31,7 +31,7 @@ type updateRoleStatusTest struct {
 	roleStatus            dto.UpdateRoleStatus
 }
 
-func TestDeleteRole(t *testing.T) {
+func TestUpdateRoleStatus(t *testing.T) {
 	u := &updateRoleStatusTest{}
 	u.TestInstance = test.Initiate(context.Background(), "../../../../")
 	u.apiTest.InitializeServer(u.Server)

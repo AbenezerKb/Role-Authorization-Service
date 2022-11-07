@@ -16,7 +16,7 @@ import (
 	"gitlab.com/2ftimeplc/2fbackend/bdd-testing-framework/src"
 )
 
-type getRoleTest struct {
+type getRolesTest struct {
 	test.TestInstance
 	apiTest               src.ApiTest
 	service               dto.CreateService
@@ -33,12 +33,12 @@ type getRoleTest struct {
 }
 
 func TestGetRoles(t *testing.T) {
-	g := &getRoleTest{}
+	g := &getRolesTest{}
 	g.TestInstance = test.Initiate(context.Background(), "../../../../")
 	g.apiTest.InitializeServer(g.Server)
 	g.apiTest.InitializeTest(t, "get roles test", "feature/get_roles.feature", g.InitializeScenario)
 }
-func (g *getRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table) error {
+func (g *getRolesTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table) error {
 	domain, err := g.apiTest.ReadCellString(domainAndTenant, "domain")
 	if err != nil {
 		return err
@@ -71,7 +71,7 @@ func (g *getRoleTest) aRegisteredDomainAndTenant(domainAndTenant *godog.Table) e
 	return nil
 }
 
-func (g *getRoleTest) iHaveServiceWith(service *godog.Table) error {
+func (g *getRolesTest) iHaveServiceWith(service *godog.Table) error {
 	body, err := g.apiTest.ReadRow(service, nil, false)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (g *getRoleTest) iHaveServiceWith(service *godog.Table) error {
 	return nil
 }
 
-func (g *getRoleTest) iRequestToGetAllRolesUnderMyTenant() error {
+func (g *getRolesTest) iRequestToGetAllRolesUnderMyTenant() error {
 	g.apiTest.SetHeader("Authorization", "Basic "+g.BasicAuth(g.createdService.ServiceID.String(), "123456"))
 	g.apiTest.SetHeader("x-subject", g.service.UserId)
 	g.apiTest.SetHeader("x-action", "*")
@@ -113,7 +113,7 @@ func (g *getRoleTest) iRequestToGetAllRolesUnderMyTenant() error {
 	return nil
 }
 
-func (g *getRoleTest) iShouldGetAllRolesInMyTenant(roles *godog.Table) error {
+func (g *getRolesTest) iShouldGetAllRolesInMyTenant(roles *godog.Table) error {
 	if err := g.apiTest.AssertStatusCode(http.StatusOK); err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func (g *getRoleTest) iShouldGetAllRolesInMyTenant(roles *godog.Table) error {
 	return nil
 }
 
-func (g *getRoleTest) theRoleIsRegisteredWithTheFollowingPermissionInTheTenant(role string, permission *godog.Table) error {
+func (g *getRolesTest) theRoleIsRegisteredWithTheFollowingPermissionInTheTenant(role string, permission *godog.Table) error {
 	body, err := g.apiTest.ReadRow(permission, []src.Type{
 		{
 			Column: "name",
@@ -184,7 +184,7 @@ func (g *getRoleTest) theRoleIsRegisteredWithTheFollowingPermissionInTheTenant(r
 	return nil
 }
 
-func (g *getRoleTest) InitializeScenario(ctx *godog.ScenarioContext) {
+func (g *getRolesTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		g.apiTest.URL = "/v1/roles"
 		g.apiTest.Method = http.MethodGet

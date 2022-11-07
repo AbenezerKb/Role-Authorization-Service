@@ -24,7 +24,7 @@ type updateServiceStatusTest struct {
 	createdService db.CreateServiceRow
 }
 
-func TestDeleteService(t *testing.T) {
+func TestUpdateServiceStatus(t *testing.T) {
 	u := &updateServiceStatusTest{}
 	u.TestInstance = test.Initiate(context.Background(), "../../../../")
 	u.apiTest.InitializeServer(u.Server)

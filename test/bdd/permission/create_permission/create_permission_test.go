@@ -24,12 +24,9 @@ type createTestPermission struct {
 	createdService dto.CreateServiceResponse
 	domainrequest  dto.Domain
 	permission     dto.CreatePermission
-	result         struct {
-		OK bool `json:"ok"`
-	}
 }
 
-func TestCreateDomain(t *testing.T) {
+func TestCreatePermission(t *testing.T) {
 	c := &createTestPermission{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)

@@ -22,7 +22,7 @@ type createServiceTest struct {
 	}
 }
 
-func TestLogin(t *testing.T) {
+func TestCreateService(t *testing.T) {
 	c := &createServiceTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)

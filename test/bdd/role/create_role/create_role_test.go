@@ -33,7 +33,7 @@ type createRoleTest struct {
 	}
 }
 
-func TestCreateDomain(t *testing.T) {
+func TestCreateRole(t *testing.T) {
 	c := &createRoleTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)

@@ -1,7 +1,7 @@
-Feature: Create Domain
+Feature: Delete Domain
     As a system user,
     i want to delete a Domain which is in may service
-    so that i i will have more flexibility on my service domains.
+    so that i will have more flexibility on my service domains.
 
   Background: 
     Given I have domain

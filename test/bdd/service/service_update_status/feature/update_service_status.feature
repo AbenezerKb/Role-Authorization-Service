@@ -2,7 +2,7 @@ Feature: update service Status
 
     As a admin
     I want to update services's status
-    So that I can activate or deactivate service's
+    So that I can activate or deactivate service
     Background: the service is registered on the system
         Given the service is registered on the system
             | name | user_id                              |

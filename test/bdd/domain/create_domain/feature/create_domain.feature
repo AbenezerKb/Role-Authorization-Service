@@ -1,7 +1,7 @@
 Feature: Create Domain
     As a system user,
     i want to create a new Domains
-    so that i assign diffrent domains for my service.
+    so that i assign different domains for my permissions and tenants.
 
   Background: 
     Given I have service with

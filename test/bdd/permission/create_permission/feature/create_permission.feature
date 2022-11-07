@@ -1,7 +1,8 @@
-Feature: Create Domain
-    As a system user,
-    i want to create a new domains
-    so that i assign diffrent domains for my service.
+Feature: Create Permission
+    As a user
+    I want to create new permissions under my tenant
+    So that I can have multiple permissions with different attributes
+    
     Background: Create service and domain
         Given I have a registered service
             | name | user_id                              |

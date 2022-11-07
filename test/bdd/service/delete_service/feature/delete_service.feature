@@ -2,7 +2,7 @@ Feature: Delete Service
 
     As a system user,
     I want to delete the service
-    So that I can remove remove my service from the system
+    So that I can remove my service from the system
 
     @success
     Scenario: Successful Delete Service

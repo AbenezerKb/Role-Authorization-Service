@@ -1,9 +1,9 @@
 Feature: Assign  role
-  As an Admin,
-  I want to assign role to my users
-  So that I can assign it to a user
+  As a user
+  I want to revoke a user's role
+  So that I can remove a user’s permission for executing a specific task on a protected resource
 
-  Background: 
+  Background:
     Given I have service with
       | name | user_id                              |
       | sso2 | a93fab67-1c11-4cdc-b410-f6fc728f592a |
@@ -35,7 +35,7 @@ Feature: Assign  role
       | <user_id> | <role_name> |
     Then my request should fail with "<message>"
 
-    Examples: 
+    Examples:
       | user_id                              | role_name | message          |
       | 00000000-0000-0000-0000-000000000000 | admin     | User id required |
       | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | Role id required |

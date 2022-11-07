@@ -31,7 +31,7 @@ type createPermissionDependencyTest struct {
 	}
 }
 
-func TestCreateDomain(t *testing.T) {
+func TestCreatePermissionDependency(t *testing.T) {
 	c := &createPermissionDependencyTest{}
 	c.TestInstance = test.Initiate(context.Background(), "../../../../")
 	c.apiTest.InitializeServer(c.Server)

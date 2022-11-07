@@ -16,7 +16,7 @@ import (
 	"gitlab.com/2ftimeplc/2fbackend/bdd-testing-framework/src"
 )
 
-type ListPermission struct {
+type ListPermissions struct {
 	test.TestInstance
 	apiTest             src.ApiTest
 	service             dto.CreateService
@@ -32,13 +32,13 @@ type ListPermission struct {
 	}
 }
 
-func TestCreateDomain(t *testing.T) {
-	l := &ListPermission{}
+func TestListPermissions(t *testing.T) {
+	l := &ListPermissions{}
 	l.TestInstance = test.Initiate(context.Background(), "../../../../")
 	l.apiTest.InitializeServer(l.Server)
 	l.apiTest.InitializeTest(t, "list permission test", "feature/list_permissions.feature", l.InitializeScenario)
 }
-func (l *ListPermission) aPermissionsRegisteredOnTheDomain(permission *godog.Table) error {
+func (l *ListPermissions) aPermissionsRegisteredOnTheDomain(permission *godog.Table) error {
 	body, err := l.apiTest.ReadRow(permission, []src.Type{
 		{
 			Column: "name",
@@ -80,7 +80,7 @@ func (l *ListPermission) aPermissionsRegisteredOnTheDomain(permission *godog.Tab
 	return nil
 }
 
-func (l *ListPermission) aRegisteredDomainAndTenant(domainAndTenant *godog.Table) error {
+func (l *ListPermissions) aRegisteredDomainAndTenant(domainAndTenant *godog.Table) error {
 	domain, err := l.apiTest.ReadCellString(domainAndTenant, "domain")
 	if err != nil {
 		return err
@@ -111,7 +111,7 @@ func (l *ListPermission) aRegisteredDomainAndTenant(domainAndTenant *godog.Table
 	return nil
 }
 
-func (l *ListPermission) iHaveServiceWith(service *godog.Table) error {
+func (l *ListPermissions) iHaveServiceWith(service *godog.Table) error {
 	body, err := l.apiTest.ReadRow(service, nil, false)
 	if err != nil {
 		return err
@@ -142,7 +142,7 @@ func (l *ListPermission) iHaveServiceWith(service *godog.Table) error {
 	return nil
 }
 
-func (l *ListPermission) iRequestToGetAllPermissionsUnderMyTenant() error {
+func (l *ListPermissions) iRequestToGetAllPermissionsUnderMyTenant() error {
 	l.apiTest.SetHeader("Authorization", "Basic "+l.BasicAuth(l.createdService.ServiceID.String(), "123456"))
 	l.apiTest.SetHeader("x-subject", l.service.UserId)
 	l.apiTest.SetHeader("x-action", "*")
@@ -153,7 +153,7 @@ func (l *ListPermission) iRequestToGetAllPermissionsUnderMyTenant() error {
 	return nil
 }
 
-func (l *ListPermission) iShouldGetAllPermissionsInMyTenant(permissions *godog.Table) error {
+func (l *ListPermissions) iShouldGetAllPermissionsInMyTenant(permissions *godog.Table) error {
 	if err := l.apiTest.AssertStatusCode(http.StatusOK); err != nil {
 		return err
 	}
@@ -206,7 +206,7 @@ func (l *ListPermission) iShouldGetAllPermissionsInMyTenant(permissions *godog.T
 	return nil
 }
 
-func (l *ListPermission) InitializeScenario(ctx *godog.ScenarioContext) {
+func (l *ListPermissions) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		l.apiTest.URL = "/v1/permissions"
 		l.apiTest.Method = http.MethodGet

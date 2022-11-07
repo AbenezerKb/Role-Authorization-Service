@@ -35,7 +35,7 @@ type authorizeUserTest struct {
 	}
 }
 
-func TestUpdateRole(t *testing.T) {
+func TestAuthorizeUser(t *testing.T) {
 	a := &authorizeUserTest{}
 	a.TestInstance = test.Initiate(context.Background(), "../../../../")
 	a.apiTest.InitializeServer(a.Server)
