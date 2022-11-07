@@ -221,3 +221,7 @@ func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus,
 
 	return r.opa.Refresh(ctx, fmt.Sprintf("Updating role [%v] in tenant [%v] with status [%v]", roleId.String(), tenant, param.Status))
 }
+
+func (r *role) GetRole(ctx context.Context, param uuid.UUID) (*dto.Role, error) {
+	return r.rolePersistence.GetRole(ctx, param)
+}

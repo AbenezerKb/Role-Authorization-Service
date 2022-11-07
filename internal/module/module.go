@@ -42,6 +42,7 @@ type Role interface {
 	DeleteRole(ctx context.Context, param string) (*dto.Role, error)
 	ListRoles(ctx context.Context) ([]dto.Role, error)
 	UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId uuid.UUID) error
+	GetRole(ctx context.Context, param uuid.UUID) (*dto.Role, error)
 }
 
 type Opa interface {
