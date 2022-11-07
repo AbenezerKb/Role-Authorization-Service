@@ -97,8 +97,13 @@ func (q *Queries) DeleteRole(ctx context.Context, id uuid.UUID) (DeleteRoleRow, 
 }
 
 const getRoleById = `-- name: GetRoleById :one
-select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r where r.id=$1 and r.deleted_at is null
+select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r join tenants t on t.id = r.tenant_id where t.service_id=$1 and t.deleted_at is null and r.id=$2 and r.deleted_at is null
 `
+
+type GetRoleByIdParams struct {
+	ServiceID uuid.UUID `json:"service_id"`
+	ID        uuid.UUID `json:"id"`
+}
 
 type GetRoleByIdRow struct {
 	Name       string    `json:"name"`
@@ -109,8 +114,8 @@ type GetRoleByIdRow struct {
 	Permission []string  `json:"permission"`
 }
 
-func (q *Queries) GetRoleById(ctx context.Context, id uuid.UUID) (GetRoleByIdRow, error) {
-	row := q.db.QueryRow(ctx, getRoleById, id)
+func (q *Queries) GetRoleById(ctx context.Context, arg GetRoleByIdParams) (GetRoleByIdRow, error) {
+	row := q.db.QueryRow(ctx, getRoleById, arg.ServiceID, arg.ID)
 	var i GetRoleByIdRow
 	err := row.Scan(
 		&i.Name,
