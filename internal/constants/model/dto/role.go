@@ -63,6 +63,8 @@ type Role struct {
 	ID uuid.UUID `json:"id,omitempty"`
 	// Name is the name of the role.
 	Name string `json:"name,omitempty"`
+	// Permissions are the list of permissions names this role contains
+	Permissions []string `json:"permissions,omitempty"`
 	// Status is the status of the role.
 	Status string `json:"status,omitempty"`
 	// DeletedAt is the time this service was created.
