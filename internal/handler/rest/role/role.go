@@ -297,3 +297,21 @@ func (r *role) UpdateRoleStatus(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
+
+func (r *role) GetRole(ctx *gin.Context) {
+	roleId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid role id")
+		r.logger.Info(ctx, "invalid role id", zap.Error(err), zap.Any("role id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	result, err := r.roleModule.GetRole(ctx, roleId)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
+}
