@@ -298,6 +298,23 @@ func (r *role) UpdateRoleStatus(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
 
+// GetRole  returns a role with the given id
+// @Summary      returns a role with the given id
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 id 	path string true "role id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200 {object} dto.Role "successfully returns a role detail"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Failure      404  {object}  model.ErrorResponse "role not found"
+// @Router       /roles/{id} [get]
+// @Security	 BasicAuth
 func (r *role) GetRole(ctx *gin.Context) {
 	roleId, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {

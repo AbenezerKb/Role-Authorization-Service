@@ -235,6 +235,11 @@ definitions:
       name:
         description: Name is the name of the role.
         type: string
+      permissions:
+        description: Permissions are the list of permissions names this role contains
+        items:
+          type: string
+        type: array
       status:
         description: Status is the status of the role.
         type: string
@@ -816,6 +821,63 @@ paths:
       security:
       - BasicAuth: []
       summary: delete role.
+      tags:
+      - roles
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully returns a role detail
+          schema:
+            $ref: '#/definitions/dto.Role'
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: role not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: returns a role with the given id
       tags:
       - roles
     put:
