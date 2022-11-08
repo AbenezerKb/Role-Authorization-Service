@@ -27,6 +27,8 @@ type Permission struct {
 	Tenant string `json:"tenant,omitempty"`
 	// Domain is an array that holds the id of the domains the permission is accessible at
 	Domain []uuid.UUID `json:"domains,omitempty"`
+	// InheritedPermissions is the list of permissions name the permission is inheriting.
+	InheritedPermissions []Permission `json:"inherited_permissions,omitempty"`
 	// Status is the status of the permission.
 	Status string `json:"status,omitempty"`
 	// DeletedAt is the time this permission was deleted.
