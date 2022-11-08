@@ -113,7 +113,7 @@ func (t *tenant) IsPermissionExistsInTenant(ctx context.Context, tenant string, 
 		return false, err
 	}
 
-	if count.(int64) > 0 {
+	if count > 0 {
 		return true, nil
 	}
 	return false, nil

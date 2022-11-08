@@ -24,4 +24,11 @@ select * from _permission;
 
 
 -- name: IsPermissionExistsInTenant :one
-SELECT count_rows() FROM permissions p join tenants t on p.tenant_id=t.id WHERE p.name =$1 and p.service_id=$2 and t.tenant_name=$3 and p.deleted_at IS NULL and p.deleted_at IS NULL ;
+with _tenant as (
+    select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2 and deleted_at IS NULL
+),_sum as(
+SELECT count_rows() as count FROM _tenant,permissions p WHERE p.name =$3 and p.service_id=$2 and p.tenant_id=_tenant.id and p.deleted_at IS NULL
+union all
+SELECT  count_rows() as count from _tenant,permission_domains pd join permissions p2 on pd.permission_id = p2.id where p2.name=$3 and pd.domain_id=_tenant.domain_id
+)
+select sum(count) from _sum;

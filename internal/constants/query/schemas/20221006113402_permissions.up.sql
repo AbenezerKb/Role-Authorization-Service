@@ -28,6 +28,6 @@ CREATE TABLE "permissions_hierarchy" (
     "updated_at" timestamptz NOT NULL default now()
 );
 
-ALTER TABLE "permissions_hierarchy" ADD FOREIGN KEY ("parent") REFERENCES "permissions" ("id");
+ALTER TABLE "permissions_hierarchy" ADD FOREIGN KEY ("parent") REFERENCES "permissions" ("id") on DELETE cascade;
 
-ALTER TABLE "permissions_hierarchy" ADD FOREIGN KEY ("child") REFERENCES "permissions" ("id");
+ALTER TABLE "permissions_hierarchy" ADD FOREIGN KEY ("child") REFERENCES "permissions" ("id") on DELETE cascade;
