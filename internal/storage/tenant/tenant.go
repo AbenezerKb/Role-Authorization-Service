@@ -40,7 +40,7 @@ func (t *tenant) CreateTenant(ctx context.Context, param dto.CreateTenent) error
 	return nil
 
 }
-func (t *tenant) IsTenantExist(ctx context.Context, param dto.CreateTenent) (bool, error) {
+func (t *tenant) CheckIfTenantExists(ctx context.Context, param dto.CreateTenent) (bool, error) {
 	_, err := t.db.GetTenentWithNameAndServiceId(ctx, db.GetTenentWithNameAndServiceIdParams{
 		TenantName: param.TenantName,
 		ServiceID:  param.ServiceID,
@@ -101,8 +101,8 @@ func (t *tenant) RegsiterTenantPermission(ctx context.Context, tenant string, pa
 	}, nil
 }
 
-func (t *tenant) IsPermissionExistsInTenant(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (bool, error) {
-	count, err := t.db.IsPermissionExistsInTenant(ctx, db.IsPermissionExistsInTenantParams{
+func (t *tenant) CheckIfPermissionExistsInTenant(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (bool, error) {
+	count, err := t.db.CheckIfPermissionExistsInTenant(ctx, db.CheckIfPermissionExistsInTenantParams{
 		Name:       param.Name,
 		ServiceID:  param.ServiceID,
 		TenantName: tenant,

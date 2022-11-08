@@ -40,7 +40,7 @@ func (t *tenant) CreateTenant(ctx context.Context, param dto.CreateTenent) error
 		t.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
-	isTenantExist, err := t.tenantPersistant.IsTenantExist(ctx, param)
+	isTenantExist, err := t.tenantPersistant.CheckIfTenantExists(ctx, param)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (t *tenant) RegsiterTenantPermission(ctx context.Context, param dto.Registe
 		param.Statement.Fields = []string{"*"}
 	}
 
-	exists, err := t.tenantPersistant.IsPermissionExistsInTenant(ctx, tenant, param)
+	exists, err := t.tenantPersistant.CheckIfPermissionExistsInTenant(ctx, tenant, param)
 	if err != nil {
 		return nil, err
 	}

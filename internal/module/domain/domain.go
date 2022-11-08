@@ -35,7 +35,7 @@ func (d *domain) CreateDomain(ctx context.Context, param dto.CreateDomain) (*dto
 		return nil, err
 	}
 
-	isExist, err := d.domainPersistant.IsDomainExist(ctx, param)
+	isExist, err := d.domainPersistant.CheckIfDomainExists(ctx, param)
 	if err != nil {
 		d.log.Info(ctx, "domain already exists", zap.String("name", param.Name))
 		return nil, errors.ErrDataExists.Wrap(err, "domain  with this name and service already exists")

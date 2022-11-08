@@ -11,6 +11,31 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkIfDomainExists = `-- name: CheckIfDomainExists :one
+SELECT id, name, status, deleted_at, service_id, created_at, updated_at FROM domains 
+WHERE service_id = $1 AND name = $2 AND deleted_at IS NULL
+`
+
+type CheckIfDomainExistsParams struct {
+	ServiceID uuid.UUID `json:"service_id"`
+	Name      string    `json:"name"`
+}
+
+func (q *Queries) CheckIfDomainExists(ctx context.Context, arg CheckIfDomainExistsParams) (Domain, error) {
+	row := q.db.QueryRow(ctx, checkIfDomainExists, arg.ServiceID, arg.Name)
+	var i Domain
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Status,
+		&i.DeletedAt,
+		&i.ServiceID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createDomain = `-- name: CreateDomain :one
 INSERT INTO domains (
     name ,
@@ -81,31 +106,6 @@ func (q *Queries) GetDomainByServiceId(ctx context.Context, serviceID uuid.UUID)
 		return nil, err
 	}
 	return items, nil
-}
-
-const isDomainExist = `-- name: IsDomainExist :one
-SELECT id, name, status, deleted_at, service_id, created_at, updated_at FROM domains 
-WHERE service_id = $1 AND name = $2 AND deleted_at IS NULL
-`
-
-type IsDomainExistParams struct {
-	ServiceID uuid.UUID `json:"service_id"`
-	Name      string    `json:"name"`
-}
-
-func (q *Queries) IsDomainExist(ctx context.Context, arg IsDomainExistParams) (Domain, error) {
-	row := q.db.QueryRow(ctx, isDomainExist, arg.ServiceID, arg.Name)
-	var i Domain
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Status,
-		&i.DeletedAt,
-		&i.ServiceID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
 }
 
 const softDeleteDomain = `-- name: SoftDeleteDomain :one

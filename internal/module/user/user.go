@@ -43,7 +43,7 @@ func (u *user) RegisterUser(ctx context.Context, param dto.RegisterUser) error {
 		return err
 	}
 
-	exists, err := u.userPersistant.IsUserExist(ctx, param)
+	exists, err := u.userPersistant.CheckIfUserExists(ctx, param)
 	if err != nil {
 		return err
 	}

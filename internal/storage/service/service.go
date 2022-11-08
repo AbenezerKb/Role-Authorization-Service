@@ -45,7 +45,7 @@ func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*
 	}, nil
 }
 
-func (s *service) IsServiceExist(ctx context.Context, param dto.CreateService) (bool, error) {
+func (s *service) CheckIfServiceExists(ctx context.Context, param dto.CreateService) (bool, error) {
 	_, err := s.db.GetServiceByName(ctx, param.Name)
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {

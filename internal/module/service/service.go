@@ -37,7 +37,7 @@ func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*
 		return nil, err
 	}
 
-	exists, err := s.servicePersistence.IsServiceExist(ctx, param)
+	exists, err := s.servicePersistence.CheckIfServiceExists(ctx, param)
 	if err != nil {
 		return nil, err
 	}

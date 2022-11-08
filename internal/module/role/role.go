@@ -51,7 +51,7 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 		return nil, err
 	}
 
-	exists, err := r.rolePersistence.IsRoleExist(ctx, param)
+	exists, err := r.rolePersistence.CheckIfRoleExists(ctx, param)
 	if err != nil {
 		return nil, err
 	}

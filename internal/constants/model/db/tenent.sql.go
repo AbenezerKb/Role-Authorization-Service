@@ -13,6 +13,30 @@ import (
 	"github.com/jackc/pgtype"
 )
 
+const checkIfPermissionExistsInTenant = `-- name: CheckIfPermissionExistsInTenant :one
+with _tenant as (
+    select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2 and deleted_at IS NULL
+),_sum as(
+SELECT count_rows() as count FROM _tenant,permissions p WHERE p.name =$3 and p.service_id=$2 and p.tenant_id=_tenant.id and p.deleted_at IS NULL
+union all
+SELECT  count_rows() as count from _tenant,permission_domains pd join permissions p2 on pd.permission_id = p2.id where p2.name=$3 and pd.domain_id=_tenant.domain_id
+)
+select sum(count) from _sum
+`
+
+type CheckIfPermissionExistsInTenantParams struct {
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+	Name       string    `json:"name"`
+}
+
+func (q *Queries) CheckIfPermissionExistsInTenant(ctx context.Context, arg CheckIfPermissionExistsInTenantParams) (int64, error) {
+	row := q.db.QueryRow(ctx, checkIfPermissionExistsInTenant, arg.TenantName, arg.ServiceID, arg.Name)
+	var sum int64
+	err := row.Scan(&sum)
+	return sum, err
+}
+
 const createTenent = `-- name: CreateTenent :exec
 INSERT INTO tenants (
 domain_id,
@@ -60,30 +84,6 @@ func (q *Queries) GetTenentWithNameAndServiceId(ctx context.Context, arg GetTene
 		&i.Inherit,
 	)
 	return i, err
-}
-
-const isPermissionExistsInTenant = `-- name: IsPermissionExistsInTenant :one
-with _tenant as (
-    select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2 and deleted_at IS NULL
-),_sum as(
-SELECT count_rows() as count FROM _tenant,permissions p WHERE p.name =$3 and p.service_id=$2 and p.tenant_id=_tenant.id and p.deleted_at IS NULL
-union all
-SELECT  count_rows() as count from _tenant,permission_domains pd join permissions p2 on pd.permission_id = p2.id where p2.name=$3 and pd.domain_id=_tenant.domain_id
-)
-select sum(count) from _sum
-`
-
-type IsPermissionExistsInTenantParams struct {
-	TenantName string    `json:"tenant_name"`
-	ServiceID  uuid.UUID `json:"service_id"`
-	Name       string    `json:"name"`
-}
-
-func (q *Queries) IsPermissionExistsInTenant(ctx context.Context, arg IsPermissionExistsInTenantParams) (int64, error) {
-	row := q.db.QueryRow(ctx, isPermissionExistsInTenant, arg.TenantName, arg.ServiceID, arg.Name)
-	var sum int64
-	err := row.Scan(&sum)
-	return sum, err
 }
 
 const tenantRegisterPermission = `-- name: TenantRegisterPermission :one

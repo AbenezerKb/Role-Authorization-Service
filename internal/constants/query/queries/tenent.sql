@@ -23,7 +23,7 @@ with _permission as(
 select * from _permission;
 
 
--- name: IsPermissionExistsInTenant :one
+-- name: CheckIfPermissionExistsInTenant :one
 with _tenant as (
     select tenants.domain_id,tenants.id from tenants where tenant_name =$1 and tenants.service_id=$2 and deleted_at IS NULL
 ),_sum as(

@@ -38,7 +38,7 @@ func (u *user) RegiseterUser(ctx context.Context, param dto.RegisterUser) error 
 	return nil
 }
 
-func (u *user) IsUserExist(ctx context.Context, param dto.RegisterUser) (bool, error) {
+func (u *user) CheckIfUserExists(ctx context.Context, param dto.RegisterUser) (bool, error) {
 	_, err := u.db.GetUserWithUserIdAndServiceId(ctx, db.GetUserWithUserIdAndServiceIdParams{
 		UserID:    param.UserId,
 		ServiceID: param.ServiceID,

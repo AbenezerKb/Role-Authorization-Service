@@ -46,7 +46,7 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 		Status:    string(role.Status),
 	}, nil
 }
-func (r *role) IsRoleExist(ctx context.Context, param dto.CreateRole) (bool, error) {
+func (r *role) CheckIfRoleExists(ctx context.Context, param dto.CreateRole) (bool, error) {
 	_, err := r.db.GetRoleByNameAndTenantName(ctx, db.GetRoleByNameAndTenantNameParams{
 		Name:       param.Name,
 		TenantName: param.TenantName,

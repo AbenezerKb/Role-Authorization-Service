@@ -64,9 +64,9 @@ func (d *domain) SoftDeleteDomain(ctx context.Context, param dto.DeleteDomain) e
 	return nil
 
 }
-func (d *domain) IsDomainExist(ctx context.Context, param dto.CreateDomain) (bool, error) {
+func (d *domain) CheckIfDomainExists(ctx context.Context, param dto.CreateDomain) (bool, error) {
 
-	_, err := d.db.IsDomainExist(ctx, db.IsDomainExistParams{ServiceID: param.ServiceID, Name: param.Name})
+	_, err := d.db.CheckIfDomainExists(ctx, db.CheckIfDomainExistsParams{ServiceID: param.ServiceID, Name: param.Name})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			return false, nil

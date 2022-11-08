@@ -20,6 +20,6 @@ RETURNING *;
 SELECT * FROM domains 
 WHERE service_id = $1 AND deleted_at IS NULL;
 
--- name: IsDomainExist :one
+-- name: CheckIfDomainExists :one
 SELECT * FROM domains 
 WHERE service_id = $1 AND name = $2 AND deleted_at IS NULL;
