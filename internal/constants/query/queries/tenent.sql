@@ -14,8 +14,8 @@ tenant_name = $1 AND service_id = $2 AND deleted_at IS NULL;
 
 -- name: TenantRegisterPermission :one
 with _permission as(
-    INSERT INTO permissions (name,description,statement,service_id,tenant_id)
-    SELECT $1,$2,$3,$4,t.id from tenants t where t.tenant_name=$5 and t.deleted_at is null
+    INSERT INTO permissions (name,description,statement,service_id,tenant_id,delete_or_update)
+    SELECT $1,$2,$3,$4,t.id,true from tenants t where t.tenant_name=$5 and t.deleted_at is null
     RETURNING permissions.id,permissions.statement,permissions.description,permissions.name,permissions.created_at,permissions.service_id, $5::string as tenant
 ), _ph as(
     insert into permissions_hierarchy(parent, child) select _permission.id,p.id from _permission,permissions p where p.name=ANY($6::string[])  and p.service_id=$4 and p.deleted_at IS NULl ON conflict  do nothing returning id

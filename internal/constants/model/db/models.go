@@ -68,16 +68,17 @@ type Domain struct {
 }
 
 type Permission struct {
-	ID          uuid.UUID     `json:"id"`
-	Status      Status        `json:"status"`
-	Name        string        `json:"name"`
-	Description string        `json:"description"`
-	Statement   pgtype.JSON   `json:"statement"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
-	ServiceID   uuid.UUID     `json:"service_id"`
-	TenantID    uuid.NullUUID `json:"tenant_id"`
-	DeletedAt   sql.NullTime  `json:"deleted_at"`
+	ID             uuid.UUID     `json:"id"`
+	Status         Status        `json:"status"`
+	Name           string        `json:"name"`
+	Description    string        `json:"description"`
+	Statement      pgtype.JSON   `json:"statement"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      time.Time     `json:"updated_at"`
+	ServiceID      uuid.UUID     `json:"service_id"`
+	TenantID       uuid.NullUUID `json:"tenant_id"`
+	DeletedAt      sql.NullTime  `json:"deleted_at"`
+	DeleteOrUpdate bool          `json:"delete_or_update"`
 }
 
 type PermissionDomain struct {
