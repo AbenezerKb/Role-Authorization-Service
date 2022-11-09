@@ -81,3 +81,14 @@ func (u *user) UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus)
 
 	return u.opa.Refresh(ctx, fmt.Sprintf("Updating user [%v] with status [%v]", param.UserID.String(), param.Status))
 }
+
+func (u *user) GetPermissionWithInTenant(ctx context.Context, tenant string, userId uuid.UUID) ([]dto.Permission, error) {
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		u.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return nil, err
+	}
+
+	return u.userPersistant.GetPermissionWithInTenant(ctx, tenant, userId, serviceID)
+}
