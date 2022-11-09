@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -87,4 +88,23 @@ func (u *user) UpdateUserStatus(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
+
+func (u *user) GetPermissionWithInTenant(ctx *gin.Context) {
+	userId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid role id")
+		u.logger.Info(ctx, "invalid role id", zap.Error(err), zap.Any("role id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+	tenant := ctx.Param("tenant-id")
+
+	permission, err := u.userModule.GetPermissionWithInTenant(ctx, tenant, userId)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, permission, nil)
 }

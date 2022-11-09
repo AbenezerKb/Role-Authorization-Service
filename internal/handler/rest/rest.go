@@ -27,6 +27,7 @@ type Tenant interface {
 type User interface {
 	RegisterUser(ctx *gin.Context)
 	UpdateUserStatus(ctx *gin.Context)
+	GetPermissionWithInTenant(ctx *gin.Context)
 }
 
 type Role interface {
