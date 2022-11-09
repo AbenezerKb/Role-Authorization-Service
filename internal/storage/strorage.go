@@ -42,6 +42,7 @@ type User interface {
 	RegiseterUser(ctx context.Context, param dto.RegisterUser) error
 	CheckIfUserExists(ctx context.Context, param dto.RegisterUser) (bool, error)
 	UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus) error
+	GetPermissionWithInTenant(ctx context.Context, tenant string, userId, serviceID uuid.UUID) ([]dto.Permission, error)
 }
 
 type Role interface {

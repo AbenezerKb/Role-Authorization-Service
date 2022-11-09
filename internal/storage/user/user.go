@@ -10,6 +10,7 @@ import (
 	"2f-authorization/platform/logger"
 	"context"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -74,4 +75,24 @@ func (u *user) UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus)
 		}
 	}
 	return nil
+}
+
+func (u *user) GetPermissionWithInTenant(ctx context.Context, tenant string, userId, serviceID uuid.UUID) ([]dto.Permission, error) {
+	permissions, err := u.db.GetUserPermissionWithInTenant(ctx, dbinstance.GetUserPermissionWithInTenantParams{
+		UserID:     userId,
+		TenantName: tenant,
+		ServiceID:  serviceID,
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no permisisons found")
+			u.log.Info(ctx, "no permissions were found", zap.Error(err), zap.String("tenany-name", tenant), zap.String("user-id", userId.String()))
+			return []dto.Permission{}, err
+		} else {
+			err = errors.ErrReadError.Wrap(err, "error reading permissions")
+			u.log.Error(ctx, "error reading permissions", zap.Error(err), zap.String("tenany-name", tenant), zap.String("user-id", userId.String()))
+			return []dto.Permission{}, err
+		}
+	}
+	return permissions, nil
 }
