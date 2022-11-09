@@ -1580,6 +1580,64 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{id}/tenants/{tenant-id}/permissions": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "returns user's permissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant id",
+                        "name": "tenant-id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "return permissions list",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Permission"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1802,6 +1860,13 @@ const docTemplate = `{
                     "description": "ID is the unique identifier for the service.\nIt is automatically generated when the permission is registered.",
                     "type": "string"
                 },
+                "inherited_permissions": {
+                    "description": "InheritedPermissions is the list of permissions name the permission is inheriting.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Permission"
+                    }
+                },
                 "name": {
                     "description": "Name is the name of the permission being created",
                     "type": "string"
@@ -1834,6 +1899,13 @@ const docTemplate = `{
                 "description": {
                     "description": "Description is the description of the permission being created",
                     "type": "string"
+                },
+                "inherited_permissions": {
+                    "description": "InheritedPermissions is the list of permissions name the permission is inheriting.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "description": "Name is the name of the permission being created",

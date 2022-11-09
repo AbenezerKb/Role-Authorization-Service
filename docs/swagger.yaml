@@ -176,6 +176,12 @@ definitions:
           ID is the unique identifier for the service.
           It is automatically generated when the permission is registered.
         type: string
+      inherited_permissions:
+        description: InheritedPermissions is the list of permissions name the permission
+          is inheriting.
+        items:
+          $ref: '#/definitions/dto.Permission'
+        type: array
       name:
         description: Name is the name of the permission being created
         type: string
@@ -202,6 +208,12 @@ definitions:
       description:
         description: Description is the description of the permission being created
         type: string
+      inherited_permissions:
+        description: InheritedPermissions is the list of permissions name the permission
+          is inheriting.
+        items:
+          type: string
+        type: array
       name:
         description: Name is the name of the permission being created
         type: string
@@ -1368,6 +1380,43 @@ paths:
       security:
       - BasicAuth: []
       summary: add new user to the system.
+      tags:
+      - users
+  /users/{id}/tenants/{tenant-id}/permissions:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: tenant id
+        in: path
+        name: tenant-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: return permissions list
+          schema:
+            items:
+              $ref: '#/definitions/dto.Permission'
+            type: array
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: returns user's permissions
       tags:
       - users
   /users/status:

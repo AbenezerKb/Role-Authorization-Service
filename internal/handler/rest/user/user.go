@@ -90,6 +90,18 @@ func (u *user) UpdateUserStatus(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
 
+// GetPermissionWithInTenant returns user's permissions within the specified tenant
+// @Summary      returns user's permissions
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @param 		 id 	path string true "user id"
+// @param 		 tenant-id 	path string true "tenant id"
+// @Success      200  {object} []dto.Permission "return permissions list"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Router       /users/{id}/tenants/{tenant-id}/permissions [get]
+// @Security	 BasicAuth
 func (u *user) GetPermissionWithInTenant(ctx *gin.Context) {
 	userId, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
