@@ -78,6 +78,7 @@ func (g *getUserPermissionsWithinTenantTest) iAmGrantedAnRole(role string) error
 		RoleID:     g.createdRoleResponseId,
 		UserID:     g.user.UserId,
 		TenantName: g.tenant,
+		ServiceID:  g.createdService.ServiceID,
 	}); err != nil {
 		return err
 	}

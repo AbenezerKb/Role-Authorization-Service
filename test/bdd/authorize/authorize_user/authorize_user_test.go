@@ -204,6 +204,7 @@ func (a *authorizeUserTest) theUserIsGrantedWithTheRole(role string) error {
 		RoleID:     a.createdRoleResponseId,
 		UserID:     a.user.UserId,
 		TenantName: a.tenant,
+		ServiceID: a.createdService.ServiceID,
 	}); err != nil {
 		return err
 	}
