@@ -63,12 +63,13 @@ func (r *role) CheckIfRoleExists(ctx context.Context, param dto.CreateRole) (boo
 	return true, nil
 }
 
-func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error {
+func (r *role) AssignRole(ctx context.Context, serviceID uuid.UUID, param dto.TenantUsersRole) error {
 
 	err := r.db.AssignRole(ctx, db.AssignRoleParams{
 		TenantName: param.TenantName,
 		RoleID:     param.RoleID,
 		UserID:     param.UserID,
+		ServiceID:  serviceID,
 	})
 	if err != nil {
 		err := errors.ErrWriteError.Wrap(err, "could not assign role")

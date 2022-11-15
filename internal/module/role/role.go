@@ -67,10 +67,15 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error {
 
 	var err error
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service", ctx.Value("x-service-id")))
+		return err
+	}
+
 	param.TenantName = ctx.Value("x-tenant").(string)
-
 	if err = param.Validate(); err != nil {
-
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		r.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
@@ -84,7 +89,7 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "role already exists", zap.String("name", param.RoleID.String()))
 		return errors.ErrDataExists.Wrap(err, "user  with this role  already exists")
 	}
-	if err := r.rolePersistence.AssignRole(ctx, param); err != nil {
+	if err := r.rolePersistence.AssignRole(ctx, serviceID, param); err != nil {
 		return err
 	}
 

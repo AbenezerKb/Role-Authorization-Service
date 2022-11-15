@@ -51,7 +51,7 @@ type Role interface {
 	RemovePermissionsFromRole(ctx context.Context, param dto.UpdateRole) error
 	CheckIfRoleExists(ctx context.Context, param dto.CreateRole) (bool, error)
 	IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (bool, error)
-	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
+	AssignRole(ctx context.Context, serviceID uuid.UUID, param dto.TenantUsersRole) error
 	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 	DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, error)
 	ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dto.Role, error)
