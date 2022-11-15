@@ -15,10 +15,16 @@ roles.name = $1 AND tenants.tenant_name = $2 and roles.deleted_at IS NULL and te
 
 
 -- name: AssignRole :exec
+WITH new_row AS (
+    INSERT INTO users (user_id,  service_id) select $1,$2 where not exists(select id from users where user_id=$1 and service_id=$2 and deleted_at is null)returning id
+),_user as(
+    SELECT id FROM new_row
+    UNION
+    SELECT id FROM users WHERE user_id=$1 and service_id=$2 and deleted_at is null
+)
 insert into tenant_users_roles(tenant_id, user_id, role_id)
-select tenants.id,users.id,$1
-from tenants,users  where tenants.tenant_name=$2
-and users.user_id=$3 and users.deleted_at IS NULL and tenants.deleted_at IS NULL;
+select tenants.id,_user.id,$3
+from tenants,_user  where tenants.tenant_name=$4 and tenants.deleted_at IS NULL;
 
 -- name: IsRoleAssigned :one 
 SELECT count_rows() FROM tenant_users_roles 

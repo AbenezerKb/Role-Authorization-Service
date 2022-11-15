@@ -19,7 +19,7 @@ type Permission struct {
 	// Description is the description of the permission being created
 	Description string `json:"description,omitempty"`
 	// Statement is an object that holds the action, resource and effect of the permission being created
-	Statement `json:"statement,omitempty"`
+	Statement Statement `json:"statement,omitempty"`
 	// ServiceID is the id of the service the permission belongs to
 	ServiceID uuid.UUID `json:"service_id,omitempty"`
 	// Tenant is the scope the permissions is registred in.
