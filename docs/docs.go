@@ -1581,6 +1581,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/roles/{role-id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "changes user's role status",
+                "parameters": [
+                    {
+                        "description": "status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserRoleStatus"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "role id",
+                        "name": "role-id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully updates the user's role status",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/tenants/{tenant-id}/permissions": {
             "get": {
                 "security": [
@@ -1826,10 +1924,6 @@ const docTemplate = `{
         "dto.Permission": {
             "type": "object",
             "properties": {
-                "action": {
-                    "description": "Action is the urn for the action(method) the user is taking on the resource",
-                    "type": "string"
-                },
                 "created_at": {
                     "description": "CreatedAt is the time this permission was created.",
                     "type": "string"
@@ -1840,17 +1934,6 @@ const docTemplate = `{
                 },
                 "domains": {
                     "description": "Domain is an array that holds the id of the domains the permission is accessible at",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "effect": {
-                    "description": "Effect is the effect that's taken on the permission\nIt is either allow or deny",
-                    "type": "string"
-                },
-                "fields": {
-                    "description": "Fields are the attributes of the resource",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -1871,13 +1954,13 @@ const docTemplate = `{
                     "description": "Name is the name of the permission being created",
                     "type": "string"
                 },
-                "resource": {
-                    "description": "Resource is the urn for the path that is being accessed",
-                    "type": "string"
-                },
                 "service_id": {
                     "description": "ServiceID is the id of the service the permission belongs to",
                     "type": "string"
+                },
+                "statement": {
+                    "description": "Statement is an object that holds the action, resource and effect of the permission being created",
+                    "$ref": "#/definitions/dto.Statement"
                 },
                 "status": {
                     "description": "Status is the status of the permission.",
@@ -2024,6 +2107,15 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "Status is new status that will replace old status of the service",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateUserRoleStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status is new status of the role that is going to replace the old one",
                     "type": "string"
                 }
             }

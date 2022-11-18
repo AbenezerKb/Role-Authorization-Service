@@ -121,6 +121,24 @@ func (u *user) GetPermissionWithInTenant(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, permission, nil)
 }
 
+// UpdateUserRoleStatus updates user's role status
+// @Summary      changes user's role status
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @param status body dto.UpdateUserRoleStatus true "status"
+// @param 		 role-id 	path string true "role id"
+// @param 		 id 	path string true "user id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200 boolean true "successfully updates the user's role status"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /users/{id}/roles/{role-id}/status [patch]
+// @Security	 BasicAuth
 func (u *user) UpdateUserRoleStatus(ctx *gin.Context) {
 	updateStatusParam := dto.UpdateUserRoleStatus{}
 	err := ctx.ShouldBind(&updateStatusParam)

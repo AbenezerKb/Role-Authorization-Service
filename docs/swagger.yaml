@@ -145,10 +145,6 @@ definitions:
     type: object
   dto.Permission:
     properties:
-      action:
-        description: Action is the urn for the action(method) the user is taking on
-          the resource
-        type: string
       created_at:
         description: CreatedAt is the time this permission was created.
         type: string
@@ -158,16 +154,6 @@ definitions:
       domains:
         description: Domain is an array that holds the id of the domains the permission
           is accessible at
-        items:
-          type: string
-        type: array
-      effect:
-        description: |-
-          Effect is the effect that's taken on the permission
-          It is either allow or deny
-        type: string
-      fields:
-        description: Fields are the attributes of the resource
         items:
           type: string
         type: array
@@ -185,12 +171,13 @@ definitions:
       name:
         description: Name is the name of the permission being created
         type: string
-      resource:
-        description: Resource is the urn for the path that is being accessed
-        type: string
       service_id:
         description: ServiceID is the id of the service the permission belongs to
         type: string
+      statement:
+        $ref: '#/definitions/dto.Statement'
+        description: Statement is an object that holds the action, resource and effect
+          of the permission being created
       status:
         description: Status is the status of the permission.
         type: string
@@ -304,6 +291,13 @@ definitions:
         type: string
       status:
         description: Status is new status that will replace old status of the service
+        type: string
+    type: object
+  dto.UpdateUserRoleStatus:
+    properties:
+      status:
+        description: Status is new status of the role that is going to replace the
+          old one
         type: string
     type: object
   dto.UpdateUserStatus:
@@ -1380,6 +1374,71 @@ paths:
       security:
       - BasicAuth: []
       summary: add new user to the system.
+      tags:
+      - users
+  /users/{id}/roles/{role-id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserRoleStatus'
+      - description: role id
+        in: path
+        name: role-id
+        required: true
+        type: string
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updates the user's role status
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: changes user's role status
       tags:
       - users
   /users/{id}/tenants/{tenant-id}/permissions:
