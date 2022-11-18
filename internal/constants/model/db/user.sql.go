@@ -111,6 +111,36 @@ func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) erro
 	return err
 }
 
+const updateUserRoleStatus = `-- name: UpdateUserRoleStatus :one
+with _tenants as(
+    select id from tenants t where t.tenant_name=$1 and t.service_id=$2 and t.deleted_at IS NULL
+),_user as(
+    select id from users u where u.user_id=$3 and u.deleted_at is null and u.service_id=$2
+)
+update tenant_users_roles tur set status =$4 from _tenants,_user where tur.role_id=$5 and tur.deleted_at IS NULL and tur.tenant_id=_tenants.id and tur.user_id=_user.id returning tur.id
+`
+
+type UpdateUserRoleStatusParams struct {
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+	UserID     uuid.UUID `json:"user_id"`
+	Status     Status    `json:"status"`
+	RoleID     uuid.UUID `json:"role_id"`
+}
+
+func (q *Queries) UpdateUserRoleStatus(ctx context.Context, arg UpdateUserRoleStatusParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, updateUserRoleStatus,
+		arg.TenantName,
+		arg.ServiceID,
+		arg.UserID,
+		arg.Status,
+		arg.RoleID,
+	)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
+}
+
 const updateUserStatus = `-- name: UpdateUserStatus :one
 UPDATE users SET status = $1 WHERE user_id = $2 AND service_id=$3 AND deleted_at IS NULL RETURNING id
 `
