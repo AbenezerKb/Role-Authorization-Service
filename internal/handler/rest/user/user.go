@@ -120,3 +120,36 @@ func (u *user) GetPermissionWithInTenant(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, permission, nil)
 }
+
+func (u *user) UpdateUserRoleStatus(ctx *gin.Context) {
+	updateStatusParam := dto.UpdateUserRoleStatus{}
+	err := ctx.ShouldBind(&updateStatusParam)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		u.logger.Info(ctx, "unable to bind role status", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	roleId, err := uuid.Parse(ctx.Param("role-id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid role id")
+		u.logger.Info(ctx, "invalid role id", zap.Error(err), zap.Any("role id", ctx.Param("role-id")))
+		_ = ctx.Error(err)
+		return
+	}
+	userId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid user id")
+		u.logger.Info(ctx, "invalid role id", zap.Error(err), zap.Any("user id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := u.userModule.UpdateUserRoleStatus(ctx, updateStatusParam, roleId, userId); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
