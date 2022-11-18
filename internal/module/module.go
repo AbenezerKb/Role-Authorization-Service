@@ -33,6 +33,7 @@ type User interface {
 	RegisterUser(ctx context.Context, param dto.RegisterUser) error
 	UpdateUserStatus(ctx context.Context, param dto.UpdateUserStatus) error
 	GetPermissionWithInTenant(ctx context.Context, tenant string, userId uuid.UUID) ([]dto.Permission, error)
+	UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, roleId, userId uuid.UUID) error
 }
 
 type Role interface {
