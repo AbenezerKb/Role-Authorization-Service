@@ -47,3 +47,14 @@ func (u UpdateUserStatus) Validate() error {
 		validation.Field(&u.UserID, validation.NotIn(uuid.Nil.String()).Error("user id is required")),
 	)
 }
+
+type UpdateUserRoleStatus struct {
+	// Status is new status of the role that is going to replace the old one
+	Status string `json:"status"`
+}
+
+func (u UpdateUserRoleStatus) Validate() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Status, validation.Required.Error("status is required"), validation.In(constants.Active, constants.InActive).Error("invalid status")),
+	)
+}
