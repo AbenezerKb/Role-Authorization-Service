@@ -120,3 +120,21 @@ func (u *user) UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRol
 
 	return u.opa.Refresh(ctx, fmt.Sprintf("Updating  [%v]'s role [%v] status in tenant [%v] with [%v]", userId, roleId.String(), tenant, param.Status))
 }
+
+func (u *user) GetPermissionWithInDomain(ctx context.Context, domain string, userId uuid.UUID) ([]dto.DomainPermissions, error) {
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		u.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return nil, err
+	}
+
+	domainId, err := uuid.Parse(domain)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid domain id")
+		u.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")), zap.Any("domian-id", domain))
+		return nil, err
+	}
+
+	return u.userPersistant.GetPermissionWithInDomain(ctx, domainId, userId, serviceID)
+}
