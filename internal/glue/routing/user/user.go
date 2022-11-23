@@ -52,6 +52,15 @@ func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMi
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodGet,
+			Path:        "/:id/domains/:domain-id/permissions",
+			Handler:     user.GetPermissionWithInDomain,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+			},
+		},
 	}
 	routing.RegisterRoutes(tenants, tenantRoutes)
 }
