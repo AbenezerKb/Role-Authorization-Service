@@ -171,3 +171,23 @@ func (u *user) UpdateUserRoleStatus(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
+
+func (u *user) GetPermissionWithInDomain(ctx *gin.Context) {
+	userId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid role id")
+		u.logger.Info(ctx, "invalid role id", zap.Error(err), zap.Any("role id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+	domain := ctx.Param("domain-id")
+
+	permission, err := u.userModule.GetPermissionWithInDomain(ctx, domain, userId)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, permission, nil)
+
+}

@@ -29,6 +29,7 @@ type User interface {
 	UpdateUserStatus(ctx *gin.Context)
 	GetPermissionWithInTenant(ctx *gin.Context)
 	UpdateUserRoleStatus(ctx *gin.Context)
+	GetPermissionWithInDomain(ctx *gin.Context)
 }
 
 type Role interface {
