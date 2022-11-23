@@ -70,9 +70,9 @@ type Role struct {
 	// DeletedAt is the time this service was created.
 	DeletedAt time.Time `json:"-"`
 	// CreatedAt is the time this service was created.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// UpdatedAt is the time this service was last updated.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
 type TenantUsersRole struct {

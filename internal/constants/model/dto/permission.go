@@ -21,7 +21,7 @@ type Permission struct {
 	// Statement is an object that holds the action, resource and effect of the permission being created
 	Statement Statement `json:"statement,omitempty"`
 	// ServiceID is the id of the service the permission belongs to
-	ServiceID uuid.UUID `json:"service_id,omitempty"`
+	ServiceID *uuid.UUID `json:"service_id,omitempty"`
 	// Tenant is the scope the permissions is registred in.
 	// It is set to null unless it's created by a tenant
 	Tenant string `json:"tenant,omitempty"`
@@ -32,11 +32,11 @@ type Permission struct {
 	// Status is the status of the permission.
 	Status string `json:"status,omitempty"`
 	// DeletedAt is the time this permission was deleted.
-	DeletedAt time.Time `json:"-"`
+	DeletedAt *time.Time `json:"-"`
 	// CreatedAt is the time this permission was created.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// UpdatedAt is the time this permission was last updated.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
 type CreatePermission struct {

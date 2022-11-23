@@ -42,7 +42,7 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 	return &dto.Role{
 		Name:      role.Name,
 		ID:        role.RoleID,
-		CreatedAt: role.CreatedAt,
+		CreatedAt: &role.CreatedAt,
 		Status:    string(role.Status),
 	}, nil
 }
@@ -151,8 +151,7 @@ func (r *role) DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, err
 	return &dto.Role{
 		ID:        role.ID,
 		Name:      role.Name,
-		CreatedAt: role.CreatedAt,
-		UpdatedAt: role.UpdatedAt,
+		CreatedAt: &role.CreatedAt,
 	}, nil
 }
 
@@ -215,8 +214,7 @@ func (r *role) GetRole(ctx context.Context, param uuid.UUID, serviceId uuid.UUID
 		Name:        role.Name,
 		Status:      string(role.Status),
 		ID:          role.ID,
-		CreatedAt:   role.CreatedAt,
+		CreatedAt:   &role.CreatedAt,
 		Permissions: role.Permission,
-		UpdatedAt:   role.UpdatedAt,
 	}, nil
 }

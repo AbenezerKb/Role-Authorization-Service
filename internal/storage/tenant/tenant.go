@@ -96,8 +96,8 @@ func (t *tenant) RegsiterTenantPermission(ctx context.Context, tenant string, pa
 		Name:        permission.Name,
 		Statement:   st,
 		Tenant:      permission.Tenant,
-		CreatedAt:   permission.CreatedAt,
-		ServiceID:   permission.ServiceID,
+		CreatedAt:   &permission.CreatedAt,
+		ServiceID:   &permission.ServiceID,
 	}, nil
 }
 
