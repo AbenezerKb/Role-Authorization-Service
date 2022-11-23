@@ -58,3 +58,8 @@ func (u UpdateUserRoleStatus) Validate() error {
 		validation.Field(&u.Status, validation.Required.Error("status is required"), validation.In(constants.Active, constants.InActive).Error("invalid status")),
 	)
 }
+
+type DomainPermissions struct {
+	Tenant      string       `json:"tenant,omitempty"`
+	Permissions []Permission `json:"permissions,omitempty"`
+}
