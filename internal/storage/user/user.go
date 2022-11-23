@@ -118,3 +118,23 @@ func (u *user) UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRol
 	}
 	return nil
 }
+
+func (u *user) GetPermissionWithInDomain(ctx context.Context, domain, userId, serviceID uuid.UUID) ([]dto.DomainPermissions, error) {
+	permissions, err := u.db.GetUserPermissionWithInTheDomain(ctx, dbinstance.GetUserPermissionWithInTheDomainParams{
+		UserID:    userId,
+		DomainID:  domain,
+		ServiceID: serviceID,
+	})
+	if err != nil {
+		// if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+		// 	err := errors.ErrNoRecordFound.Wrap(err, "no permisisons found")
+		// 	u.log.Info(ctx, "no permissions were found", zap.Error(err), zap.String("domain-name", domain.String()), zap.String("user-id", userId.String()))
+		// 	return []dto.DomainPermissions{}, err
+		// } else {
+		err = errors.ErrReadError.Wrap(err, "error reading permissions")
+		u.log.Error(ctx, "error reading permissions", zap.Error(err), zap.String("domain-name", domain.String()), zap.String("user-id", userId.String()))
+		return []dto.DomainPermissions{}, err
+		// }
+	}
+	return permissions, nil
+}
