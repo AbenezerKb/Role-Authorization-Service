@@ -623,6 +623,61 @@ paths:
       summary: register a new permission.
       tags:
       - permissions
+  /permissions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This function deletes the permissions if it does already exist.
+      parameters:
+      - description: permission id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: permission successfully deleted
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized service
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: service is not active
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: deletes permission.
+      tags:
+      - permissions
   /permissions/inherit:
     post:
       consumes:

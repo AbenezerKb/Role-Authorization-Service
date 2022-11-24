@@ -115,6 +115,23 @@ func (p *permission) CreatePermissionDependency(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
 
+// DeletePermission is used to delete permissions.
+// @Summary      deletes permission.
+// @Description  This function deletes the permissions if it does already exist.
+// @Tags         permissions
+// @Accept       json
+// @Produce      json
+// @param 		 id path string true "permission id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  boolean true "permission successfully deleted"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized service"
+// @Failure      403  {object}  model.ErrorResponse "service is not active"
+// @Router       /permissions/{id} [delete]
+// @security 	 BasicAuth
 func (p *permission) DeletePermission(ctx *gin.Context) {
 
 	if err := p.permissionModule.DeletePermission(ctx, ctx.Param("id")); err != nil {
