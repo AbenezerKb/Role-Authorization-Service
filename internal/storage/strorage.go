@@ -30,6 +30,8 @@ type Permission interface {
 	AddToDomain(ctx context.Context, permissionId, domain uuid.UUID) error
 	ListAllPermission(ctx context.Context, param dto.GetAllPermissionsReq) ([]dto.Permission, error)
 	CreatePermissionDependency(ctx context.Context, param dto.CreatePermissionDependency, serviceId uuid.UUID) error
+	DeletePermission(ctx context.Context, serviceId, permissionId uuid.UUID, tenantName string) error
+	CanBeDeleted(ctx context.Context, permissionId, serviceId uuid.UUID) (bool, error)
 }
 
 type Tenant interface {
