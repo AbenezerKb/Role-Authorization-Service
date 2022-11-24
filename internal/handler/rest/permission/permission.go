@@ -114,3 +114,13 @@ func (p *permission) CreatePermissionDependency(ctx *gin.Context) {
 	}
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
+
+func (p *permission) DeletePermission(ctx *gin.Context) {
+
+	if err := p.permissionModule.DeletePermission(ctx, ctx.Param("id")); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
