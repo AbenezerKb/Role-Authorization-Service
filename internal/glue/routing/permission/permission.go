@@ -41,6 +41,16 @@ func InitRoute(group *gin.RouterGroup, permission rest.Permission, log logger.Lo
 				authMiddleware.BasicAuth(),
 			},
 		},
+		{
+			Method:      http.MethodDelete,
+			Path:        "/:id",
+			Handler:     permission.DeletePermission,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
 	}
 	routing.RegisterRoutes(permissions, permissionRoutes)
 }
