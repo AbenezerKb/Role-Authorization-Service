@@ -31,6 +31,22 @@ func (q *Queries) AssignDomain(ctx context.Context, arg AssignDomainParams) erro
 	return err
 }
 
+const canBeDeleted = `-- name: CanBeDeleted :one
+select p.delete_or_update from permissions p where p.id=$1 and p.service_id=$2
+`
+
+type CanBeDeletedParams struct {
+	ID        uuid.UUID `json:"id"`
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
+func (q *Queries) CanBeDeleted(ctx context.Context, arg CanBeDeletedParams) (bool, error) {
+	row := q.db.QueryRow(ctx, canBeDeleted, arg.ID, arg.ServiceID)
+	var delete_or_update bool
+	err := row.Scan(&delete_or_update)
+	return delete_or_update, err
+}
+
 const createOrGetPermission = `-- name: CreateOrGetPermission :one
 WITH new_row AS (
     INSERT INTO permissions (name,description,statement,service_id)
@@ -85,6 +101,25 @@ type CreatePermissionDependencyParams struct {
 func (q *Queries) CreatePermissionDependency(ctx context.Context, arg CreatePermissionDependencyParams) error {
 	_, err := q.db.Exec(ctx, createPermissionDependency, arg.Name, arg.ServiceID, arg.Column3)
 	return err
+}
+
+const deletePermissions = `-- name: DeletePermissions :one
+UPDATE permissions p set deleted_at = now() from tenants t WHERE  t.tenant_name=$1
+and p.id = $2 and p.tenant_id=t.id AND p.service_id = $3 AND t.service_id = $3
+AND p.deleted_at IS NULL AND p.delete_or_update RETURNING p.id
+`
+
+type DeletePermissionsParams struct {
+	TenantName string    `json:"tenant_name"`
+	ID         uuid.UUID `json:"id"`
+	ServiceID  uuid.UUID `json:"service_id"`
+}
+
+func (q *Queries) DeletePermissions(ctx context.Context, arg DeletePermissionsParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, deletePermissions, arg.TenantName, arg.ID, arg.ServiceID)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const listPermissions = `-- name: ListPermissions :many

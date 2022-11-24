@@ -34,3 +34,11 @@ with _parent as(
     select id as parant_id from permissions where permissions.name=$1 and permissions.service_id=$2 and permissions.deleted_at IS NULL
 )
 insert into permissions_hierarchy(parent, child) select _parent.parant_id,p.id from _parent,permissions p where p.name=ANY($3::string[]) and p.service_id=$2  and p.deleted_at IS NULl ON conflict  do nothing;
+
+-- name: DeletePermissions :one 
+UPDATE permissions p set deleted_at = now() from tenants t WHERE  t.tenant_name=$1
+and p.id = $2 and p.tenant_id=t.id AND p.service_id = $3 AND t.service_id = $3
+AND p.deleted_at IS NULL AND p.delete_or_update RETURNING p.id;
+
+-- name: CanBeDeleted :one
+select p.delete_or_update from permissions p where p.id=$1 and p.service_id=$2;
