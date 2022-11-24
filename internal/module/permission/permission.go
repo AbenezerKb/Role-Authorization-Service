@@ -112,3 +112,43 @@ func (p *permission) CreatePermissionDependency(ctx context.Context, param []dto
 
 	return nil
 }
+
+func (p *permission) DeletePermission(ctx context.Context, param string) error {
+
+	serviceId, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	permissionId, err := uuid.Parse(param)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("permission-id", param))
+		return err
+	}
+
+	tenantName, ok := ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid tenant")
+		p.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+	}
+
+	ok, err = p.permissionPersistence.CanBeDeleted(ctx, permissionId, serviceId)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		err := errors.ErrDBDelError.Wrap(err, "you can not delete this permission")
+		p.log.Info(ctx, "unable to delete permission", zap.Error(err), zap.Any("permission-id", permissionId))
+		return err
+	}
+
+	if err := p.permissionPersistence.DeletePermission(ctx, serviceId, permissionId, tenantName); err != nil {
+		return err
+	}
+	return nil
+}

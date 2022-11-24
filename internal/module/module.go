@@ -23,6 +23,7 @@ type Permission interface {
 	CreatePermission(ctx context.Context, param dto.CreatePermission) error
 	ListPermissions(ctx context.Context) ([]dto.Permission, error)
 	CreatePermissionDependency(ctx context.Context, param []dto.CreatePermissionDependency) error
+	DeletePermission(ctx context.Context, param string) error
 }
 
 type Tenant interface {
