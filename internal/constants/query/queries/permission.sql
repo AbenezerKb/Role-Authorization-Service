@@ -42,3 +42,54 @@ AND p.deleted_at IS NULL AND p.delete_or_update RETURNING p.id;
 
 -- name: CanBeDeleted :one
 select p.delete_or_update from permissions p where p.id=$1 and p.service_id=$2;
+
+
+-- name: GetPermissionDetails :one
+WITH _tenant AS(
+    SELECT
+        domain_id,
+        id AS tenant_id
+    FROM
+        tenants
+    WHERE
+            tenant_name = $1
+)
+SELECT
+    p.name,
+    p.status,
+    p.description,
+    p.statement,
+    p.id,
+    COALESCE(json_agg(json_build_object('name',
+                                        p2.name,
+                                        'description',
+                                        p2.description,
+                                        'statement',
+                                        p2.statement,
+                                        'id',
+                                        p2.id)) FILTER (
+                 WHERE
+                     p2.deleted_at IS NULL
+                     AND p2.status = 'ACTIVE' ),
+             '[]') AS inherited_permissions
+FROM
+    _tenant,
+    permissions p
+        LEFT JOIN permissions_hierarchy ph ON
+            p.id = ph.parent
+        LEFT JOIN permissions p2 ON
+            p2.id = ph.child
+        LEFT JOIN permission_domains pd ON
+            p.id = pd.permission_id
+WHERE
+    (p.tenant_id = _tenant.tenant_id
+        OR pd.domain_id = _tenant.domain_id)
+  AND p.id = $2
+  AND p.service_id = $3
+  AND p.deleted_at IS NULL
+GROUP BY
+    p.name,
+    p.status,
+    p.description,
+    p.statement,
+    p.id;
