@@ -143,6 +143,23 @@ func (p *permission) DeletePermission(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
 
+// GetPermission  returns a permission with the given id
+// @Summary      returns a permission with the given id
+// @Tags         permissions
+// @Accept       json
+// @Produce      json
+// @param 		 id 	path string true "permission id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200 {object} dto.Permission "successfully returns a permission detail"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Failure      404  {object}  model.ErrorResponse "role not found"
+// @Router       /permissions/{id} [get]
+// @Security	 BasicAuth
 func (p *permission) GetPermission(ctx *gin.Context) {
 	permissionId, err := uuid.Parse(ctx.Param("id"))
 	if err != nil {
