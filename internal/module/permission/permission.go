@@ -152,3 +152,20 @@ func (p *permission) DeletePermission(ctx context.Context, param string) error {
 	}
 	return nil
 }
+
+func (p *permission) GetPermission(ctx context.Context, param uuid.UUID) (*dto.Permission, error) {
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		p.log.Info(ctx, "invalid service id", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return nil, err
+	}
+	tenantName, ok := ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid tenant")
+		p.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return nil, err
+	}
+
+	return p.permissionPersistence.GetPermission(ctx, param, serviceID, tenantName)
+}
