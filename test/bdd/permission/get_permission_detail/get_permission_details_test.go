@@ -215,7 +215,29 @@ func (g *getPermissionDetails) iWantToGetThePermissionDetail() error {
 func (g *getPermissionDetails) theRequestShouldBeSuccessfull() error {
 	return g.apiTest.AssertStatusCode(http.StatusOK)
 }
+func (g *getPermissionDetails) iSendTheRequestToGetThePermissionDetails() error {
+	g.apiTest.SetHeader("Authorization", "Basic "+g.BasicAuth(g.createdService.ServiceID.String(), "123456"))
+	g.apiTest.SetHeader("x-subject", g.service.UserId)
+	g.apiTest.SetHeader("x-action", "*")
+	g.apiTest.SetHeader("x-resource", "*")
+	g.apiTest.SetHeader("x-tenant", g.tenant)
 
+	g.apiTest.SendRequest()
+	return nil
+}
+
+func (g *getPermissionDetails) iShouldGetAnErrorWithMessage(message string) error {
+	if err := g.apiTest.AssertStatusCode(http.StatusNotFound); err != nil {
+		return err
+	}
+	return g.apiTest.AssertStringValueOnPathInResponse("error.message", message)
+}
+
+func (g *getPermissionDetails) thePermissionDoesNotExists(permission string) error {
+	g.apiTest.Method = http.MethodGet
+	g.apiTest.URL = "/v1/permissions/" + permission
+	return nil
+}
 func (g *getPermissionDetails) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		g.apiTest.SetHeader("Content-Type", "application/json")
@@ -226,6 +248,9 @@ func (g *getPermissionDetails) InitializeScenario(ctx *godog.ScenarioContext) {
 		_, _ = g.DB.Pool.Exec(ctx, "truncate table services,tenants,users,roles,permissions,role_permissions,tenant_users_roles,domains,permission_domains,permissions_hierarchy cascade;")
 		return ctx, nil
 	})
+	ctx.Step(`^I send the request to get the permission details$`, g.iSendTheRequestToGetThePermissionDetails)
+	ctx.Step(`^I should get an error with message "([^"]*)"$`, g.iShouldGetAnErrorWithMessage)
+	ctx.Step(`^the permission does not exists "([^"]*)"$`, g.thePermissionDoesNotExists)
 	ctx.Step(`^A permission registered on the domain$`, g.aPermissionRegisteredOnTheDomain)
 	ctx.Step(`^A registered domain and tenant$`, g.aRegisteredDomainAndTenant)
 	ctx.Step(`^I have service with$`, g.iHaveServiceWith)

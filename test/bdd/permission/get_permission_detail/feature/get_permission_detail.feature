@@ -22,13 +22,13 @@ Feature: Get Pemrission Details
         And I should get the permission detail
             | name           | description    | effect | action                 | fields | resource                      | status |
             | delete service | delete service | allow  | "admin:service:delete" | *      | "admin:service:deleteservice" | ACTIVE |
-# @failure
-# Scenario Outline: Getting the role failed
-#     Given the role does not exists under the tenant "<id>"
-#     When I send the request to get the role details
-#     Then I should get an error with message "<message>"
+    @failure
+    Scenario Outline: Getting the permission detail failed
+        Given the permission does not exists "<id>"
+        When I send the request to get the permission details
+        Then I should get an error with message "<message>"
 
-#     Examples:
-#         | id                                   | message        |
-#         | 2302f310-e60f-4434-b54b-d133eaa63a2c | role not found |
+        Examples:
+            | id                                   | message                    |
+            | 2302f310-e60f-4434-b54b-d133eaa63a2c | permission does not exists |
 
