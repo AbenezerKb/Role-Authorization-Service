@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -140,4 +141,22 @@ func (p *permission) DeletePermission(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
+
+func (p *permission) GetPermission(ctx *gin.Context) {
+	permissionId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid permission id")
+		p.logger.Info(ctx, "invalid permission id", zap.Error(err), zap.Any("permission id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	result, err := p.permissionModule.GetPermission(ctx, permissionId)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
 }
