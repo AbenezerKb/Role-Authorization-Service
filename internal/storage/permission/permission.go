@@ -132,3 +132,23 @@ func (p *permission) CanBeDeleted(ctx context.Context, permissionId, serviceId u
 
 	return delete_or_update, nil
 }
+
+func (p *permission) GetPermission(ctx context.Context, permissionId, serviceId uuid.UUID, tenantName string) (*dto.Permission, error) {
+	permission, err := p.db.GetPermissionDetails(ctx, dbinstance.GetPermissionDetailsParams{
+		TenantName: tenantName,
+		ServiceID:  serviceId,
+		ID:         permissionId,
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
+			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()), zap.String("tenant", tenantName))
+			return nil, err
+		}
+		err := errors.ErrReadError.Wrap(err, "could not read permission data")
+		p.log.Error(ctx, "unable to read the permission data", zap.Error(err), zap.Any("permission id", permissionId), zap.Any("service id", serviceId), zap.String("tenant", tenantName))
+		return nil, err
+	}
+
+	return &permission, nil
+}
