@@ -117,7 +117,8 @@ SELECT
     p.description,
     p.statement,
     p.id,
-   COALESCE(json_agg(json_build_object('name',
+    p.delete_or_update,
+    COALESCE(json_agg(json_build_object('name',
                                         p2.name,
                                         'description',
                                         p2.description,
@@ -149,7 +150,8 @@ GROUP BY
     p.status,
     p.description,
     p.statement,
-    p.id
+    p.id,
+    p.delete_or_update
 `
 
 type GetPermissionDetailsParams struct {
@@ -167,6 +169,7 @@ func (q *DBInstance) GetPermissionDetails(ctx context.Context, arg GetPermission
 		&i.Description,
 		&i.Statement,
 		&i.ID,
+		&i.DeleteOrUpdate,
 		&i.InheritedPermissions,
 	)
 	return i, err

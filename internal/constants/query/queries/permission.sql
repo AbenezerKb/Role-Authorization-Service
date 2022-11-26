@@ -111,6 +111,7 @@ SELECT
     p.description,
     p.statement,
     p.id,
+    p.delete_or_update,
     COALESCE(json_agg(json_build_object('name',
                                         p2.name,
                                         'description',
@@ -143,8 +144,8 @@ GROUP BY
     p.status,
     p.description,
     p.statement,
-    p.id;
-
+    p.id,
+    p.delete_or_update;
 
 -- name: UpdatePermissionStatus :one
 with _tenants as(
