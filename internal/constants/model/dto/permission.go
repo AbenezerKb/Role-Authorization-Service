@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"2f-authorization/internal/constants"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -163,4 +164,15 @@ func validatePermissionsName(value interface{}) error {
 	}
 
 	return nil
+}
+
+type UpdatePermissionStatus struct {
+	// Status is new status of the permission that is going to replace the old one
+	Status string `json:"status"`
+}
+
+func (u UpdatePermissionStatus) Validate() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Status, validation.Required.Error("status is required"), validation.In(constants.Active, constants.InActive).Error("invalid status")),
+	)
 }
