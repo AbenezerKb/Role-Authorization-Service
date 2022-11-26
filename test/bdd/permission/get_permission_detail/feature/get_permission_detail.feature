@@ -24,11 +24,11 @@ Feature: Get Pemrission Details
             | delete service | delete service | allow  | "admin:service:delete" | *      | "admin:service:deleteservice" | ACTIVE |
     @failure
     Scenario Outline: Getting the permission detail failed
-        Given the permission does not exists "<id>"
+        Given the permission does not exist "<id>"
         When I send the request to get the permission details
         Then I should get an error with message "<message>"
 
         Examples:
-            | id                                   | message                    |
-            | 2302f310-e60f-4434-b54b-d133eaa63a2c | permission does not exists |
+            | id                                   | message                   |
+            | 2302f310-e60f-4434-b54b-d133eaa63a2c | permission does not exist |
 

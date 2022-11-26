@@ -250,7 +250,7 @@ func (g *getPermissionDetails) InitializeScenario(ctx *godog.ScenarioContext) {
 	})
 	ctx.Step(`^I send the request to get the permission details$`, g.iSendTheRequestToGetThePermissionDetails)
 	ctx.Step(`^I should get an error with message "([^"]*)"$`, g.iShouldGetAnErrorWithMessage)
-	ctx.Step(`^the permission does not exists "([^"]*)"$`, g.thePermissionDoesNotExists)
+	ctx.Step(`^the permission does not exist "([^"]*)"$`, g.thePermissionDoesNotExists)
 	ctx.Step(`^A permission registered on the domain$`, g.aPermissionRegisteredOnTheDomain)
 	ctx.Step(`^A registered domain and tenant$`, g.aRegisteredDomainAndTenant)
 	ctx.Step(`^I have service with$`, g.iHaveServiceWith)
