@@ -32,8 +32,8 @@ Feature: Update Permission Status
         Then Then I should get an error with message "<message>"
 
         Examples:
-            | id                                   | status | message                    |
-            | 2302f310-e60f-4434-b54b-d133eaa63a2c | ACTIVE | permission does not exists |
+            | id                                   | status | message                   |
+            | 2302f310-e60f-4434-b54b-d133eaa63a2c | ACTIVE | permission does not exist |
 
     @failure
     Scenario Outline: Missing required field values

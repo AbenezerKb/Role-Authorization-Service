@@ -103,7 +103,7 @@ func (p *permission) DeletePermission(ctx context.Context, serviceId, permission
 		TenantName: tenantName,
 	}); err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
-			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
+			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exist")
 			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
 			return err
 		}
@@ -121,7 +121,7 @@ func (p *permission) CanBeDeletedOrUpdated(ctx context.Context, permissionId, se
 	})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
-			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
+			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exist")
 			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
 			return false, err
 		}
@@ -141,7 +141,7 @@ func (p *permission) GetPermission(ctx context.Context, permissionId, serviceId 
 	})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
-			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
+			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exist")
 			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()), zap.String("tenant", tenantName))
 			return nil, err
 		}
@@ -162,7 +162,7 @@ func (p *permission) UpdatePermissionStatus(ctx context.Context, param dto.Updat
 	})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
-			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
+			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exist")
 			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
 			return err
 		}
