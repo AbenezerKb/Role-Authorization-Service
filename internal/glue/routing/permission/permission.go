@@ -61,6 +61,16 @@ func InitRoute(group *gin.RouterGroup, permission rest.Permission, log logger.Lo
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodPatch,
+			Path:        "/:id/status",
+			Handler:     permission.UpdatePermissionStatus,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
 	}
 	routing.RegisterRoutes(permissions, permissionRoutes)
 }
