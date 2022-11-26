@@ -8,6 +8,7 @@ import (
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -136,7 +137,7 @@ func (p *permission) DeletePermission(ctx context.Context, param string) error {
 		return err
 	}
 
-	ok, err = p.permissionPersistence.CanBeDeleted(ctx, permissionId, serviceId)
+	ok, err = p.permissionPersistence.CanBeDeletedOrUpdated(ctx, permissionId, serviceId)
 	if err != nil {
 		return err
 	}
@@ -168,4 +169,43 @@ func (p *permission) GetPermission(ctx context.Context, param uuid.UUID) (*dto.P
 	}
 
 	return p.permissionPersistence.GetPermission(ctx, param, serviceID, tenantName)
+}
+
+func (p *permission) UpdatePermissionStatus(ctx context.Context, param dto.UpdatePermissionStatus, permissionId uuid.UUID) error {
+	serviceId, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		p.log.Info(ctx, "invalid service id", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	tenant, ok := ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid tenant")
+		p.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+	}
+
+	if err = param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
+	ok, err = p.permissionPersistence.CanBeDeletedOrUpdated(ctx, permissionId, serviceId)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		err := errors.ErrDBDelError.Wrap(err, "you can not update this permission status")
+		p.log.Info(ctx, "unable to update permission status", zap.Error(err), zap.Any("permission-id", permissionId))
+		return err
+	}
+
+	if err = p.permissionPersistence.UpdatePermissionStatus(ctx, param, permissionId, serviceId, tenant); err != nil {
+		return err
+	}
+
+	return p.opa.Refresh(ctx, fmt.Sprintf("Updating permission [%v] in tenant [%v] with status [%v]", permissionId.String(), tenant, param.Status))
 }
