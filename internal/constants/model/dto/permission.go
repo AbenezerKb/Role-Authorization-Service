@@ -34,6 +34,8 @@ type Permission struct {
 	Status string `json:"status,omitempty"`
 	// DeletedAt is the time this permission was deleted.
 	DeletedAt *time.Time `json:"-"`
+	// DeletedAt is the time this permission was deleted.
+	DeleteOrUpdate bool `json:"delete_or_update,omitempty"`
 	// CreatedAt is the time this permission was created.
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// UpdatedAt is the time this permission was last updated.
