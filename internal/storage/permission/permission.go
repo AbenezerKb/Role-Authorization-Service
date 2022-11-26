@@ -104,29 +104,29 @@ func (p *permission) DeletePermission(ctx context.Context, serviceId, permission
 	}); err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
-			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-name", permissionId.String()))
+			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
 			return err
 		}
 		err = errors.ErrDBDelError.Wrap(err, "error deleting permission")
-		p.log.Error(ctx, "error deleting permission", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-name", permissionId.String()))
+		p.log.Error(ctx, "error deleting permission", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
 		return err
 	}
 	return nil
 }
 
-func (p *permission) CanBeDeleted(ctx context.Context, permissionId, serviceId uuid.UUID) (bool, error) {
-	delete_or_update, err := p.db.CanBeDeleted(ctx, db.CanBeDeletedParams{
+func (p *permission) CanBeDeletedOrUpdated(ctx context.Context, permissionId, serviceId uuid.UUID) (bool, error) {
+	delete_or_update, err := p.db.CanBeDeletedOrUpdated(ctx, db.CanBeDeletedOrUpdatedParams{
 		ID:        permissionId,
 		ServiceID: serviceId,
 	})
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
-			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-name", permissionId.String()))
+			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
 			return false, err
 		}
 		err := errors.ErrReadError.Wrap(err, "could not read permission data")
-		p.log.Error(ctx, "unable to read the permission data", zap.Error(err), zap.Any("permission id", permissionId), zap.Any("service id", serviceId))
+		p.log.Error(ctx, "unable to read the permission data", zap.Error(err), zap.Any("permission id", permissionId), zap.Any("service id", serviceId), zap.String("permission-id", permissionId.String()))
 		return false, err
 	}
 
