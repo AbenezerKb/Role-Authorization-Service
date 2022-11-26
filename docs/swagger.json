@@ -517,7 +517,7 @@
                         }
                     },
                     "404": {
-                        "description": "role not found",
+                        "description": "permission not found",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -599,6 +599,103 @@
                     },
                     "403": {
                         "description": "service is not active",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/permissions/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "permissions"
+                ],
+                "summary": "changes permission status",
+                "parameters": [
+                    {
+                        "description": "status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePermissionStatus"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "permission id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully updates the permission's status",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "permission does not exist",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -2230,6 +2327,15 @@
                 },
                 "resource": {
                     "description": "Resource is the urn for the path that is being accessed",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdatePermissionStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status is new status of the permission that is going to replace the old one",
                     "type": "string"
                 }
             }

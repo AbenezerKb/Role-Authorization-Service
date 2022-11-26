@@ -178,6 +178,24 @@ func (p *permission) GetPermission(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
 }
 
+// UpdatePermissionStatus updates permission status
+// @Summary      changes permission status
+// @Tags         permissions
+// @Accept       json
+// @Produce      json
+// @param status body dto.UpdatePermissionStatus true "status"
+// @param 		 id 	path string true "permission id"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200 boolean true "successfully updates the permission's status"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Failure      404  {object}  model.ErrorResponse "permission does not exist"
+// @Router       /permissions/{id}/status [patch]
+// @Security	 BasicAuth
 func (p *permission) UpdatePermissionStatus(ctx *gin.Context) {
 	updateStatusParam := dto.UpdatePermissionStatus{}
 	err := ctx.ShouldBind(&updateStatusParam)

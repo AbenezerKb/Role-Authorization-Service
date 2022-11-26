@@ -266,6 +266,13 @@ definitions:
         description: Resource is the urn for the path that is being accessed
         type: string
     type: object
+  dto.UpdatePermissionStatus:
+    properties:
+      status:
+        description: Status is new status of the permission that is going to replace
+          the old one
+        type: string
+    type: object
   dto.UpdateRole:
     properties:
       permissions_id:
@@ -727,12 +734,76 @@ paths:
           schema:
             $ref: '#/definitions/model.ErrorResponse'
         "404":
-          description: role not found
+          description: permission not found
           schema:
             $ref: '#/definitions/model.ErrorResponse'
       security:
       - BasicAuth: []
       summary: returns a permission with the given id
+      tags:
+      - permissions
+  /permissions/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePermissionStatus'
+      - description: permission id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updates the permission's status
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: permission does not exist
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: changes permission status
       tags:
       - permissions
   /permissions/inherit:
