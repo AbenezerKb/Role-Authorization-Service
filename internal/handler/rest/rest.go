@@ -19,6 +19,7 @@ type Permission interface {
 	CreatePermissionDependency(ctx *gin.Context)
 	DeletePermission(ctx *gin.Context)
 	GetPermission(ctx *gin.Context)
+	UpdatePermissionStatus(ctx *gin.Context)
 }
 
 type Tenant interface {

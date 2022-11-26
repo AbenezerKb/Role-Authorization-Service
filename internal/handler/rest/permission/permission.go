@@ -157,7 +157,7 @@ func (p *permission) DeletePermission(ctx *gin.Context) {
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"
 // @Failure      403  {object}  model.ErrorResponse "access denied"
-// @Failure      404  {object}  model.ErrorResponse "role not found"
+// @Failure      404  {object}  model.ErrorResponse "permission not found"
 // @Router       /permissions/{id} [get]
 // @Security	 BasicAuth
 func (p *permission) GetPermission(ctx *gin.Context) {
@@ -176,4 +176,30 @@ func (p *permission) GetPermission(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
+}
+
+func (p *permission) UpdatePermissionStatus(ctx *gin.Context) {
+	updateStatusParam := dto.UpdatePermissionStatus{}
+	err := ctx.ShouldBind(&updateStatusParam)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.logger.Info(ctx, "unable to bind permission status", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	permissionId, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid permission id")
+		p.logger.Info(ctx, "invalid permission id", zap.Error(err), zap.Any("permission id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := p.permissionModule.UpdatePermissionStatus(ctx, updateStatusParam, permissionId); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
