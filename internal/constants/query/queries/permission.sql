@@ -92,3 +92,10 @@ GROUP BY
     p.description,
     p.statement,
     p.id;
+
+
+-- name: UpdatePermissionStatus :one
+with _tenants as(
+    select id from tenants t where t.tenant_name=$1 and t.service_id=$2
+)
+update permissions p set status =$3 from _tenants where p.id=$4 and p.tenant_id=_tenants.id returning p.id;

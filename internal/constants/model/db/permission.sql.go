@@ -254,3 +254,29 @@ func (q *Queries) ListPermissions(ctx context.Context, arg ListPermissionsParams
 	}
 	return items, nil
 }
+
+const updatePermissionStatus = `-- name: UpdatePermissionStatus :one
+with _tenants as(
+    select id from tenants t where t.tenant_name=$1 and t.service_id=$2
+)
+update permissions p set status =$3 from _tenants where p.id=$4 and p.tenant_id=_tenants.id returning p.id
+`
+
+type UpdatePermissionStatusParams struct {
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+	Status     Status    `json:"status"`
+	ID         uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdatePermissionStatus(ctx context.Context, arg UpdatePermissionStatusParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, updatePermissionStatus,
+		arg.TenantName,
+		arg.ServiceID,
+		arg.Status,
+		arg.ID,
+	)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
+}
