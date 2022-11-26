@@ -152,3 +152,23 @@ func (p *permission) GetPermission(ctx context.Context, permissionId, serviceId 
 
 	return &permission, nil
 }
+
+func (p *permission) UpdatePermissionStatus(ctx context.Context, param dto.UpdatePermissionStatus, permissionId, serviceId uuid.UUID, tenant string) error {
+	_, err := p.db.UpdatePermissionStatus(ctx, db.UpdatePermissionStatusParams{
+		ID:         permissionId,
+		TenantName: tenant,
+		ServiceID:  serviceId,
+		Status:     db.Status(param.Status),
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "permission does not exists")
+			p.log.Info(ctx, "permission not found", zap.Error(err), zap.String("service-id", serviceId.String()), zap.String("permission-id", permissionId.String()))
+			return err
+		}
+		err = errors.ErrUpdateError.Wrap(err, "error changing permission's status")
+		p.log.Error(ctx, "error changing permission's status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("permission-status", param.Status), zap.String("permission-id", permissionId.String()), zap.String("tenant", tenant))
+		return err
+	}
+	return nil
+}

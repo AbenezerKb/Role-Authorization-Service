@@ -31,8 +31,9 @@ type Permission interface {
 	ListAllPermission(ctx context.Context, param dto.GetAllPermissionsReq) ([]dto.Permission, error)
 	CreatePermissionDependency(ctx context.Context, param dto.CreatePermissionDependency, serviceId uuid.UUID) error
 	DeletePermission(ctx context.Context, serviceId, permissionId uuid.UUID, tenantName string) error
-	CanBeDeleted(ctx context.Context, permissionId, serviceId uuid.UUID) (bool, error)
+	CanBeDeletedOrUpdated(ctx context.Context, permissionId, serviceId uuid.UUID) (bool, error)
 	GetPermission(ctx context.Context, permissionId, serviceID uuid.UUID, tenantName string) (*dto.Permission, error)
+	UpdatePermissionStatus(ctx context.Context, param dto.UpdatePermissionStatus, permissionId, serviceId uuid.UUID, tenant string) error
 }
 
 type Tenant interface {
