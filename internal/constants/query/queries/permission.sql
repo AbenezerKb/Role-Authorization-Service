@@ -37,11 +37,10 @@ insert into permissions_hierarchy(parent, child) select _parent.parant_id,p.id f
 
 -- name: DeletePermissions :one 
 UPDATE permissions p set deleted_at = now() from tenants t WHERE  t.tenant_name=$1
-and p.id = $2 and p.tenant_id=t.id AND p.service_id = $3 AND t.service_id = $3
-AND p.deleted_at IS NULL AND p.delete_or_update RETURNING p.id;
+and p.id = $2 and p.tenant_id=t.id AND p.service_id = $3 AND t.service_id = $3 RETURNING p.id;
 
--- name: CanBeDeleted :one
-select p.delete_or_update from permissions p where p.id=$1 and p.service_id=$2;
+-- name: CanBeDeletedOrUpdated :one
+select p.delete_or_update from permissions p where p.id=$1 and p.service_id=$2 AND p.deleted_at IS NULL ;
 
 
 -- name: GetPermissionDetails :one
