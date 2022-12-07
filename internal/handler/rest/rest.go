@@ -44,6 +44,7 @@ type Role interface {
 	ListRoles(ctx *gin.Context)
 	UpdateRoleStatus(ctx *gin.Context)
 	GetRole(ctx *gin.Context)
+	SystemAssignRole(ctx *gin.Context)
 }
 
 type Opa interface {

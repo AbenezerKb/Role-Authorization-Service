@@ -332,3 +332,52 @@ func (r *role) GetRole(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
 }
+
+// SystemAssignRole is used by the system to assign a role to a user.
+// @Summary      assign role to a user.
+// @Description  This function assign new role if the role  dosen't assigned.
+// @Tags         roles
+// @Accept       json
+// @Produce      json
+// @param 		 userid path string true "user id"
+// @param 		 role body dto.SystemAssignRole true "role"
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200  {object} dto.Role "successfully assigned role"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized"
+// @Failure      403  {object}  model.ErrorResponse "access denied"
+// @Router       /system/users/{userid}/roles [post]
+// @security 	 BasicAuth
+func (r *role) SystemAssignRole(ctx *gin.Context) {
+	roleTenant := dto.RoleTenant{}
+
+	err := ctx.ShouldBind(&roleTenant)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "unable to bind role body", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	userID, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("user id", ctx.Param("id")))
+		_ = ctx.Error(err)
+		return
+	}
+
+	err = r.roleModule.AssignRole(ctx, dto.TenantUsersRole{
+		UserID:     userID,
+		RoleTenant: roleTenant,
+	})
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
