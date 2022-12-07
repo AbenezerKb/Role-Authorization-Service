@@ -1611,34 +1611,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoleTenant"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "user id",
-                        "name": "x-subject",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "action",
-                        "name": "x-action",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "tenant",
-                        "name": "x-tenant",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "resource",
-                        "name": "x-resource",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {

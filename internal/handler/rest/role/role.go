@@ -341,10 +341,6 @@ func (r *role) GetRole(ctx *gin.Context) {
 // @Produce      json
 // @param 		 userid path string true "user id"
 // @param 		 role body dto.RoleTenant true "role"
-// @param 		 x-subject header string true "user id"
-// @param 		 x-action header string true "action"
-// @param 		 x-tenant header string true "tenant"
-// @param 		 x-resource header string true "resource"
 // @Success      200  {object} dto.Role "successfully assigned role"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"

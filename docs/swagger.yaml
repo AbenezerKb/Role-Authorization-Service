@@ -1449,26 +1449,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.RoleTenant'
-      - description: user id
-        in: header
-        name: x-subject
-        required: true
-        type: string
-      - description: action
-        in: header
-        name: x-action
-        required: true
-        type: string
-      - description: tenant
-        in: header
-        name: x-tenant
-        required: true
-        type: string
-      - description: resource
-        in: header
-        name: x-resource
-        required: true
-        type: string
       produces:
       - application/json
       responses:
