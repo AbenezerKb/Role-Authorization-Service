@@ -76,8 +76,12 @@ type Role struct {
 }
 
 type TenantUsersRole struct {
+	RoleTenant
 	//UserID is the user identifier which going to get the the role
 	UserID uuid.UUID `json:"user_id"`
+}
+
+type RoleTenant struct {
 	//RoleID is id of the role which is going to be assigned to the user.
 	RoleID uuid.UUID `json:"role_id"`
 	//TenantName The Name of the tenante which is given when the tenant is created
@@ -88,7 +92,7 @@ func (t TenantUsersRole) Validate() error {
 
 	return validation.ValidateStruct(
 		&t,
-		validation.Field(&t.TenantName, validation.Required.Error("tenant name cann be empty")),
+		validation.Field(&t.TenantName, validation.Required.Error("tenant is required")),
 		validation.Field(&t.UserID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("User id required")),
 		validation.Field(&t.RoleID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("Role id required")),
 	)
