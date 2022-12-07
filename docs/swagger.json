@@ -1569,6 +1569,98 @@
                 }
             }
         },
+        "/system/users/{userid}/roles": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This function assign new role if the role  dosen't assigned.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roles"
+                ],
+                "summary": "assign role to a user.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "role",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoleTenant"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully assigned role",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Role"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "access denied",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/tenants": {
             "post": {
                 "security": [
@@ -2186,6 +2278,10 @@
                     "description": "CreatedAt is the time this permission was created.",
                     "type": "string"
                 },
+                "delete_or_update": {
+                    "description": "DeletedAt is the time this permission was deleted.",
+                    "type": "boolean"
+                },
                 "description": {
                     "description": "Description is the description of the permission being created",
                     "type": "string"
@@ -2303,6 +2399,19 @@
                 },
                 "updated_at": {
                     "description": "UpdatedAt is the time this service was last updated.",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoleTenant": {
+            "type": "object",
+            "properties": {
+                "role_id": {
+                    "description": "RoleID is id of the role which is going to be assigned to the user.",
+                    "type": "string"
+                },
+                "tenant_name": {
+                    "description": "TenantName The Name of the tenante which is given when the tenant is created",
                     "type": "string"
                 }
             }

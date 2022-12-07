@@ -340,7 +340,7 @@ func (r *role) GetRole(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @param 		 userid path string true "user id"
-// @param 		 role body dto.SystemAssignRole true "role"
+// @param 		 role body dto.RoleTenant true "role"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"

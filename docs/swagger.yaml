@@ -148,6 +148,9 @@ definitions:
       created_at:
         description: CreatedAt is the time this permission was created.
         type: string
+      delete_or_update:
+        description: DeletedAt is the time this permission was deleted.
+        type: boolean
       description:
         description: Description is the description of the permission being created
         type: string
@@ -244,6 +247,17 @@ definitions:
         type: string
       updated_at:
         description: UpdatedAt is the time this service was last updated.
+        type: string
+    type: object
+  dto.RoleTenant:
+    properties:
+      role_id:
+        description: RoleID is id of the role which is going to be assigned to the
+          user.
+        type: string
+      tenant_name:
+        description: TenantName The Name of the tenante which is given when the tenant
+          is created
         type: string
     type: object
   dto.Statement:
@@ -1418,6 +1432,67 @@ paths:
       summary: changes service status
       tags:
       - services
+  /system/users/{userid}/roles:
+    post:
+      consumes:
+      - application/json
+      description: This function assign new role if the role  dosen't assigned.
+      parameters:
+      - description: user id
+        in: path
+        name: userid
+        required: true
+        type: string
+      - description: role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoleTenant'
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully assigned role
+          schema:
+            $ref: '#/definitions/dto.Role'
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: access denied
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: assign role to a user.
+      tags:
+      - roles
   /tenants:
     post:
       consumes:
