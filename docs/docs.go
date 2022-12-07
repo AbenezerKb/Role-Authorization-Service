@@ -1106,9 +1106,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "successfully deletes role",
+                        "description": "successfully deleted role",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.Role"
                         }
                     },
                     "400": {
@@ -1295,7 +1295,7 @@ const docTemplate = `{
                     "200": {
                         "description": "successfully assigned role",
                         "schema": {
-                            "$ref": "#/definitions/dto.Role"
+                            "type": "boolean"
                         }
                     },
                     "400": {
@@ -1383,7 +1383,7 @@ const docTemplate = `{
                     "200": {
                         "description": "successfully assigned role",
                         "schema": {
-                            "$ref": "#/definitions/dto.Role"
+                            "type": "boolean"
                         }
                     },
                     "400": {
@@ -1617,7 +1617,7 @@ const docTemplate = `{
                     "200": {
                         "description": "successfully assigned role",
                         "schema": {
-                            "$ref": "#/definitions/dto.Role"
+                            "type": "boolean"
                         }
                     },
                     "400": {
