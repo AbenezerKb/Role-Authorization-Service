@@ -11,11 +11,11 @@ import (
 )
 
 func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMiddleware middleware.AuthMiddeleware) {
-	roles := group.Group("/roles")
+	// roles := group.Group("/roles")
 	roleRoutes := []routing.Router{
 		{
 			Method:      http.MethodPost,
-			Path:        "",
+			Path:        "roles",
 			Handler:     role.CreateRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -25,7 +25,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPost,
-			Path:        "/:id/users/:userid",
+			Path:        "roles/:id/users/:userid",
 			Handler:     role.AssignRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -35,7 +35,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPatch,
-			Path:        "/:id/users/:userid",
+			Path:        "roles/:id/users/:userid",
 			Handler:     role.RevokeRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -45,7 +45,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPut,
-			Path:        "/:id",
+			Path:        "roles/:id",
 			Handler:     role.UpdateRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -55,7 +55,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodDelete,
-			Path:        "/:id",
+			Path:        "roles/:id",
 			Handler:     role.DeleteRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -65,7 +65,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodGet,
-			Path:        "",
+			Path:        "roles",
 			Handler:     role.ListRoles,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -75,7 +75,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPatch,
-			Path:        "/:id/status",
+			Path:        "roles/:id/status",
 			Handler:     role.UpdateRoleStatus,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -85,7 +85,7 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodGet,
-			Path:        "/:id",
+			Path:        "roles/:id",
 			Handler:     role.GetRole,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -93,6 +93,15 @@ func InitRoute(group *gin.RouterGroup, role rest.Role, log logger.Logger, authMi
 				authMiddleware.Authorize(),
 			},
 		},
+		{
+			Method:      http.MethodPost,
+			Path:        "system/users/:id/roles",
+			Handler:     role.SystemAssignRole,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+			},
+		},
 	}
-	routing.RegisterRoutes(roles, roleRoutes)
+	routing.RegisterRoutes(group, roleRoutes)
 }
