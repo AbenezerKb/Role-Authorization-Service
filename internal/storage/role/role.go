@@ -91,10 +91,7 @@ func (r *role) IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (b
 		return false, err
 	}
 
-	if count.(int64) > 0 {
-		return true, nil
-	}
-	return false, nil
+	return count.(int64) > 0, nil
 }
 
 func (r *role) UpdateRole(ctx context.Context, param dto.UpdateRole) error {

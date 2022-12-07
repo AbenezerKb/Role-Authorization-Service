@@ -65,8 +65,8 @@ func (r *role) CreateRole(ctx context.Context, param dto.CreateRole) (*dto.Role,
 }
 
 func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error {
-
 	var err error
+
 	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
@@ -74,12 +74,17 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		return err
 	}
 
-	param.TenantName = ctx.Value("x-tenant").(string)
+	tenant, ok := ctx.Value("x-tenant").(string)
+	if ok {
+		param.TenantName = tenant
+	}
+
 	if err = param.Validate(); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		r.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
+
 	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
 	if err != nil {
 		return err
