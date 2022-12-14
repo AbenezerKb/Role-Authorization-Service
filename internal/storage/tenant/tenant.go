@@ -10,6 +10,7 @@ import (
 	"2f-authorization/platform/logger"
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgtype"
 	"go.uber.org/zap"
 )
@@ -117,4 +118,23 @@ func (t *tenant) CheckIfPermissionExistsInTenant(ctx context.Context, tenant str
 		return true, nil
 	}
 	return false, nil
+}
+func (t *tenant) UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantStatus, serviceId uuid.UUID, tenant string) error {
+	_, err := t.db.UpdateTenantStatus(ctx, db.UpdateTenantStatusParams{
+		TenantName: tenant,
+		ServiceID:  serviceId,
+		Status:     db.Status(param.Status),
+	})
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "tenant not found")
+			t.log.Error(ctx, "error changing tenant's status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("tenant-status", param.Status), zap.String("tenant", tenant))
+			return err
+		}
+
+		err = errors.ErrUpdateError.Wrap(err, "error changing tenant's status")
+		t.log.Error(ctx, "error changing tenant's status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("tenant-status", param.Status), zap.String("tenant", tenant))
+		return err
+	}
+	return nil
 }

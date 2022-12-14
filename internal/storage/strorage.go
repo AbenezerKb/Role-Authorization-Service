@@ -41,6 +41,7 @@ type Tenant interface {
 	CheckIfTenantExists(ctx context.Context, param dto.CreateTenent) (bool, error)
 	CheckIfPermissionExistsInTenant(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (bool, error)
 	RegsiterTenantPermission(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (*dto.Permission, error)
+	UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantStatus, serviceId uuid.UUID, tenant string) error
 }
 type User interface {
 	RegiseterUser(ctx context.Context, param dto.RegisterUser) error
