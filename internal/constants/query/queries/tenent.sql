@@ -32,3 +32,6 @@ union all
 SELECT  count_rows() as count from _tenant,permission_domains pd join permissions p2 on pd.permission_id = p2.id where p2.name=$3 and pd.domain_id=_tenant.domain_id
 )
 select sum(count) from _sum;
+
+-- name: UpdateTenantStatus :one
+update tenants set status=$1 where tenant_name=$2 and service_id=$3 returning id;
