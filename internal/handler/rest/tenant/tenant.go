@@ -89,3 +89,21 @@ func (t *tenant) RegisterTenantPermission(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusCreated, result, nil)
 }
+
+func (t *tenant) UpdateTenantStatus(ctx *gin.Context) {
+	updateStatusParam := dto.UpdateTenantStatus{}
+	err := ctx.ShouldBind(&updateStatusParam)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		t.logger.Info(ctx, "unable to bind tenant status", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := t.tenantModule.UpdateTenantStatus(ctx, updateStatusParam, ctx.Param("id")); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
