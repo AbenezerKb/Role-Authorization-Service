@@ -29,7 +29,7 @@ func InitModule(persistence Persistence, log logger.Logger, opa opa_platform.Opa
 		service:    service.Init(log, persistence.service, opa),
 		domain:     domain.Init(log.Named("domain module"), persistence.doamin),
 		permission: permission.Init(log.Named("permission module"), persistence.permission, opa),
-		tenant:     tenant.Init(log.Named("tenant module"), persistence.tenant),
+		tenant:     tenant.Init(log.Named("tenant module"), persistence.tenant, opa),
 		user:       user.Init(log.Named("user-module"), persistence.user, opa),
 		role:       role.Init(log.Named("role-module"), persistence.role, opa),
 		opa:        opamodule.Init(log.Named("opa-module"), opa),
