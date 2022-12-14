@@ -65,7 +65,7 @@ func (t *tenant) CreateTenant(ctx *gin.Context) {
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"
 // @param 		 x-resource header string true "resource"
-// @Success      201  {object} dto.Permission "successfully register the permission"
+// @Success      201  {object} dto.Permission "successfully registered the permission"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized service"
 // @Failure      403  {object}  model.ErrorResponse "service is not active"
@@ -90,6 +90,17 @@ func (t *tenant) RegisterTenantPermission(ctx *gin.Context) {
 	constants.SuccessResponse(ctx, http.StatusCreated, result, nil)
 }
 
+// UpdateTenantStatus updates tenant status
+// @Summary      changes tenant status
+// @Tags         tenants
+// @Accept       json
+// @Produce      json
+// @param status body dto.UpdateTenantStatus true "status"
+// @param 		 id 	path string true "tenant id"
+// @Success      200 boolean true "successfully updated the tenant's status"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Router       /tenants/{id}/status [patch]
+// @Security	 BasicAuth
 func (t *tenant) UpdateTenantStatus(ctx *gin.Context) {
 	updateStatusParam := dto.UpdateTenantStatus{}
 	err := ctx.ShouldBind(&updateStatusParam)

@@ -1744,7 +1744,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "successfully register the permission",
+                        "description": "successfully registered the permission",
                         "schema": {
                             "$ref": "#/definitions/dto.Permission"
                         }
@@ -1763,6 +1763,57 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "service is not active",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenants/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tenants"
+                ],
+                "summary": "changes tenant status",
+                "parameters": [
+                    {
+                        "description": "status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateTenantStatus"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully updated the tenant's status",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -2463,6 +2514,15 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "Status is new status that will replace old status of the service",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateTenantStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status is new status of the tenant that is going to replace the old one",
                     "type": "string"
                 }
             }

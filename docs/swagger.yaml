@@ -314,6 +314,13 @@ definitions:
         description: Status is new status that will replace old status of the service
         type: string
     type: object
+  dto.UpdateTenantStatus:
+    properties:
+      status:
+        description: Status is new status of the tenant that is going to replace the
+          old one
+        type: string
+    type: object
   dto.UpdateUserRoleStatus:
     properties:
       status:
@@ -1501,6 +1508,38 @@ paths:
       summary: create tenant.
       tags:
       - tenants
+  /tenants/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTenantStatus'
+      - description: tenant id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updated the tenant's status
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: changes tenant status
+      tags:
+      - tenants
   /tenants/permissions:
     post:
       consumes:
@@ -1536,7 +1575,7 @@ paths:
       - application/json
       responses:
         "201":
-          description: successfully register the permission
+          description: successfully registered the permission
           schema:
             $ref: '#/definitions/dto.Permission'
         "400":
