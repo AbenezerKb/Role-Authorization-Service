@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 	"go.uber.org/zap"
 )
 
@@ -246,13 +247,23 @@ func (r *role) DeleteRole(ctx *gin.Context) {
 // @Router       /roles [get]
 // @security 	 BasicAuth
 func (r *role) ListRoles(ctx *gin.Context) {
-	result, err := r.roleModule.ListRoles(ctx)
+	param := db_pgnflt.PgnFltQueryParams{}
+
+	err := ctx.BindQuery(&param)
+	if err != nil {
+		er := errors.ErrInvalidUserInput.Wrap(err, "invalid user input")
+		r.logger.Info(ctx, "unable to bind role query", zap.Error(err))
+		_ = ctx.Error(er)
+		return
+	}
+
+	result, metaData, err := r.roleModule.ListRoles(ctx, param)
 	if err != nil {
 		_ = ctx.Error(err)
 		return
 	}
 
-	constants.SuccessResponse(ctx, http.StatusOK, result, nil)
+	constants.SuccessResponse(ctx, http.StatusOK, result, metaData)
 }
 
 // UpdateRoleStatus updates role status

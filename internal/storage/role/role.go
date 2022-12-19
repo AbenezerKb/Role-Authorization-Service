@@ -4,11 +4,14 @@ import (
 	"2f-authorization/internal/constants/dbinstance"
 	errors "2f-authorization/internal/constants/error"
 	"2f-authorization/internal/constants/error/sqlcerr"
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
 	"context"
+
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -152,8 +155,8 @@ func (r *role) DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, err
 	}, nil
 }
 
-func (r *role) ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dto.Role, error) {
-	roles, err := r.db.ListRoles(ctx, dbinstance.ListRolesParams{
+func (r *role) ListAllRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetAllRolesReq) ([]dto.Role, *model.MetaData, error) {
+	roles, metaData, err := r.db.ListRoles(ctx, filter, dbinstance.ListRolesParams{
 		ServiceID:  param.ServiceID,
 		TenantName: param.TenantName,
 	})
@@ -161,14 +164,14 @@ func (r *role) ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dt
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "no roles found")
 			r.log.Info(ctx, "no roles were found", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
-			return []dto.Role{}, err
+			return []dto.Role{}, nil, err
 		} else {
 			err = errors.ErrReadError.Wrap(err, "error reading roles")
 			r.log.Error(ctx, "error reading roles", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
-			return []dto.Role{}, err
+			return []dto.Role{}, nil, err
 		}
 	}
-	return roles, nil
+	return roles, metaData, nil
 }
 
 func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId, serviceId uuid.UUID, tenant string) error {

@@ -5,6 +5,8 @@ import (
 	"2f-authorization/internal/constants/model/dto"
 	"context"
 
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
+
 	"github.com/google/uuid"
 )
 
@@ -47,7 +49,7 @@ type Role interface {
 	AssignRole(ctx context.Context, param dto.TenantUsersRole) error
 	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 	DeleteRole(ctx context.Context, param string) (*dto.Role, error)
-	ListRoles(ctx context.Context) ([]dto.Role, error)
+	ListRoles(ctx context.Context, param db_pgnflt.PgnFltQueryParams) ([]dto.Role, *model.MetaData, error)
 	UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId uuid.UUID) error
 	GetRole(ctx context.Context, param uuid.UUID) (*dto.Role, error)
 }

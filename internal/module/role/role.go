@@ -1,7 +1,9 @@
 package role
 
 import (
+	"2f-authorization/internal/constants"
 	errors "2f-authorization/internal/constants/error"
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
@@ -9,6 +11,8 @@ import (
 	"2f-authorization/platform/opa"
 	"context"
 	"fmt"
+
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -174,34 +178,66 @@ func (r *role) DeleteRole(ctx context.Context, param string) (*dto.Role, error) 
 	return role, nil
 }
 
-func (r *role) ListRoles(ctx context.Context) ([]dto.Role, error) {
+func (r *role) ListRoles(ctx context.Context, query db_pgnflt.PgnFltQueryParams) ([]dto.Role, *model.MetaData, error) {
 	var err error
 	param := dto.GetAllRolesReq{}
 	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
-		return nil, err
+		return nil, nil, err
 	}
 	var ok bool
 	param.TenantName, ok = ctx.Value("x-tenant").(string)
 	if !ok {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
-		return nil, err
+		return nil, nil, err
 	}
 
 	if err = param.Validate(); err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		r.log.Info(ctx, "invalid input", zap.Error(err))
-		return nil, err
+		return nil, nil, err
 	}
 
-	roles, err := r.rolePersistence.ListAllRoles(ctx, param)
+	filter, err := query.ToFilterParams([]db_pgnflt.FieldType{
+		{
+			Name: "name",
+			Type: db_pgnflt.String,
+		},
+		{
+			Name: "created_at",
+			Type: db_pgnflt.Time,
+		},
+		{
+			Name: "updated_at",
+			Type: db_pgnflt.Time,
+		},
+		{
+			Name:   "status",
+			Type:   db_pgnflt.Enum,
+			Values: []string{constants.Active, constants.InActive},
+		},
+	}, db_pgnflt.Defaults{
+		Sort: []db_pgnflt.Sort{
+			{
+				Field: "created_at",
+				Sort:  db_pgnflt.SortDesc,
+			},
+		},
+		PerPage: 10,
+	})
 	if err != nil {
-		return nil, err
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid filter params provided")
+		r.log.Warn(ctx, "invalid filter input", zap.Error(err))
+		return nil, nil, err
 	}
-	return roles, nil
+	roles, metaData, err := r.rolePersistence.ListAllRoles(ctx, filter, param)
+	if err != nil {
+		return nil, nil, err
+	}
+	return roles, metaData, nil
 }
 
 func (r *role) UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId uuid.UUID) error {

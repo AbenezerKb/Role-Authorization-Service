@@ -1,0 +1,1 @@
+drop view role_tenant;

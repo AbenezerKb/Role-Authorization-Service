@@ -1,8 +1,11 @@
 package storage
 
 import (
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"context"
+
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 
 	"github.com/google/uuid"
 )
@@ -61,7 +64,7 @@ type Role interface {
 	AssignRole(ctx context.Context, serviceID uuid.UUID, param dto.TenantUsersRole) error
 	RevokeRole(ctx context.Context, param dto.TenantUsersRole) error
 	DeleteRole(ctx context.Context, roleId uuid.UUID) (*dto.Role, error)
-	ListAllRoles(ctx context.Context, param dto.GetAllRolesReq) ([]dto.Role, error)
+	ListAllRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetAllRolesReq) ([]dto.Role, *model.MetaData, error)
 	UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId, serviceId uuid.UUID, tenant string) error
 	GetRole(ctx context.Context, param uuid.UUID, serviceId uuid.UUID) (*dto.Role, error)
 }

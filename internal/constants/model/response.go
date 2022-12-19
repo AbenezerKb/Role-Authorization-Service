@@ -1,5 +1,7 @@
 package model
 
+import db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
+
 type Response struct {
 	// OK is only true if the request was successful.
 	OK bool `json:"ok"`
@@ -12,12 +14,9 @@ type Response struct {
 }
 
 type MetaData struct {
-	Page    int `form:"page" json:"page,omitempty"`
-	PerPage int `form:"per_page" json:"per_page,omitempty"`
-	// Sort is the total number of data without pagination
-	Sort string `form:"sort" json:"sort,omitempty"` // Total is the total number of data without pagination
+	db_pgnflt.FilterParams
 	// Total is the total number of data without pagination
-	Total int `json:"total"`
+	Total int64 `json:"total"`
 	// Extra contains other response specific data
 	Extra interface{} `json:"extra,omitempty"`
 }
