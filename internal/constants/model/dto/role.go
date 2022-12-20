@@ -19,7 +19,7 @@ type UpdateRole struct {
 
 func (r UpdateRole) Validate() error {
 	return validation.ValidateStruct(&r,
-		validation.Field(&r.RoleID, validation.NotIn(uuid.Nil.String()).Error("role id is required")),
+		validation.Field(&r.RoleID, validation.NotIn(uuid.Nil.String()).Error("Role id is required")),
 		validation.Field(&r.PermissionsID, validation.By(validatePermissions)),
 	)
 }
