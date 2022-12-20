@@ -14,6 +14,7 @@ variables:
 
 stages:
   - test
+  - setup
   - publish
   - deploy
 test:
@@ -41,9 +42,46 @@ test:
   script:
     - CONFIG_NAME=$CONFIG_NAME go test ./... -p=1 -count=1
 
+install_dependencies:
+  stage: setup
+  image: golang:1.19.3-alpine3.16
+  tags:
+    - gitlab-runner
+  before_script:
+    - mkdir -p .go
+    - apk update && apk add openssh-client
+    - apk add git
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - echo "$SSH_ACCESS_KEY" | tr -d '\r' | ssh-add -
+    - chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - go env -w GOPRIVATE="gitlab.com/2ftimeplc/*"
+    - printf "machine gitlab.com\nlogin 2ftimesgitlab@gmail.com\npassword $ACCESS_TOKEN" > ~/.netrc
+    - printf '[user]\n\temail = 2ftimesgitlab@gmail.com\n\tname = Two F Times Trading PLC\n\n[url "ssh://git@gitlab.com/"]\n\tinsteadOf = https://gitlab.com/' > ~/.gitconfig
+  script:
+    - go mod vendor
+  cache:
+    key: $CI_PROJECT_DIR
+    paths:
+      - vendor/
+    policy: push
+  only:
+    changes:
+      - go.mod
+      - go.sum
+    refs:
+      - main
+
 publish:
   image: docker:latest
   stage: publish
+  cache:
+    key: $CI_PROJECT_DIR
+    paths:
+      - vendor/
+    policy: pull
   tags:
     - gitlab-runner
   services:
