@@ -36,3 +36,10 @@ func (u UpdateTenantStatus) Validate() error {
 		validation.Field(&u.Status, validation.Required.Error("status is required"), validation.In(constants.Active, constants.InActive).Error("invalid status")),
 	)
 }
+
+type TenantUserRoles struct {
+	UserId uuid.UUID `json:"user_id"`
+	Roles  []string  `json:"roles"`
+}
+type TenantUserRolesRequest struct {
+}
