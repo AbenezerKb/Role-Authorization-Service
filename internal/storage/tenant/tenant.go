@@ -138,3 +138,29 @@ func (t *tenant) UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantS
 	}
 	return nil
 }
+
+func (t *tenant) GetUsersWithTheirRoles(ctx context.Context, tenantName string) ([]dto.TenantUserRoles, error) {
+	tenantRoles := []dto.TenantUserRoles{}
+	tenantUserRoles, err := t.db.Queries.GetTenantUsersWithRoles(ctx, tenantName)
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+
+			return []dto.TenantUserRoles{}, nil
+		} else {
+			err = errors.ErrReadError.Wrap(err, "can not read tenant user's role")
+			t.log.Error(ctx, "error to get tenant user's roles", zap.Error(err), zap.String("tenant", tenantName))
+			return []dto.TenantUserRoles{}, err
+		}
+
+	}
+
+	for _, tenantUserRole := range tenantUserRoles {
+
+		tenantRoles = append(tenantRoles, dto.TenantUserRoles{
+			UserId: tenantUserRole.UserID,
+			Roles:  tenantUserRole.Roles,
+		})
+	}
+	return tenantRoles, nil
+
+}
