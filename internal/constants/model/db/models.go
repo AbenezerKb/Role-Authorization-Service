@@ -115,6 +115,16 @@ type RolePermission struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
+type RoleTenant struct {
+	Name       string    `json:"name"`
+	CreatedAt  time.Time `json:"created_at"`
+	ID         uuid.UUID `json:"id"`
+	Status     Status    `json:"status"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
+}
+
 type Service struct {
 	ID        uuid.UUID    `json:"id"`
 	Status    Status       `json:"status"`
