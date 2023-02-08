@@ -118,3 +118,14 @@ func (t *tenant) UpdateTenantStatus(ctx *gin.Context) {
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
 }
+
+func (t *tenant) GetUsersWithTheirRoles(ctx *gin.Context) {
+
+	tenantUserRoles, err := t.tenantModule.GetTenantUsersWithRoles(ctx)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	constants.SuccessResponse(ctx, http.StatusOK, tenantUserRoles, nil)
+
+}
