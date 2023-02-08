@@ -119,3 +119,13 @@ func (t *tenant) UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantS
 
 	return t.opa.Refresh(ctx, fmt.Sprintf("Updating tenant [%v] with status [%v]", tenant, param.Status))
 }
+
+func (t *tenant) GetTenantUsersWithRoles(ctx context.Context) ([]dto.TenantUserRoles, error) {
+	tenantName := ctx.Value("x-tenant").(string)
+	tenantUserRoles, err := t.tenantPersistant.GetUsersWithTheirRoles(ctx, tenantName)
+	if err != nil {
+		return []dto.TenantUserRoles{}, err
+	}
+	return tenantUserRoles, nil
+
+}
