@@ -5,11 +5,11 @@ Feature: Get Tenant users with their role
 
   Background: 
     Given I have service with
-      | name | user_id                              |
+      | name | service_id                           |
       | sso  | a93fab67-1c11-4cdc-b410-f6fc728f592a |
     And A registered domain and tenant and role
-      | domain | tenant_name | role |
-      | vendor | vendor_1    | test |
+      | domain | tenant_name | role          |
+      | vendor | vendor_1    | manager,Admin |
     And tenant users and role
       | name  | roles         |
       | name1 | manager,Admin |
@@ -19,9 +19,7 @@ Feature: Get Tenant users with their role
   Scenario Outline: Successfully get tenant users
     Given i am system user
     When I send request  "vendor_1"
-    Then the tenant users should be   "<name>" and "<roles>"
-
-    Examples: 
+    Then the result should be <name> and <roles>
       | name  | roles         |
       | name1 | manager,Admin |
       | name2 | Admin         |
