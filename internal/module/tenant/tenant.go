@@ -2,6 +2,7 @@ package tenant
 
 import (
 	errors "2f-authorization/internal/constants/error"
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
@@ -9,6 +10,8 @@ import (
 	"2f-authorization/platform/opa"
 	"context"
 	"fmt"
+
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -120,12 +123,40 @@ func (t *tenant) UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantS
 	return t.opa.Refresh(ctx, fmt.Sprintf("Updating tenant [%v] with status [%v]", tenant, param.Status))
 }
 
-func (t *tenant) GetTenantUsersWithRoles(ctx context.Context) ([]dto.TenantUserRoles, error) {
-	tenantName := ctx.Value("x-tenant").(string)
-	tenantUserRoles, err := t.tenantPersistant.GetUsersWithTheirRoles(ctx, tenantName)
+func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.PgnFltQueryParams) ([]dto.TenantUserRoles, *model.MetaData, error) {
+	param := dto.GetTenantUsersRequest{}
+	var err error
+	param.TenantName = ctx.Value("x-tenant").(string)
+	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
 	if err != nil {
-		return []dto.TenantUserRoles{}, err
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		t.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
+		return nil, nil, err
 	}
-	return tenantUserRoles, nil
+	filter, err := query.ToFilterParams([]db_pgnflt.FieldType{
+		{
+			Name: "user_id",
+			Type: db_pgnflt.String,
+		},
+	}, db_pgnflt.Defaults{
+		Sort: []db_pgnflt.Sort{
+			{
+				Field: "user_id",
+				Sort:  db_pgnflt.SortDesc,
+			},
+		},
+		PerPage: 10,
+	})
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid filter params provided for tenant users roles")
+		t.log.Warn(ctx, "invalid filter input", zap.Error(err))
+		return []dto.TenantUserRoles{}, nil, err
+	}
+
+	tenantUserRoles, metadata, err := t.tenantPersistant.GetUsersWithTheirRoles(ctx, filter, param)
+	if err != nil {
+		return []dto.TenantUserRoles{}, nil, err
+	}
+	return tenantUserRoles, metadata, nil
 
 }
