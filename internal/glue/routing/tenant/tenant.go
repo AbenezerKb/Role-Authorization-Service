@@ -44,7 +44,7 @@ func InitRoute(group *gin.RouterGroup, tenant rest.Tenant, log logger.Logger, au
 			},
 		}, {
 			Method:      http.MethodGet,
-			Path:        "/tenant/users",
+			Path:        "/users",
 			Handler:     tenant.GetUsersWithTheirRoles,
 			UnAuthorize: false,
 			Middlewares: []gin.HandlerFunc{
