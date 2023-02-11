@@ -27,7 +27,8 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
       statement:
-        $ref: '#/definitions/dto.Statement'
+        allOf:
+        - $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
     type: object
@@ -178,7 +179,8 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
       statement:
-        $ref: '#/definitions/dto.Statement'
+        allOf:
+        - $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
       status:
@@ -211,7 +213,8 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
       statement:
-        $ref: '#/definitions/dto.Statement'
+        allOf:
+        - $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
     type: object
@@ -372,34 +375,6 @@ definitions:
         description: Name is the name of the field that caused the error.
         type: string
     type: object
-  model.Request:
-    properties:
-      action:
-        description: Action  is the urn of the action the user is taking on the resource.
-        type: string
-      fields:
-        description: Fields are the attributes of the entity.
-        items:
-          type: string
-        type: array
-      resource:
-        description: Resource is the urn for the resource the user is trying to take
-          action on.
-        type: string
-      service:
-        description: |-
-          Service is the id of the service.
-          It is set by the server after authenticating the service.
-        type: string
-      subject:
-        description: Subject is the user id who is trying to take action on the resource.
-        type: string
-      tenant:
-        description: |-
-          Tenant is the scope the user is operating.
-          It is set to "administrator" if it is not provided.
-        type: string
-    type: object
 host: 206.189.54.235:5184
 info:
   contact:
@@ -415,13 +390,6 @@ paths:
       - application/json
       description: This function check whether the user is authorized or not to perform
         the action on the resource within the given tenant and service.
-      parameters:
-      - description: authorization request body
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/model.Request'
       produces:
       - application/json
       responses:
@@ -1593,6 +1561,45 @@ paths:
       security:
       - BasicAuth: []
       summary: register a new permission.
+      tags:
+      - tenants
+  /tenants/users:
+    patch:
+      parameters:
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully updated the tenant's status
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: get Tenant Users with their roles
       tags:
       - tenants
   /users:
