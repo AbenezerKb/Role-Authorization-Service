@@ -26,6 +26,13 @@ func (d CreateTenent) Validate() error {
 	)
 }
 
+type GetTenantUsersRequest struct {
+	//TenantName is the name of the tenant
+	TenantName string `json:"tenant_name"`
+	//ServiceID  is the service id of service.
+	ServiceID uuid.UUID `json:"service_id"`
+}
+
 type UpdateTenantStatus struct {
 	// Status is new status of the tenant that is going to replace the old one
 	Status string `json:"status"`
@@ -40,6 +47,4 @@ func (u UpdateTenantStatus) Validate() error {
 type TenantUserRoles struct {
 	UserId uuid.UUID `json:"user_id"`
 	Roles  []string  `json:"roles"`
-}
-type TenantUserRolesRequest struct {
 }
