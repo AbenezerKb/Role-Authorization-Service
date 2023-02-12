@@ -157,7 +157,7 @@ func (u *updateUserRoleStatusTest) theUserHasTheFollowingRoleInTheFollowingTenan
 	if err := u.DB.AssignRole(context.Background(), db.AssignRoleParams{
 		UserID:     u.createdUser.UserId,
 		TenantName: u.tenant,
-		RoleID:     u.createdRoleResponseId,
+		ID:     u.createdRoleResponseId,
 		ServiceID:  u.createdService.ServiceID,
 	}); err != nil {
 		return err

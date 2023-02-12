@@ -221,7 +221,7 @@ func (r *revokeRoleTest) iHaveUserWithRole(userRoleName *godog.Table) error {
 
 	if err := r.DB.AssignRole(context.Background(), db.AssignRoleParams{
 		UserID:     r.assignedRole.UserID,
-		RoleID:     r.createdRoleResponseId,
+		ID:         r.createdRoleResponseId,
 		TenantName: r.tenant,
 		ServiceID:  r.createdService.ServiceID,
 	}); err != nil {

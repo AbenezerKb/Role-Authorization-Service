@@ -70,7 +70,8 @@ func (r *role) AssignRole(ctx context.Context, serviceID uuid.UUID, param dto.Te
 
 	err := r.db.AssignRole(ctx, db.AssignRoleParams{
 		TenantName: param.TenantName,
-		RoleID:     param.RoleID,
+		ID:         param.RoleID,
+		Name:       param.RoleName,
 		UserID:     param.UserID,
 		ServiceID:  serviceID,
 	})
