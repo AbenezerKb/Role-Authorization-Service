@@ -38,14 +38,21 @@ func (q *Queries) CheckIfPermissionExistsInTenant(ctx context.Context, arg Check
 }
 
 const createTenent = `-- name: CreateTenent :exec
-INSERT INTO tenants (
-domain_id,
-tenant_name,
-service_id
-
-) VALUES (
- $1,$2,$3
-)
+with new_tenant as (
+    insert into tenants (
+                         domain_id,
+                         tenant_name,
+                         service_id
+        ) values ($1, $2, $3) returning id as tenant_id ),
+new_role as (
+insert into roles (name, tenant_id)
+select 'admin', new_tenant.tenant_id from new_tenant returning id as role_id)
+insert into
+    role_permissions( role_id, permission_id)
+select role_id, id as permission_id
+       from  new_role,permissions
+       where name = 'manage-all'
+returning id
 `
 
 type CreateTenentParams struct {
