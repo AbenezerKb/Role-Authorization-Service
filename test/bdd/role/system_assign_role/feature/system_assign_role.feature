@@ -18,12 +18,12 @@ Feature: Assign  role
             | delete service | delete service | allow  | "admin:service:delete" | "admin:service:deleteservice" | vendor  |
         And i have role
             | name  |
-            | admin |
+            | Admin |
 
     Scenario Outline: successfully assign a new role to the user
         When I request to  assign role to user
             | user_id                              | role_name | tenant_name |
-            | a93fab67-1c11-4cdc-b410-f6fc728f5922 | admin     | vendor_1    |
+            | a93fab67-1c11-4cdc-b410-f6fc728f5922 | Admin     | vendor_1    |
         Then the role should successfully be  assigned
 
     Scenario Outline: Required fields are missing
@@ -34,6 +34,6 @@ Feature: Assign  role
 
         Examples:
             | user_id                              | role_name | tenant_name | message            |
-            | a93fab67-1c11-4cdc-b410-f6fc728f592a | admin     |             | tenant is required |
-            |                                      | admin     | vendor_1    | User id required   |
+            | a93fab67-1c11-4cdc-b410-f6fc728f592a | Admin     |             | tenant is required |
+            |                                      | Admin     | vendor_1    | User id required   |
             | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | vendor_1    | Role id required   |

@@ -13,7 +13,7 @@ Feature: Get User Permissions Within Tenant
         And A registered domain and tenants
             | domain | tenant_name        |
             | vendor | vendor_1,vendor_2 |
-        And A role "admin" in tenant "vendor_1" with the following permissions
+        And A role "Admin" in tenant "vendor_1" with the following permissions
             | name           | description    | effect | action | resource                    | fields | domains |
             | delete service | delete service | allow  | delete | admin:service:deleteservice | *      | vendor  |
         And A role "co-ordinator" in tenant "vendor_2" with the following permissions

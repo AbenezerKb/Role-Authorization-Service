@@ -18,15 +18,15 @@ Feature: Assign  role
       | delete service | delete service | allow  | "admin:service:delete" | "admin:service:deleteservice" | vendor  |
     And i have role
       | name  |
-      | admin |
+      | Admin |
     And I have user with role
       | user_id                              | role_name |
-      | a93fab67-1c11-4cdc-b410-f6fc728f5921 | admin     |
+      | a93fab67-1c11-4cdc-b410-f6fc728f5921 | Admin     |
 
   Scenario Outline: successfully revoked  user role
     When I request to revoke the role of the user
       | user_id                              | role_name |
-      | a93fab67-1c11-4cdc-b410-f6fc728f592a | admin     |
+      | a93fab67-1c11-4cdc-b410-f6fc728f592a | Admin     |
     Then the role should successfully revoked
 
   Scenario Outline: Required fields are missing
@@ -37,5 +37,5 @@ Feature: Assign  role
 
     Examples:
       | user_id                              | role_name | message          |
-      | 00000000-0000-0000-0000-000000000000 | admin     | User id required |
+      | 00000000-0000-0000-0000-000000000000 | Admin     | User id required |
       | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | Role id required |
