@@ -24,7 +24,7 @@ WITH new_row AS (
 )
 insert into tenant_users_roles(tenant_id, user_id, role_id)
 select tenants.id,_user.id,roles.id
-from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and roles.id=$3 or roles.name=$4 and roles.tenant_id=tenants.id;
+from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and roles.id=$3 or roles.name=$4 and roles.tenant_id=tenants.id and roles.deleted_at is null;
 
 -- name: IsRoleAssigned :one 
 SELECT count_rows() FROM tenant_users_roles 
