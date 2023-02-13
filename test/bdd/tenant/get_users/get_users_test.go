@@ -2,11 +2,13 @@ package getusers
 
 import (
 	"2f-authorization/internal/constants/model/db"
+	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"testing"
@@ -26,6 +28,9 @@ type DomainTenantsRoles struct {
 	TenantName string `json:"tenant_name"`
 	Role       string `json:"role"`
 }
+type ResponseData struct {
+	Data []dto.TenantUserRoles `json:"data"`
+}
 type getUserTenantUsersWithRoles struct {
 	test.TestInstance
 	apiTest         src.ApiTest
@@ -40,6 +45,7 @@ type getUserTenantUsersWithRoles struct {
 	roles           map[string]uuid.UUID
 	userids         map[string]uuid.UUID
 	userToRoles     map[string][]string
+	tenantName      string
 }
 type TenantUserRoles struct {
 	Name  string `json:"name"`
@@ -67,6 +73,7 @@ func (r *getUserTenantUsersWithRoles) aRegisteredDomainAndTenantAndRole(domainte
 	if err := json.Unmarshal([]byte(body), &domainTenantRole); err != nil {
 		return err
 	}
+	r.tenantName = domainTenantRole.TenantName
 	tenantId := r.DB.Pool.QueryRow(context.Background(), "INSERT INTO tenants(tenant_name,service_id,domain_id) VALUES ($1,$2,$3) RETURNING  id", domainTenantRole.TenantName, r.serviceID, r.Domain)
 	var id *uuid.UUID
 	tenantId.Scan(&id)
@@ -109,7 +116,7 @@ func (r *getUserTenantUsersWithRoles) iHaveServiceWith(service *godog.Table) err
 	if err := r.Opa.Refresh(context.Background(), fmt.Sprintf("Created service with name - [%v]", r.serviceName)); err != nil {
 		return err
 	}
-	sub := r.DB.Pool.QueryRow(context.Background(), "select ur.id from (select * from tenants where tenant_name='administrator')tn INNER JOIN (select id,user_id,tenant_id from tenant_users_roles ) tur ON tn.id=tur.tenant_id Inner join (select id from users)ur on ur.id=tur.user_id ")
+	sub := r.DB.Pool.QueryRow(context.Background(), "select ur.user_id from (select * from tenants where tenant_name='administrator')tn INNER JOIN (select id,user_id,tenant_id from tenant_users_roles ) tur ON tn.id=tur.tenant_id Inner join (select id,user_id from users)ur on ur.id=tur.user_id ")
 
 	var i *uuid.UUID
 	sub.Scan(&i)
@@ -127,7 +134,7 @@ func (r *getUserTenantUsersWithRoles) iSendRequest(tenantname string) error {
 	r.apiTest.SetHeader("x-subject", r.Subject.String())
 	r.apiTest.SetHeader("x-action", "*")
 	r.apiTest.SetHeader("x-resource", "*")
-	r.apiTest.SetHeader("x-tenant", r.tenant.String())
+	r.apiTest.SetHeader("x-tenant", r.tenantName)
 	r.apiTest.SendRequest()
 	return nil
 }
@@ -168,7 +175,7 @@ func (r *getUserTenantUsersWithRoles) tenantUsersAndRole(tenantUserRole *godog.T
 		var id *uuid.UUID
 		usr.Scan(&id)
 		r.users[tur.Name] = userid
-		r.userids[tur.Name] = *id
+		r.userids[tur.Name] = userid
 
 		for i := 0; i < len(roles); i++ {
 
@@ -188,21 +195,43 @@ func (r *getUserTenantUsersWithRoles) theResultShouldBeNameAndRoles(results *god
 	if err := json.Unmarshal([]byte(body), &turs); err != nil {
 		return err
 	}
-	for _, tur := range turs {
 
+	respnses := ResponseData{}
+
+	if err := json.Unmarshal(r.apiTest.ResponseBody, &respnses); err != nil {
+		return err
+	}
+	for _, tur := range turs {
+		log.Println(r.userids[tur.Name])
 		roles := strings.Split(tur.Roles, ",")
-		storedRole := r.userToRoles[tur.Name]
-		for _, role := range roles {
-			isRoleExist := false
-			for _, rol := range storedRole {
-				if role == rol {
-					isRoleExist = true
+		for _, respons := range respnses.Data {
+			isExist := false
+			if respons.UserId == r.userids[tur.Name] {
+				for _, responseRoles := range respons.Roles {
+					for _, rol := range roles {
+						if rol == responseRoles.RoleName {
+							isExist = true
+						}
+					}
+				}
+				if !isExist {
+					return fmt.Errorf("user role do not match the user")
 				}
 			}
-			if !isRoleExist {
-				return fmt.Errorf("user and  the user role dose not matched")
-			}
+
 		}
+
+		// for _, role := range roles {
+
+		// 	isRoleExist := false
+
+		// 	for _, rol := range storedRole {
+
+		// 	}
+		// 	if !isRoleExist {
+		// 		return fmt.Errorf("user and  the user role dose not matched")
+		// 	}
+		// }
 	}
 
 	return nil
