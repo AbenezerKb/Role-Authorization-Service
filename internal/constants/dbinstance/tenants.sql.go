@@ -16,7 +16,7 @@ type GetTenantUsersRoles struct {
 }
 
 func (db *DBInstance) GetTenantUsersWithRoles(ctx context.Context, filter db_pgnflt.FilterParams, arg GetTenantUsersRoles) ([]dto.TenantUserRoles, *model.MetaData, error) {
-	query := fmt.Sprintf("(select json_agg(json_build_object('role_name',rl.name,'status',tur.status,'role_id',rl.id))::jsonb as roles,us.user_id,tn.service_id from ( select id ,service_id from tenants where tenant_name='%s')tn INNER JOIN (select role_id,tenant_id,user_id,status,id from tenant_users_roles)tur ON tn.id = tur.tenant_id INNER JOIN (select id , name from roles ) rl ON tur.role_id = rl.id INNER JOIN ( select id, user_id from users) us on us.id =tur.user_id  GROUP BY us.user_id,tn.service_id)", arg.TenantName)
+	query := fmt.Sprintf("(select json_agg(json_build_object('role_name',rl.name,'status',tur.status,'id',rl.id))::jsonb as roles,us.user_id,tn.service_id from ( select id ,service_id from tenants where tenant_name='%s')tn INNER JOIN (select role_id,tenant_id,user_id,status,id from tenant_users_roles)tur ON tn.id = tur.tenant_id INNER JOIN (select id , name from roles ) rl ON tur.role_id = rl.id INNER JOIN ( select id, user_id from users) us on us.id =tur.user_id  GROUP BY us.user_id,tn.service_id)", arg.TenantName)
 	// var count int64
 	metadata := &model.MetaData{FilterParams: filter}
 	var filtParam = db_pgnflt.FilterWithCustomWhere(fmt.Sprintf("service_id ='%s'", arg.ServiceID), filter)
