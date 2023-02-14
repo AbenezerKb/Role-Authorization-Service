@@ -27,8 +27,7 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
       statement:
-        allOf:
-        - $ref: '#/definitions/dto.Statement'
+        $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
     type: object
@@ -179,8 +178,7 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
       statement:
-        allOf:
-        - $ref: '#/definitions/dto.Statement'
+        $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
       status:
@@ -213,8 +211,7 @@ definitions:
         description: ServiceID is the id of the service the permission belongs to
         type: string
       statement:
-        allOf:
-        - $ref: '#/definitions/dto.Statement'
+        $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
           of the permission being created
     type: object
@@ -257,6 +254,10 @@ definitions:
       role_id:
         description: RoleID is id of the role which is going to be assigned to the
           user.
+        type: string
+      role_name:
+        description: RoleName is the name of the role which is going to be assigned
+          to the user.
         type: string
       tenant_name:
         description: TenantName The Name of the tenante which is given when the tenant
@@ -1563,8 +1564,8 @@ paths:
       summary: register a new permission.
       tags:
       - tenants
-  /tenants/users:
-    patch:
+  /users:
+    get:
       parameters:
       - description: user id
         in: header
@@ -1590,7 +1591,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: successfully updated the tenant's status
+          description: successfully get user's roles
           schema:
             type: boolean
         "400":
@@ -1602,7 +1603,6 @@ paths:
       summary: get Tenant Users with their roles
       tags:
       - tenants
-  /users:
     post:
       consumes:
       - application/json
