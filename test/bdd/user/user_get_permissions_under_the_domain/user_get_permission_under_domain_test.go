@@ -173,7 +173,7 @@ func (g *getUserPermissionsWithinDomainTest) aRoleInTenantWithTheFollowingPermis
 func (g *getUserPermissionsWithinDomainTest) theUserIsGrantedTheFollowingRoleInTheRespectiveTenant() error {
 	for _, r := range g.createdRoleResponseId {
 		if err := g.DB.AssignRole(context.Background(), db.AssignRoleParams{
-			RoleID:     r.roleId,
+			ID:     r.roleId,
 			UserID:     g.user.UserId,
 			TenantName: r.tenant,
 			ServiceID:  g.createdService.ServiceID,
