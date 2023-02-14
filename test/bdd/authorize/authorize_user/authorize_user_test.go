@@ -201,10 +201,10 @@ func (a *authorizeUserTest) iWantToAuthorizeTheUserToPerformTheBelowActionOnTheR
 
 func (a *authorizeUserTest) theUserIsGrantedWithTheRole(role string) error {
 	if err := a.DB.AssignRole(context.Background(), db.AssignRoleParams{
-		RoleID:     a.createdRoleResponseId,
+		ID:         a.createdRoleResponseId,
 		UserID:     a.user.UserId,
 		TenantName: a.tenant,
-		ServiceID: a.createdService.ServiceID,
+		ServiceID:  a.createdService.ServiceID,
 	}); err != nil {
 		return err
 	}

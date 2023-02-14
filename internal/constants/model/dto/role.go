@@ -84,6 +84,8 @@ type TenantUsersRole struct {
 type RoleTenant struct {
 	//RoleID is id of the role which is going to be assigned to the user.
 	RoleID uuid.UUID `json:"role_id"`
+	//RoleName is the name of the role which is going to be assigned to the user.
+	RoleName string `json:"role_name"`
 	//TenantName The Name of the tenante which is given when the tenant is created
 	TenantName string `json:"tenant_name"`
 }
@@ -94,7 +96,11 @@ func (t TenantUsersRole) Validate() error {
 		&t,
 		validation.Field(&t.TenantName, validation.Required.Error("tenant is required")),
 		validation.Field(&t.UserID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("User id required")),
-		validation.Field(&t.RoleID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("Role id required")),
+		validation.Field(&t.RoleID, validation.When(t.RoleName == "", is.UUID,
+			validation.NotIn(uuid.Nil.String()).Error("Role id required"))),
+		validation.Field(&t.RoleName, validation.When(t.RoleID == uuid.Nil,
+			validation.Required.Error("role id is required"),
+		)),
 	)
 }
 

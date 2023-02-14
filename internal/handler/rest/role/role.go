@@ -163,7 +163,7 @@ func (r *role) RevokeRole(ctx *gin.Context) {
 // @Tags         roles
 // @Accept       json
 // @Produce      json
-// @param 		 role id path string true "role id"
+// @param 		 id path string true "role id"
 // @param 		 updaterolepermissionslist body dto.UpdateRole true "update role request body"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
@@ -207,7 +207,7 @@ func (r *role) UpdateRole(ctx *gin.Context) {
 // @Tags         roles
 // @Accept       json
 // @Produce      json
-// @param 		 role id path string true "role id"
+// @param 		  id path string true "role id"
 // @param 		 x-subject header string true "user id"
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"

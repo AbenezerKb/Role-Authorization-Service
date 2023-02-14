@@ -42,3 +42,4 @@ select sum(count) from _sum;
 
 -- name: UpdateTenantStatus :one
 update tenants set status=$1 where tenant_name=$2 and service_id=$3 returning id;
+

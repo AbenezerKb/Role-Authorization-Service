@@ -75,7 +75,7 @@ func (g *getUserPermissionsWithinTenantTest) aRegisteredDomainAndTenant(domainAn
 
 func (g *getUserPermissionsWithinTenantTest) iAmGrantedAnRole(role string) error {
 	if err := g.DB.AssignRole(context.Background(), db.AssignRoleParams{
-		RoleID:     g.createdRoleResponseId,
+		ID:     g.createdRoleResponseId,
 		UserID:     g.user.UserId,
 		TenantName: g.tenant,
 		ServiceID:  g.createdService.ServiceID,

@@ -38,17 +38,6 @@ const docTemplate = `{
                     "authorize"
                 ],
                 "summary": "authorize user.",
-                "parameters": [
-                    {
-                        "description": "authorization request body",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Request"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "successfully authorize the user",
@@ -1822,6 +1811,64 @@ const docTemplate = `{
             }
         },
         "/users": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tenants"
+                ],
+                "summary": "get Tenant Users with their roles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "x-subject",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "action",
+                        "name": "x-action",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tenant",
+                        "name": "x-tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "resource",
+                        "name": "x-resource",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully get user's roles",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -2441,6 +2488,10 @@ const docTemplate = `{
                     "description": "RoleID is id of the role which is going to be assigned to the user.",
                     "type": "string"
                 },
+                "role_name": {
+                    "description": "RoleName is the name of the role which is going to be assigned to the user.",
+                    "type": "string"
+                },
                 "tenant_name": {
                     "description": "TenantName The Name of the tenante which is given when the tenant is created",
                     "type": "string"
@@ -2590,38 +2641,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "Name is the name of the field that caused the error.",
-                    "type": "string"
-                }
-            }
-        },
-        "model.Request": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "description": "Action  is the urn of the action the user is taking on the resource.",
-                    "type": "string"
-                },
-                "fields": {
-                    "description": "Fields are the attributes of the entity.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "resource": {
-                    "description": "Resource is the urn for the resource the user is trying to take action on.",
-                    "type": "string"
-                },
-                "service": {
-                    "description": "Service is the id of the service.\nIt is set by the server after authenticating the service.",
-                    "type": "string"
-                },
-                "subject": {
-                    "description": "Subject is the user id who is trying to take action on the resource.",
-                    "type": "string"
-                },
-                "tenant": {
-                    "description": "Tenant is the scope the user is operating.\nIt is set to \"administrator\" if it is not provided.",
                     "type": "string"
                 }
             }

@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 	"go.uber.org/zap"
 )
 
@@ -117,4 +118,35 @@ func (t *tenant) UpdateTenantStatus(ctx *gin.Context) {
 	}
 
 	constants.SuccessResponse(ctx, http.StatusOK, nil, nil)
+}
+
+// GetUsersWithTheirRoles get tenant users with their roles
+// @Summary      get Tenant Users with their roles
+// @Tags         tenants
+// @Produce      json
+// @param 		 x-subject header string true "user id"
+// @param 		 x-action header string true "action"
+// @param 		 x-tenant header string true "tenant"
+// @param 		 x-resource header string true "resource"
+// @Success      200 boolean true "successfully get user's roles"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Router       /users [get]
+// @Security	 BasicAuth
+func (t *tenant) GetUsersWithTheirRoles(ctx *gin.Context) {
+	param := db_pgnflt.PgnFltQueryParams{}
+
+	err := ctx.BindQuery(&param)
+	if err != nil {
+		er := errors.ErrInvalidUserInput.Wrap(err, "invalid user input")
+		t.logger.Info(ctx, "unable to bind tenant query", zap.Error(err))
+		_ = ctx.Error(er)
+		return
+	}
+	tenantUserRoles, metadata, err := t.tenantModule.GetTenantUsersWithRoles(ctx, param)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	constants.SuccessResponse(ctx, http.StatusOK, tenantUserRoles, metadata)
+
 }
