@@ -1,6 +1,7 @@
 package tenant
 
 import (
+	"2f-authorization/internal/constants"
 	errors "2f-authorization/internal/constants/error"
 	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
@@ -138,10 +139,23 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 			Name: "user_id",
 			Type: db_pgnflt.String,
 		},
+		{
+			Name: "created_at",
+			Type: db_pgnflt.Time,
+		},
+		{
+			Name: "updated_at",
+			Type: db_pgnflt.Time,
+		},
+		{
+			Name:   "status",
+			Type:   db_pgnflt.Enum,
+			Values: []string{constants.Active, constants.InActive},
+		},
 	}, db_pgnflt.Defaults{
 		Sort: []db_pgnflt.Sort{
 			{
-				Field: "user_id",
+				Field: "created_at",
 				Sort:  db_pgnflt.SortDesc,
 			},
 		},
@@ -150,12 +164,12 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid filter params provided for tenant users roles")
 		t.log.Warn(ctx, "invalid filter input", zap.Error(err))
-		return []dto.TenantUserRoles{}, nil, err
+		return nil, nil, err
 	}
 
 	tenantUserRoles, metadata, err := t.tenantPersistant.GetUsersWithTheirRoles(ctx, filter, param)
 	if err != nil {
-		return []dto.TenantUserRoles{}, nil, err
+		return nil, nil, err
 	}
 	return tenantUserRoles, metadata, nil
 

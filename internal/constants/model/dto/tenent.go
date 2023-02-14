@@ -46,7 +46,7 @@ func (u UpdateTenantStatus) Validate() error {
 
 type UserRole struct {
 	RoleName string `json:"role_name"`
-	ID       string `json:"id"`
+	RoleID   string `json:"role_id"`
 	Status   string `json:"status"`
 }
 type TenantUserRoles struct {

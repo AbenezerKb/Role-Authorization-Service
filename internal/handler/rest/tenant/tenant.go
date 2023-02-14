@@ -128,9 +128,9 @@ func (t *tenant) UpdateTenantStatus(ctx *gin.Context) {
 // @param 		 x-action header string true "action"
 // @param 		 x-tenant header string true "tenant"
 // @param 		 x-resource header string true "resource"
-// @Success      200 boolean true "successfully updated the tenant's status"
+// @Success      200 boolean true "successfully get user's roles"
 // @Failure      400  {object}  model.ErrorResponse "required field error"
-// @Router       /tenants/users [patch]
+// @Router       /users [get]
 // @Security	 BasicAuth
 func (t *tenant) GetUsersWithTheirRoles(ctx *gin.Context) {
 	param := db_pgnflt.PgnFltQueryParams{}
