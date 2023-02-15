@@ -219,3 +219,22 @@ func (r *role) GetRole(ctx context.Context, param uuid.UUID, serviceId uuid.UUID
 		Permissions: role.Permission,
 	}, nil
 }
+
+func (r *role) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
+	err := r.db.RevokeAdminRole(ctx, tenantID)
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "role not found")
+			r.log.Error(ctx, "error revoking admin role's status", zap.Error(err),
+				zap.String("tenant", tenantID.String()))
+			return err
+		}
+
+		err = errors.ErrUpdateError.Wrap(err, "error revoking admin role's status")
+		r.log.Error(ctx, "error revoking admin role's status",
+			zap.Error(err),
+			zap.String("tenant", tenantID.String()))
+		return err
+	}
+	return nil
+}

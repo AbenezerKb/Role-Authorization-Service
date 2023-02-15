@@ -67,4 +67,5 @@ type Role interface {
 	ListAllRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetAllRolesReq) ([]dto.Role, *model.MetaData, error)
 	UpdateRoleStatus(ctx context.Context, param dto.UpdateRoleStatus, roleId, serviceId uuid.UUID, tenant string) error
 	GetRole(ctx context.Context, param uuid.UUID, serviceId uuid.UUID) (*dto.Role, error)
+	RevokeAdminRole(ctx context.Context, param uuid.UUID) error
 }

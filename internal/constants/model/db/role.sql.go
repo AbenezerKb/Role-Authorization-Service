@@ -22,7 +22,7 @@ WITH new_row AS (
 )
 insert into tenant_users_roles(tenant_id, user_id, role_id)
 select tenants.id,_user.id,roles.id
-from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and roles.id=$3 or roles.name=$4 and roles.tenant_id=tenants.id
+from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and roles.id=$3 or roles.name=$4 and roles.tenant_id=tenants.id and roles.deleted_at is null
 `
 
 type AssignRoleParams struct {
@@ -236,6 +236,17 @@ type RemovePermissionsFromRoleParams struct {
 
 func (q *Queries) RemovePermissionsFromRole(ctx context.Context, arg RemovePermissionsFromRoleParams) error {
 	_, err := q.db.Exec(ctx, removePermissionsFromRole, arg.RoleID, arg.Column2)
+	return err
+}
+
+const revokeAdminRole = `-- name: RevokeAdminRole :exec
+UPDATE tenant_users_roles
+SET status = 'INACTIVE'
+WHERE tenant_id = $1 AND role_id = 'admin'
+`
+
+func (q *Queries) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, revokeAdminRole, tenantID)
 	return err
 }
 

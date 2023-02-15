@@ -88,7 +88,17 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
-
+	if param.RoleName == "admin" {
+		tenantID, err := uuid.Parse(param.TenantName)
+		if err != nil {
+			err := errors.ErrInvalidUserInput.Wrap(err, "invalid id")
+			r.log.Warn(ctx, "invalid input", zap.Error(err), zap.String("tenant-name", tenantID.String()))
+			return err
+		}
+		if err := r.rolePersistence.RevokeAdminRole(ctx, tenantID); err != nil {
+			return err
+		}
+	}
 	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
 	if err != nil {
 		return err
