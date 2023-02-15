@@ -121,10 +121,10 @@ func (g *getRolesTest) iShouldGetAllRolesInMyTenant(roles *godog.Table) error {
 	if err := g.apiTest.UnmarshalJSON(g.apiTest.ResponseBody, &g.result); err != nil {
 		return err
 	}
-	for _, r := range g.result.Data {
-		if err := g.apiTest.AssertEqual(r.ID, g.createdRoleResponseId); err != nil {
-			return err
-		}
+
+	if err := g.apiTest.AssertEqual(g.result.Data[0].ID, g.createdRoleResponseId); err != nil {
+		return err
+
 	}
 
 	return nil

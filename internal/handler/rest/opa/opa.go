@@ -31,7 +31,6 @@ func Init(logger logger.Logger, opamodule module.Opa) rest.Opa {
 // @Tags         authorize
 // @Accept       json
 // @Produce      json
-// @param 		 authorize user body model.Request true "authorization request body"
 // @Success      200 {object} boolean "successfully authorize the user"
 // @Failure      400  {object}  model.ErrorResponse "required field error,bad request error"
 // @Failure      401  {object}  model.ErrorResponse "unauthorized"

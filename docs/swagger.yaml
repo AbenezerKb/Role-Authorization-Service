@@ -255,6 +255,10 @@ definitions:
         description: RoleID is id of the role which is going to be assigned to the
           user.
         type: string
+      role_name:
+        description: RoleName is the name of the role which is going to be assigned
+          to the user.
+        type: string
       tenant_name:
         description: TenantName The Name of the tenante which is given when the tenant
           is created
@@ -372,34 +376,6 @@ definitions:
         description: Name is the name of the field that caused the error.
         type: string
     type: object
-  model.Request:
-    properties:
-      action:
-        description: Action  is the urn of the action the user is taking on the resource.
-        type: string
-      fields:
-        description: Fields are the attributes of the entity.
-        items:
-          type: string
-        type: array
-      resource:
-        description: Resource is the urn for the resource the user is trying to take
-          action on.
-        type: string
-      service:
-        description: |-
-          Service is the id of the service.
-          It is set by the server after authenticating the service.
-        type: string
-      subject:
-        description: Subject is the user id who is trying to take action on the resource.
-        type: string
-      tenant:
-        description: |-
-          Tenant is the scope the user is operating.
-          It is set to "administrator" if it is not provided.
-        type: string
-    type: object
 host: 206.189.54.235:5184
 info:
   contact:
@@ -415,13 +391,6 @@ paths:
       - application/json
       description: This function check whether the user is authorized or not to perform
         the action on the resource within the given tenant and service.
-      parameters:
-      - description: authorization request body
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/model.Request'
       produces:
       - application/json
       responses:
@@ -1596,6 +1565,44 @@ paths:
       tags:
       - tenants
   /users:
+    get:
+      parameters:
+      - description: user id
+        in: header
+        name: x-subject
+        required: true
+        type: string
+      - description: action
+        in: header
+        name: x-action
+        required: true
+        type: string
+      - description: tenant
+        in: header
+        name: x-tenant
+        required: true
+        type: string
+      - description: resource
+        in: header
+        name: x-resource
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully get user's roles
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: get Tenant Users with their roles
+      tags:
+      - tenants
     post:
       consumes:
       - application/json

@@ -38,14 +38,21 @@ func (q *Queries) CheckIfPermissionExistsInTenant(ctx context.Context, arg Check
 }
 
 const createTenent = `-- name: CreateTenent :exec
-INSERT INTO tenants (
-domain_id,
-tenant_name,
-service_id
-
-) VALUES (
- $1,$2,$3
-)
+with new_tenant as (
+    insert into tenants (
+                         domain_id,
+                         tenant_name,
+                         service_id
+        ) values ($1, $2, $3) returning id as tenant_id ),
+new_role as (
+insert into roles (name, tenant_id)
+select 'admin', new_tenant.tenant_id from new_tenant returning id as role_id)
+insert into
+    role_permissions( role_id, permission_id)
+select role_id, id as permission_id
+       from  new_role,permissions
+       where name = 'manage-all'
+returning id
 `
 
 type CreateTenentParams struct {
@@ -57,6 +64,73 @@ type CreateTenentParams struct {
 func (q *Queries) CreateTenent(ctx context.Context, arg CreateTenentParams) error {
 	_, err := q.db.Exec(ctx, createTenent, arg.DomainID, arg.TenantName, arg.ServiceID)
 	return err
+}
+
+const getTenantUsersWithRoles = `-- name: GetTenantUsersWithRoles :many
+select
+    array_agg(rl.name)::string[] as roles,
+    us.user_id
+  
+from
+    (
+        select
+            id
+        from
+            tenants
+        where
+            tenant_name = $1
+    ) tn
+    INNER JOIN (
+
+        select
+            role_id,
+            tenant_id,
+            user_id
+        from
+            tenant_users_roles
+
+    ) tur ON tn.id = tur.tenant_id
+    INNER JOIN (
+        select
+            id,
+            name
+        from
+            roles
+    ) rl ON tur.role_id = rl.id
+    INNER JOIN (
+        select
+            id,
+            user_id
+        from
+            users
+    ) us ON us.id = tur.user_id
+
+      GROUP  BY us.user_id
+`
+
+type GetTenantUsersWithRolesRow struct {
+	Roles  []string  `json:"roles"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetTenantUsersWithRoles(ctx context.Context, tenantName string) ([]GetTenantUsersWithRolesRow, error) {
+	rows, err := q.db.Query(ctx, getTenantUsersWithRoles, tenantName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTenantUsersWithRolesRow
+	for rows.Next() {
+		var i GetTenantUsersWithRolesRow
+		if err := rows.Scan(&i.Roles, &i.UserID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getTenentWithNameAndServiceId = `-- name: GetTenentWithNameAndServiceId :one

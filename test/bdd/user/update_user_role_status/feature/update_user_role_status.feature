@@ -11,7 +11,7 @@ Feature: Update User's Role Status
         And A registered domain and tenant
             | domain | tenant_name |
             | vendor | vendor_1    |
-        And a role "admin" in tenant "vendor_1" with the following permissions
+        And a role "Admin" in tenant "vendor_1" with the following permissions
             | name           | description    | effect | action                 | resource                      | domains |
             | delete service | delete service | allow  | "admin:service:delete" | "admin:service:deleteservice" | vendor  |
     @success
@@ -24,8 +24,8 @@ Feature: Update User's Role Status
         Then the role status should update to "<status>"
         Examples:
             | user_id                              | tenant   | role  | status   |
-            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | admin | INACTIVE |
-            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | admin | ACTIVE   |
+            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin | INACTIVE |
+            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin | ACTIVE   |
     @failure
     Scenario Outline: Missing required field values
         Given the user has the following role in the following tenant
@@ -36,5 +36,5 @@ Feature: Update User's Role Status
         Then Then I should get a field error with message "<message>"
         Examples:
             | user_id                              | tenant   | role  | status         | message            |
-            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | admin |                | status is required |
-            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | admin | invalid status | invalid status     |
+            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin |                | status is required |
+            | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin | invalid status | invalid status     |

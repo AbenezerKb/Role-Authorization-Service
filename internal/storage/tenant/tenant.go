@@ -4,11 +4,14 @@ import (
 	"2f-authorization/internal/constants/dbinstance"
 	errors "2f-authorization/internal/constants/error"
 	"2f-authorization/internal/constants/error/sqlcerr"
+	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/storage"
 	"2f-authorization/platform/logger"
 	"context"
+
+	db_pgnflt "gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgtype"
@@ -137,4 +140,26 @@ func (t *tenant) UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantS
 		return err
 	}
 	return nil
+}
+
+func (t *tenant) GetUsersWithTheirRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetTenantUsersRequest) ([]dto.TenantUserRoles, *model.MetaData, error) {
+	tenantUserRols, metaData, err := t.db.GetTenantUsersWithRoles(ctx, filter,
+		dbinstance.GetTenantUsersRoles{
+			TenantName: param.TenantName,
+			ServiceID:  param.ServiceID,
+		},
+	)
+	if err != nil {
+		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
+			err := errors.ErrNoRecordFound.Wrap(err, "no tenant users found")
+			t.log.Info(ctx, "no tenant users  were found", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
+			return []dto.TenantUserRoles{}, nil, err
+		} else {
+			err = errors.ErrReadError.Wrap(err, "error reading tenant users roles")
+			t.log.Error(ctx, "error reading tenant users roles ", zap.Error(err), zap.String("tenany-name", param.TenantName), zap.String("service-id", param.ServiceID.String()))
+			return []dto.TenantUserRoles{}, nil, err
+		}
+	}
+	return tenantUserRols, metaData, nil
+
 }

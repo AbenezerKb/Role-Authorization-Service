@@ -34,6 +34,7 @@ type Tenant interface {
 	CreateTenant(ctx context.Context, param dto.CreateTenent) error
 	RegsiterTenantPermission(ctx context.Context, param dto.RegisterTenantPermission) (*dto.Permission, error)
 	UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantStatus, tenantId string) error
+	GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.PgnFltQueryParams) ([]dto.TenantUserRoles, *model.MetaData, error)
 }
 type User interface {
 	RegisterUser(ctx context.Context, param dto.RegisterUser) error

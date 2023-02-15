@@ -39,8 +39,10 @@ func (c *createTenant) iHaveServiceWith(service *godog.Table) error {
 		return err
 	}
 
-	c.apiTest.UnmarshalJSON([]byte(body), &c.servicemodel)
-
+	err = c.apiTest.UnmarshalJSON([]byte(body), &c.servicemodel)
+	if err != nil {
+		return err
+	}
 	if c.servicemodel.Password, err = argon.CreateHash("password", argon.DefaultParams); err != nil {
 		return err
 	}
@@ -103,6 +105,7 @@ func (c *createTenant) aDomain(domain *godog.Table) error {
 		return err
 	}
 	c.domain.ID = result.ID
+
 	return nil
 }
 func (c *createTenant) iWantToCreateATenantWithData(tenant *godog.Table) error {
