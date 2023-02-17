@@ -23,7 +23,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.10
 	gitlab.com/2ftimeplc/2fbackend/bdd-testing-framework v0.1.8
-	gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt v0.0.3
+	gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt v0.0.8
 	go.uber.org/zap v1.23.0
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 )

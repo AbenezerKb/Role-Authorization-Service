@@ -17,10 +17,11 @@ type ListRolesParams struct {
 }
 
 func (db *DBInstance) ListRoles(ctx context.Context, filter db_pgnflt.FilterParams, arg ListRolesParams) ([]dto.Role, *model.MetaData, error) {
-	// var count int64
+
 	metadata := &model.MetaData{FilterParams: filter}
-	var filtParam = db_pgnflt.FilterWithCustomWhere(fmt.Sprintf("tenant_name = '%s' AND service_id= '%s'", arg.TenantName, arg.ServiceID), filter)
-	rows, err := db.Pool.Query(ctx, db_pgnflt.ComposeSelectColumnsQuery([]string{"name", "created_at", "id", "status", "updated_at"}, "role_tenant", filtParam))
+	_, filterParam := db_pgnflt.GetFilterSQL(filter)
+	filterParam.Where = fmt.Sprintf("WHERE (tenant_name = '%s' AND service_id= '%s') AND (%s)", arg.TenantName, arg.ServiceID, filterParam.Where)
+	rows, err := db.Pool.Query(ctx, db_pgnflt.GetSelectColumnsQuery([]string{"name", "created_at", "id", "status", "updated_at"}, "role_tenant", filterParam))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -36,6 +37,5 @@ func (db *DBInstance) ListRoles(ctx context.Context, filter db_pgnflt.FilterPara
 	if err := rows.Err(); err != nil {
 		return nil, nil, err
 	}
-	fmt.Println("metadat", *metadata)
 	return items, metadata, nil
 }
