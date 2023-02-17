@@ -19,7 +19,7 @@ Feature: Get Tenant users with their role
   Scenario Outline: Successfully get tenant users
     Given i am system user
     When I send request  "vendor_1"
-    Then the result should be <name> and <roles>
+    Then the result should be
       | name  | roles         |
       | name1 | manager,Admin |
       | name2 | Admin         |

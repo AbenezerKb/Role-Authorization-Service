@@ -189,7 +189,7 @@ func (r *getUserTenantUsersWithRoles) tenantUsersAndRole(tenantUserRole *godog.T
 	return nil
 }
 
-func (r *getUserTenantUsersWithRoles) theResultShouldBeNameAndRoles(results *godog.Table) error {
+func (r *getUserTenantUsersWithRoles) theResultShouldBe(results *godog.Table) error {
 	body, _ := r.apiTest.ReadRows(results, nil, false)
 	turs := []TenanUserROlesResponse{}
 	if err := json.Unmarshal([]byte(body), &turs); err != nil {
@@ -252,5 +252,5 @@ func (r *getUserTenantUsersWithRoles) InitializeScenario(ctx *godog.ScenarioCont
 	ctx.Step(`^I have service with$`, r.iHaveServiceWith)
 	ctx.Step(`^I send request  "([^"]*)"$`, r.iSendRequest)
 	ctx.Step(`^tenant users and role$`, r.tenantUsersAndRole)
-	ctx.Step(`^the result should be <name> and <roles>$`, r.theResultShouldBeNameAndRoles)
+	ctx.Step(`^the result should be$`, r.theResultShouldBe)
 }
