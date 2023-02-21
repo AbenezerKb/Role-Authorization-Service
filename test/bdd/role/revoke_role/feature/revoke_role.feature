@@ -36,6 +36,6 @@ Feature: Assign  role
     Then my request should fail with "<message>"
 
     Examples:
-      | user_id                              | role_name | message          |
-      | 00000000-0000-0000-0000-000000000000 | Admin     | User id required |
-      | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | Role id required |
+      | user_id                              | role_name | message                     |
+      | 00000000-0000-0000-0000-000000000000 | Admin     | User id required            |
+      | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | Role id or name is require |

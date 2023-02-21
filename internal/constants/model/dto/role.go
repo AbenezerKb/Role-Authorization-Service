@@ -96,10 +96,10 @@ func (t TenantUsersRole) Validate() error {
 		&t,
 		validation.Field(&t.TenantName, validation.Required.Error("tenant is required")),
 		validation.Field(&t.UserID, is.UUID, validation.NotIn(uuid.Nil.String()).Error("User id required")),
-		validation.Field(&t.RoleID, validation.When(t.RoleName == "", is.UUID,
-			validation.NotIn(uuid.Nil.String()).Error("Role id required"))),
+		validation.Field(&t.RoleID, validation.When(t.RoleName == "",
+			validation.NotIn(uuid.Nil.String()).Error("Role id or name is required"))),
 		validation.Field(&t.RoleName, validation.When(t.RoleID == uuid.Nil,
-			validation.Required.Error("role id is required"),
+			validation.Required.Error("Role id or name is required"),
 		)),
 	)
 }
