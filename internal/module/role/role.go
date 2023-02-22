@@ -88,6 +88,14 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
+	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
+	if err != nil {
+		return err
+	}
+	if isExist {
+		r.log.Info(ctx, "role already exists", zap.String("name", param.RoleID.String()))
+		return errors.ErrDataExists.Wrap(err, "user  with this role  already exists")
+	}
 	if param.RoleName == "admin" {
 		tenantID, err := uuid.Parse(param.TenantName)
 		if err != nil {
@@ -98,15 +106,6 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		if err := r.rolePersistence.RevokeAdminRole(ctx, tenantID); err != nil {
 			return err
 		}
-	}
-	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
-	if err != nil {
-		return err
-	}
-
-	if isExist {
-		r.log.Info(ctx, "role already exists", zap.String("name", param.RoleID.String()))
-		return errors.ErrDataExists.Wrap(err, "user  with this role  already exists")
 	}
 	if err := r.rolePersistence.AssignRole(ctx, serviceID, param); err != nil {
 		return err

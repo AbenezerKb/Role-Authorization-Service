@@ -224,8 +224,8 @@ func (r *role) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
 	err := r.db.RevokeAdminRole(ctx, tenantID)
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
-			err := errors.ErrNoRecordFound.Wrap(err, "role not found")
-			r.log.Error(ctx, "error revoking admin role's status", zap.Error(err),
+			err := errors.ErrNoRecordFound.Wrap(err, "admin role not found")
+			r.log.Error(ctx, "admin role not found", zap.Error(err),
 				zap.String("tenant", tenantID.String()))
 			return err
 		}
