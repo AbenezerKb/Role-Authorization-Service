@@ -136,25 +136,30 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 	}
 	filter, err := query.ToFilterParams([]db_pgnflt.FieldType{
 		{
-			Name: "user_id",
-			Type: db_pgnflt.String,
+			Name:   "user_id",
+			Type:   db_pgnflt.String,
+			DBName: "tur.user_id",
 		},
 		{
-			Name: "created_at",
-			Type: db_pgnflt.Time,
+			Name:   "created_at",
+			Type:   db_pgnflt.Time,
+			DBName: "tur.created_at",
 		},
 		{
-			Name: "updated_at",
-			Type: db_pgnflt.Time,
+			Name:   "updated_at",
+			Type:   db_pgnflt.Time,
+			DBName: "tur.updated_at",
 		},
 		{
 			Name:   "status",
 			Type:   db_pgnflt.Enum,
 			Values: []string{constants.Active, constants.InActive},
+			DBName: "tur.status",
 		},
 	}, db_pgnflt.Defaults{
 		Sort: []db_pgnflt.Sort{
 			{
+
 				Field: "created_at",
 				Sort:  db_pgnflt.SortDesc,
 			},

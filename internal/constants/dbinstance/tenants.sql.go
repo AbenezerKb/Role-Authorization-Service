@@ -16,11 +16,41 @@ type GetTenantUsersRoles struct {
 }
 
 func (db *DBInstance) GetTenantUsersWithRoles(ctx context.Context, filter db_pgnflt.FilterParams, arg GetTenantUsersRoles) ([]dto.TenantUserRoles, *model.MetaData, error) {
-	query := fmt.Sprintf("(select json_agg(json_build_object('role_name',rl.name,'status',tur.status,'id',rl.id))::jsonb as roles,us.user_id,tn.service_id from ( select id ,service_id from tenants where tenant_name='%s')tn INNER JOIN (select role_id,tenant_id,user_id,status,id from tenant_users_roles)tur ON tn.id = tur.tenant_id INNER JOIN (select id , name from roles ) rl ON tur.role_id = rl.id INNER JOIN ( select id, user_id from users) us on us.id =tur.user_id  GROUP BY us.user_id,tn.service_id)", arg.TenantName)
-	// var count int64
+	filterParam := db_pgnflt.GetFilterSQLWithCustomWhere(
+		fmt.Sprintf("t.tenant_name = '%s' and t.service_id = '%s'", arg.TenantName, arg.ServiceID), filter)
+	filterParam.GroupBy = "u.user_id, c_x_t_y_b.total_count, tur.created_at"
+	var v = db_pgnflt.GetSelectColumnsQueryWithJoins([]string{"u.user_id", "json_agg(json_build_object('role_name',rl.name,'status',tur.status,'id',rl.id)) as roles"},
+		db_pgnflt.Table{Name: "tenant_users_roles", Alias: "tur"}, []db_pgnflt.JOIN{
+			{
+				Table: db_pgnflt.Table{
+					Alias: "t",
+					Name:  "tenants",
+				},
+				JoinType: "inner join",
+				On:       "t.id=tur.tenant_id",
+			},
+			{
+				Table: db_pgnflt.Table{
+					Alias: "rl",
+					Name:  "roles",
+				},
+				JoinType: "inner join",
+				On:       "rl.id=tur.role_id",
+			},
+			{
+				Table: db_pgnflt.Table{
+					Alias: "u",
+					Name:  "users",
+				},
+				JoinType: "inner join",
+				On:       "u.id=tur.user_id",
+			},
+		}, filterParam,
+	)
+	fmt.Println("query", v)
 	metadata := &model.MetaData{FilterParams: filter}
-	var filtParam = db_pgnflt.FilterWithCustomWhere(fmt.Sprintf("service_id ='%s'", arg.ServiceID), filter)
-	rows, err := db.Pool.Query(ctx, db_pgnflt.ComposeSelectColumnsQuery([]string{"user_id", "roles"}, query, filtParam))
+
+	rows, err := db.Pool.Query(ctx, v)
 	if err != nil {
 		return nil, nil, err
 	}

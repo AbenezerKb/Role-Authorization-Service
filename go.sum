@@ -1282,8 +1282,8 @@ github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 gitlab.com/2ftimeplc/2fbackend/bdd-testing-framework v0.1.8 h1:6on21rJ7BkEFimzSG7wy3TqqD6ahFhjxalrWsD5sUPs=
 gitlab.com/2ftimeplc/2fbackend/bdd-testing-framework v0.1.8/go.mod h1:E8k7Nt21jRT5NjGSk4JQbWtC+a/uCZn4buLOiEE3TYU=
-gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt v0.0.3 h1:TZA4eJoCcFaaBo51V0jKqYXMknXgbpFvwzxmtE5kmYc=
-gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt v0.0.3/go.mod h1:Y2YU44Wlgolt5HVUdLzQuoYUdi4gC1V1+QLfECmNjG4=
+gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt v0.0.8 h1:B9js1QOKi3NUR/RxK8bB1MfijGh94lLvgoys2g6Wp2Q=
+gitlab.com/2ftimeplc/2fbackend/repo/db-pgnflt v0.0.8/go.mod h1:Y2YU44Wlgolt5HVUdLzQuoYUdi4gC1V1+QLfECmNjG4=
 gitlab.com/nyarla/go-crypt v0.0.0-20160106005555-d9a5dc2b789b/go.mod h1:T3BPAOm2cqquPa0MKWeNkmOM5RQsRhkrwMWonFMN7fE=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=

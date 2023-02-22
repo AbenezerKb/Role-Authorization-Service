@@ -3,7 +3,7 @@ database:
 migration:
   path: internal/constants/query/schemas
 server:
-  port: 8000
+  port: 9000
   timeout: 30s
 cors:
   origin:

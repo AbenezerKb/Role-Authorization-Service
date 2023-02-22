@@ -33,7 +33,7 @@ Feature: Assign  role
         Then my request should fail with "<message>"
 
         Examples:
-            | user_id                              | role_name | tenant_name | message            |
-            | a93fab67-1c11-4cdc-b410-f6fc728f592a | Admin     |             | tenant is required |
-            |                                      | Admin     | vendor_1    | User id required   |
-            | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | vendor_1    | Role id required   |
+            | user_id                              | role_name | tenant_name | message                     |
+            | a93fab67-1c11-4cdc-b410-f6fc728f592a | Admin     |             | tenant is required          |
+            |                                      | Admin     | vendor_1    | User id required            |
+            | a93fab67-1c11-4cdc-b410-f6fc728f592a |           | vendor_1    | Role id or name is required |
