@@ -40,7 +40,7 @@ func InitRoute(group *gin.RouterGroup, tenant rest.Tenant, log logger.Logger, au
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
 				authMiddleware.BasicAuth(),
-				// authMiddleware.Authorize(),
+				authMiddleware.Authorize(),
 			},
 		}, {
 			Method:      http.MethodGet,
@@ -48,7 +48,7 @@ func InitRoute(group *gin.RouterGroup, tenant rest.Tenant, log logger.Logger, au
 			Handler:     tenant.GetUsersWithTheirRoles,
 			UnAuthorize: false,
 			Middlewares: []gin.HandlerFunc{
-				// authMiddleware.BasicAuth(),
+				authMiddleware.BasicAuth(),
 				authMiddleware.Authorize(),
 			},
 		},

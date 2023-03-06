@@ -121,25 +121,24 @@ func (a *authMiddeleware) Authorize() gin.HandlerFunc {
 			return
 		}
 
-		// ok, err := a.opa.Allow(ctx, req)
-		// if err != nil {
-		// 	err := errors.ErrAcessError.Wrap(err, "unable to perform operation")
-		// 	a.logger.Error(ctx, "error while enforcing policy", zap.Error(err), zap.String("service-id", req.Service), zap.String("user-id", req.Subject))
-		// 	_ = ctx.Error(err)
-		// 	ctx.Abort()
-		// 	return
-		// }
+		ok, err := a.opa.Allow(ctx, req)
+		if err != nil {
+			err := errors.ErrAcessError.Wrap(err, "unable to perform operation")
+			a.logger.Error(ctx, "error while enforcing policy", zap.Error(err), zap.String("service-id", req.Service), zap.String("user-id", req.Subject))
+			_ = ctx.Error(err)
+			ctx.Abort()
+			return
+		}
 
-		// if !ok {
-		// 	err := errors.ErrAcessError.Wrap(err, "Access denied")
-		// 	a.logger.Info(ctx, "access denied", zap.Error(err), zap.String("service-id", req.Service), zap.String("user-id", req.Subject))
-		// 	_ = ctx.Error(err)
-		// 	ctx.Abort()
-		// 	return
-		// }
+		if !ok {
+			err := errors.ErrAcessError.Wrap(err, "Access denied")
+			a.logger.Info(ctx, "access denied", zap.Error(err), zap.String("service-id", req.Service), zap.String("user-id", req.Subject))
+			_ = ctx.Error(err)
+			ctx.Abort()
+			return
+		}
 		ctx.Set("x-tenant", ctx.GetHeader("x-tenant"))
 		ctx.Set("x-user", ctx.GetHeader("x-subject"))
-		ctx.Set("x-service-id", "d6801a84-135d-40bf-9f57-ec7085429737")
 		ctx.Next()
 	}
 }
