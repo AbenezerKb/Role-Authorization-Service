@@ -79,7 +79,7 @@ func (q *DBInstance) ListPermissions(ctx context.Context, arg ListPermissionsPar
 		return nil, err
 	}
 	defer rows.Close()
-	var items []dto.Permission
+	items := []dto.Permission{}
 	for rows.Next() {
 		var i dto.Permission
 		if err := rows.Scan(

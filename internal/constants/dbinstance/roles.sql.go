@@ -27,7 +27,7 @@ func (db *DBInstance) ListRoles(ctx context.Context, filter db_pgnflt.FilterPara
 		return nil, nil, err
 	}
 	defer rows.Close()
-	var items []dto.Role
+	items := []dto.Role{}
 	for rows.Next() {
 		var i dto.Role
 		if err := rows.Scan(&i.Name, &i.CreatedAt, &i.ID, &i.Status, &i.UpdatedAt, &metadata.Total); err != nil {

@@ -45,7 +45,7 @@ type Tenant interface {
 	CheckIfPermissionExistsInTenant(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (bool, error)
 	RegsiterTenantPermission(ctx context.Context, tenant string, param dto.RegisterTenantPermission) (*dto.Permission, error)
 	UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantStatus, serviceId uuid.UUID, tenant string) error
-	GetUsersWithTheirRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetTenantUsersRequest) ([]dto.TenantUserRoles, *model.MetaData, error)
+	GetUsersWithTheirRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetTenantUsersRequest, userID uuid.UUID) ([]dto.TenantUserRoles, *model.MetaData, error)
 }
 type User interface {
 	RegiseterUser(ctx context.Context, param dto.RegisterUser) error

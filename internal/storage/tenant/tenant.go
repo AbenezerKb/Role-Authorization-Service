@@ -142,11 +142,12 @@ func (t *tenant) UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantS
 	return nil
 }
 
-func (t *tenant) GetUsersWithTheirRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetTenantUsersRequest) ([]dto.TenantUserRoles, *model.MetaData, error) {
+func (t *tenant) GetUsersWithTheirRoles(ctx context.Context, filter db_pgnflt.FilterParams, param dto.GetTenantUsersRequest, userID uuid.UUID) ([]dto.TenantUserRoles, *model.MetaData, error) {
 	tenantUserRols, metaData, err := t.db.GetTenantUsersWithRoles(ctx, filter,
 		dbinstance.GetTenantUsersRoles{
 			TenantName: param.TenantName,
 			ServiceID:  param.ServiceID,
+			UserID:     userID,
 		},
 	)
 	if err != nil {

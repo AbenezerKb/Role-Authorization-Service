@@ -134,6 +134,13 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 		t.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
 		return nil, nil, err
 	}
+
+	userID, err := uuid.Parse(ctx.Value("x-user").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		t.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("user id", ctx.Value("x-user")))
+		return nil, nil, err
+	}
 	filter, err := query.ToFilterParams([]db_pgnflt.FieldType{
 		{
 			Name:   "user_id",
@@ -143,15 +150,15 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 		{
 			Name:   "created_at",
 			Type:   db_pgnflt.Time,
-			DBName: "tur.created_at",
+			DBName: "u.created_at",
 		},
 		{
-			Name:   "updated_at",
-			Type:   db_pgnflt.Time,
-			DBName: "tur.updated_at",
+			Name:   "role_name",
+			Type:   db_pgnflt.String,
+			DBName: "rl.name",
 		},
 		{
-			Name:   "status",
+			Name:   "role_status",
 			Type:   db_pgnflt.Enum,
 			Values: []string{constants.Active, constants.InActive},
 			DBName: "tur.status",
@@ -172,7 +179,7 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 		return nil, nil, err
 	}
 
-	tenantUserRoles, metadata, err := t.tenantPersistant.GetUsersWithTheirRoles(ctx, filter, param)
+	tenantUserRoles, metadata, err := t.tenantPersistant.GetUsersWithTheirRoles(ctx, filter, param, userID)
 	if err != nil {
 		return nil, nil, err
 	}

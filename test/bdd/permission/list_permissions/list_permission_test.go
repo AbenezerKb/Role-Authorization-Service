@@ -183,7 +183,7 @@ func (l *ListPermissions) iShouldGetAllPermissionsInMyTenant(permissions *godog.
 	if err = l.apiTest.UnmarshalJSON(l.apiTest.ResponseBody, &l.result); err != nil {
 		return err
 	}
-	fmt.Println("here", l.result)
+
 	for _, p := range l.result.Data {
 		if err := l.apiTest.AssertEqual(p.Name, l.respPermission.Name); err != nil {
 			return err

@@ -2,6 +2,7 @@ database:
   url: postgres://root@db:26257/defaultdb?sslmode=disable
 migration:
   path: internal/constants/query/schemas
+  migrate: true
 server:
   port: 8000
   timeout: 30s

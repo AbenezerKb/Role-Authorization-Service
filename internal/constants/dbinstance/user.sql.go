@@ -30,7 +30,7 @@ func (q *DBInstance) GetUserPermissionWithInTenant(ctx context.Context, arg GetU
 		return nil, err
 	}
 	defer rows.Close()
-	var items []dto.Permission
+	items := []dto.Permission{}
 	for rows.Next() {
 		var i dto.Permission
 		if err := rows.Scan(
