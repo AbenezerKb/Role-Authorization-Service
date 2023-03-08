@@ -230,8 +230,8 @@ func (r *role) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
 			return err
 		}
 
-		err = errors.ErrUpdateError.Wrap(err, "error revoking admin role's status")
-		r.log.Error(ctx, "error revoking admin role's status",
+		err = errors.ErrUpdateError.Wrap(err, "error updating admin role's status")
+		r.log.Error(ctx, "error updating admin role's status",
 			zap.Error(err),
 			zap.String("tenant", tenantID.String()))
 		return err

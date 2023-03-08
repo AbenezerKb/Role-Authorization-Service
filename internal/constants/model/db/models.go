@@ -116,14 +116,13 @@ type RolePermission struct {
 }
 
 type RoleTenant struct {
-	Name       string       `json:"name"`
-	CreatedAt  time.Time    `json:"created_at"`
-	ID         uuid.UUID    `json:"id"`
-	Status     Status       `json:"status"`
-	UpdatedAt  time.Time    `json:"updated_at"`
-	TenantName string       `json:"tenant_name"`
-	ServiceID  uuid.UUID    `json:"service_id"`
-	DeletedAt  sql.NullTime `json:"deleted_at"`
+	Name       string    `json:"name"`
+	CreatedAt  time.Time `json:"created_at"`
+	ID         uuid.UUID `json:"id"`
+	Status     Status    `json:"status"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	TenantName string    `json:"tenant_name"`
+	ServiceID  uuid.UUID `json:"service_id"`
 }
 
 type Service struct {
