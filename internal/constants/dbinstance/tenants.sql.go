@@ -17,38 +17,47 @@ type GetTenantUsersRoles struct {
 }
 
 func (db *DBInstance) GetTenantUsersWithRoles(ctx context.Context, filter db_pgnflt.FilterParams, arg GetTenantUsersRoles) ([]dto.TenantUserRoles, *model.MetaData, error) {
-	filterParam := db_pgnflt.GetFilterSQLWithCustomWhere(
-		fmt.Sprintf("t.tenant_name = '%s' and t.service_id = '%s' and tur.deleted_at is null and u.user_id !='%s'", arg.TenantName, arg.ServiceID, arg.UserID), filter)
-	filterParam.GroupBy = "u.user_id, c_x_t_y_b.total_count,u.created_at"
-	var v = db_pgnflt.GetSelectColumnsQueryWithJoins([]string{"u.user_id", "json_agg(json_build_object('role_name',rl.name,'status',tur.status,'id',rl.id)) as roles"},
-		db_pgnflt.Table{Name: "tenant_users_roles", Alias: "tur"}, []db_pgnflt.JOIN{
-			{
-				Table: db_pgnflt.Table{
-					Alias: "t",
-					Name:  "tenants",
-				},
-				JoinType: "inner join",
-				On:       "t.id=tur.tenant_id",
-			},
-			{
-				Table: db_pgnflt.Table{
-					Alias: "rl",
-					Name:  "roles",
-				},
-				JoinType: "inner join",
-				On:       "rl.id=tur.role_id",
-			},
-			{
-				Table: db_pgnflt.Table{
-					Alias: "u",
-					Name:  "users",
-				},
-				JoinType: "inner join",
-				On:       "u.id=tur.user_id",
-			},
-		}, filterParam,
-	)
+	_, sql := db_pgnflt.GetFilterSQL(filter)
 
+	where := fmt.Sprintf("WHERE t.tenant_name ='%s' AND t.service_id ='%s' ", arg.TenantName, arg.ServiceID.String())
+
+	if len(sql.Where) != 0 {
+		where += fmt.Sprintf(" AND (%s)", sql.Where)
+	}
+	if len(sql.Search) != 0 {
+		if len(sql.Where) != 0 {
+			where += fmt.Sprintf(" AND (%s) ", sql.Search)
+		} else {
+			where += fmt.Sprintf(" WHERE (%s) ", sql.Search)
+		}
+	}
+
+	orderBy := ""
+	limitOffset := ""
+	if len(sql.Sort) != 0 {
+		orderBy += fmt.Sprintf(" ORDER BY %s ", sql.Sort)
+	}
+
+	if sql.Limit > 0 {
+		limitOffset += fmt.Sprintf(" LIMIT %d  OFFSET %d ", sql.Limit, sql.Offset)
+	}
+
+	v := fmt.Sprintf(`
+	WITH ur AS (
+	    SELECT u.user_id,
+	           json_agg(json_build_object('role_name', rl.name, 'status', tur.status, 'id', rl.id)) AS roles,
+	           u.created_at
+	    FROM tenant_users_roles AS tur
+	             INNER JOIN tenants AS t ON t.id = tur.tenant_id
+	             INNER JOIN roles AS rl ON rl.id = tur.role_id
+	             INNER JOIN users AS u ON u.id = tur.user_id
+		 %s
+	  GROUP BY u.user_id, u.created_at
+	)
+	SELECT ur.user_id,
+	       ur.roles,
+	(select count(*) from ur)total_account FROM ur %s %s
+`, where, orderBy, limitOffset)
 	metadata := &model.MetaData{FilterParams: filter}
 
 	rows, err := db.Pool.Query(ctx, v)
