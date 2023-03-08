@@ -14,6 +14,7 @@ SELECT roles.id FROM roles join tenants on roles.tenant_id =tenants.id WHERE
 roles.name = $1 AND tenants.tenant_name = $2 and roles.deleted_at IS NULL and tenants.deleted_at IS NULL;
 
 
+
 -- name: AssignRole :exec
 WITH new_row AS (
     INSERT INTO users (user_id,  service_id) select $1,$2 where not exists(select id from users where user_id=$1 and service_id=$2 and deleted_at is null)returning id
@@ -69,3 +70,8 @@ update roles r set status =$3 from _tenants where r.id=$4 and r.deleted_at IS NU
 
 -- name: GetRoleById :one
 select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r join tenants t on t.id = r.tenant_id where t.service_id=$1 and t.deleted_at is null and r.id=$2 and r.deleted_at is null;
+
+-- name: RevokeAdminRole :exec
+UPDATE tenant_users_roles
+SET status = 'INACTIVE'
+WHERE tenant_id = $1 AND role_id = 'admin';

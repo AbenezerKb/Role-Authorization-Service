@@ -239,6 +239,17 @@ func (q *Queries) RemovePermissionsFromRole(ctx context.Context, arg RemovePermi
 	return err
 }
 
+const revokeAdminRole = `-- name: RevokeAdminRole :exec
+UPDATE tenant_users_roles
+SET status = 'INACTIVE'
+WHERE tenant_id = $1 AND role_id = 'admin'
+`
+
+func (q *Queries) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, revokeAdminRole, tenantID)
+	return err
+}
+
 const revokeUserRole = `-- name: RevokeUserRole :exec
 UPDATE tenant_users_roles 
 SET deleted_at= now() WHERE tenant_users_roles.tenant_id = (
