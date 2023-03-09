@@ -16,7 +16,7 @@ func InitOpa(ctx context.Context, path string, persistence Persistence, log logg
 	}
 
 	op := opa_platform.Init(string(policy), persistence.opa, log)
-	if err := op.GetData(ctx); err != nil {
+	if err := op.Refresh(ctx, "initiate"); err != nil {
 		log.Fatal(ctx, "error getting opa data", zap.Error(err))
 	}
 	return op
