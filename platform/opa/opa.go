@@ -18,7 +18,7 @@ import (
 type Opa interface {
 	Refresh(ctx context.Context, reason string) error
 	GetData(ctx context.Context) error
-	prepare(ctx context.Context, query string) (rego.PreparedEvalQuery, error)
+	prepare(ctx context.Context, query string) error
 	Allow(ctx context.Context, req model.Request) (bool, error)
 	AllowedPermissions(ctx context.Context, input map[string]interface{}) (interface{}, error)
 }
@@ -29,17 +29,23 @@ type opa struct {
 	policy string
 	Query  string
 	log    logger.Logger
+	query  rego.PreparedEvalQuery
 }
 
 func Init(policy string, policyDb dbstore.Policy, log logger.Logger) Opa {
-	return &opa{
+	o := opa{
 		policy: policy,
 		db:     policyDb,
 		log:    log,
 	}
+	err := o.prepare(context.Background(), "data.authz.allow")
+	if err != nil {
+		log.Fatal(context.Background(), "auth error", zap.Error(err))
+	}
+	return &o
 }
 
-func (o *opa) prepare(ctx context.Context, query string) (rego.PreparedEvalQuery, error) {
+func (o *opa) prepare(ctx context.Context, query string) error {
 	qr, err := rego.New(
 		rego.Query(query),
 		rego.Store(o.store),
@@ -49,9 +55,10 @@ func (o *opa) prepare(ctx context.Context, query string) (rego.PreparedEvalQuery
 	if err != nil {
 		err := errors.ErrOpaPrepareEvalError.Wrap(err, "error preparing for evaluation")
 		o.log.Error(ctx, "error preparing the rego for eval", zap.Error(err))
-		return rego.PreparedEvalQuery{}, err
+		return err
 	}
-	return qr, nil
+	o.query = qr
+	return nil
 }
 
 func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
@@ -65,11 +72,7 @@ func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
 		"fields":   req.Fields,
 	}
 
-	query, err := o.prepare(ctx, "data.authz.allow")
-	if err != nil {
-		return false, err
-	}
-	results, err := query.Eval(ctx, rego.EvalInput(input))
+	results, err := o.query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		err := errors.ErrOpaEvalError.Wrap(err, "can not evaluate the user")
 		o.log.Error(ctx, "error evaluating the user", zap.Error(err), zap.Any("input", input))
@@ -82,6 +85,10 @@ func (o *opa) Refresh(ctx context.Context, reason string) error {
 	o.log.Info(ctx, reason)
 	if err := o.GetData(ctx); err != nil {
 		return err
+	}
+	err := o.prepare(context.Background(), "data.authz.allow")
+	if err != nil {
+		o.log.Fatal(context.Background(), "auth error", zap.Error(err))
 	}
 	o.log.Info(ctx, "successfully triggered policy data update")
 	return nil
@@ -101,11 +108,11 @@ func (o *opa) GetData(ctx context.Context) error {
 }
 
 func (o *opa) AllowedPermissions(ctx context.Context, input map[string]interface{}) (interface{}, error) {
-	query, err := o.prepare(ctx, "data.authz.allowedPermissions")
-	if err != nil {
-		return rego.ResultSet{}, err
-	}
-	results, err := query.Eval(ctx, rego.EvalInput(input))
+	// query, err := o.prepare(ctx, "data.authz.allowedPermissions")
+	// if err != nil {
+	// 	return rego.ResultSet{}, err
+	// }
+	results, err := o.query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		err := errors.ErrOpaEvalError.Wrap(err, "can not evaluate the user")
 		o.log.Error(ctx, "error evaluating the user", zap.Error(err), zap.Any("input", input))
