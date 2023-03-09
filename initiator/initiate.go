@@ -46,7 +46,7 @@ func Initiator(ctx context.Context) {
 	log.Info(context.Background(), "config initialized")
 
 	log.Info(context.Background(), "initializing database")
-	Conn := InitDB(viper.GetString("database.url"), log)
+	Conn := InitDB(viper.GetString("database.url"), viper.GetDuration("database.idle_conn_timeout"), log)
 	log.Info(context.Background(), "database initialized")
 
 	if viper.GetBool("migration.migrate") {
