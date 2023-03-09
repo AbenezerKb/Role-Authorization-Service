@@ -44,7 +44,11 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
+		a.logger.Info(
+			ctx,
+			"successfully extracted service credentials",
+			zap.String("service-id", Id),
+		)
 		serviceId, err := uuid.Parse(Id)
 		if err != nil {
 			err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
@@ -60,6 +64,12 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+
+		a.logger.Info(
+			ctx,
+			"service detail",
+			zap.Any("service", service),
+		)
 
 		switch service.Status {
 		case constants.InActive:
@@ -84,6 +94,12 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+
+		a.logger.Info(
+			ctx,
+			"service authorization completed",
+			zap.Any("service", service),
+		)
 
 		if !ok {
 			err = errors.ErrAcessError.Wrap(nil, "unauthorized_service")
