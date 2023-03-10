@@ -6,7 +6,7 @@ variables:
   SERVICE: ${SERVICE_NAME_${BRANCH_NAME}}
   SERVER_USER: ${SERVER_USER_${BRANCH_NAME}}
   SERVER_IP: ${SERVER_IP_${BRANCH_NAME}}
-  SSH_KEY: ${SSH_ACCESS_KEY_${BRANCH_NAME}}
+  SSH_KEY_RP2: ${SSH_ACCESS_KEY_${BRANCH_NAME}}
 
 .go-cache:
   variables:
@@ -117,7 +117,7 @@ deployment:
   before_script:
     - apk update && apk add openssh-client
     - eval $(ssh-agent -s)
-    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - echo "$SSH_KEY_RP2" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan $SERVER_IP >> ~/.ssh/known_hosts
