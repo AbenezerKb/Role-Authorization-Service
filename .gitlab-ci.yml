@@ -2,6 +2,11 @@ image: golang:1.18
 
 variables:
   TAG: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_PIPELINE_ID
+  BRANCH_NAME: $CI_COMMIT_REF_NAME
+  SERVICE: ${SERVICE_NAME_${BRANCH_NAME}}
+  SERVER_USER: ${SERVER_USER_${BRANCH_NAME}}
+  SERVER_IP: ${SERVER_IP_${BRANCH_NAME}}
+  SSH_KEY: ${SSH_ACCESS_KEY_${BRANCH_NAME}}
 
 .go-cache:
   variables:
@@ -41,6 +46,11 @@ test:
 
   script:
     - CONFIG_NAME=$CONFIG_NAME go test ./... -p=1 -count=1
+  except:
+    refs:
+      - staging
+      - pre_production
+      - production
 
 install_dependencies:
   stage: setup
@@ -72,7 +82,9 @@ install_dependencies:
       - go.mod
       - go.sum
     refs:
-      - main
+      - staging
+      - pre_production
+      - production
 
 publish:
   image: docker:latest
@@ -93,9 +105,11 @@ publish:
     - docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc) || clean_up_status=$?
   only:
     refs:
-      - main
+      - staging
+      - pre_production
+      - production
 
-deploy-for-main:
+deployment:
   image: alpine:latest
   stage: deploy
   tags:
@@ -106,14 +120,16 @@ deploy-for-main:
     - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan $SERVERIP_MAIN >> ~/.ssh/known_hosts
+    - ssh-keyscan $SERVER_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
   script:
-    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
-    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker pull $TAG"
-    - ssh $SERVERUSER_MAIN@$SERVERIP_MAIN "docker service update --image $TAG --force authz_authz"
+    - ssh $SERVER_USER@$SERVER_IP "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
+    - ssh $SERVER_USER@$SERVER_IP "docker pull $TAG"
+    - ssh $SERVER_USER@$SERVER_IP "docker service update --image $TAG --force $SERVICE"
 
   only:
     refs:
-      - main
+      - staging
+      - pre_production
+      - production
