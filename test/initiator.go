@@ -10,12 +10,10 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
-	"os/exec"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
 )
 
 type TestInstance struct {
@@ -54,13 +52,7 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "persistence layer initialized")
 
 	log.Info(context.Background(), "initializing opa")
-	output, _ := exec.Command("lsof", "-t", "-i", ":8181").Output()
-	if len(output) != 0 {
-		if err := exec.Command("killall", "opa").Run(); err != nil {
-			log.Fatal(context.Background(), "error  while cleaning used port", zap.Error(err))
-		}
 
-	}
 	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), path+viper.GetString("opa.data_file"), path+viper.GetString("opa.server_exec"), persistence, log)
 	log.Info(context.Background(), "opa initialized")
 
