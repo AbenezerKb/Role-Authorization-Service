@@ -11,8 +11,12 @@ COPY --from=builder /config/test_config.yaml /config/config.yaml
 COPY --from=builder /internal/constants/query/schemas /internal/constants/query/schemas
 COPY --from=builder /platform/opa/authz.rego /platform/opa/authz.rego
 COPY --from=builder /platform/opa/server/opa /platform/opa/server/opa
+RUN ["apk","update"]
+RUN ["apk","add","bash"]
+RUN ["apk","add","lsof"]
+RUN ["chmod","755","platform/opa/server/opa"]
 
 
 
-EXPOSE 5184
+EXPOSE 8181
 ENTRYPOINT [ "./authz" ]

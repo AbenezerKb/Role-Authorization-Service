@@ -42,21 +42,13 @@ type opa struct {
 }
 
 func Init(policy string, policyDb dbstore.Policy, filepath, regopath, server string, log logger.Logger) Opa {
-	output, _ := exec.Command("lsof", "-t", "-i", ":8181").Output()
-	if len(output) != 0 {
-		if err := exec.Command("killall", "opa").Run(); err != nil {
-			err := errors.ErrOpaPrepareEvalError.Wrap(err, "error  while cleaning used port")
-			log.Error(context.Background(), "error  while cleaning used port", zap.Error(err))
-		}
-
-	}
 
 	go func() {
 
 		err := exec.Command(server, "run", "--server", "--watch", regopath, filepath).Run()
 		if err != nil {
 			err := errors.ErrOpaPrepareEvalError.Wrap(err, "error  Initializing OPA  Server")
-			log.Error(context.Background(), "error preparing the rego for eval", zap.Error(err))
+			log.Fatal(context.Background(), "error preparing the rego for eval", zap.Error(err))
 		}
 	}()
 
@@ -83,16 +75,26 @@ func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
 		Input: req,
 	}
 	resp := responseBody{}
-	js, _ := json.Marshal(reqst)
+	js, err := json.Marshal(reqst)
 
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(js))
+	if err != nil {
+		err := errors.ErrOpaPrepareEvalError.Wrap(err, "error while preparing evaluation to json")
+		o.log.Error(ctx, "error preparing the opa data to json", zap.Error(err))
+		return false, err
+	}
 	if err != nil {
 		err := errors.ErrOpaPrepareEvalError.Wrap(err, "error while preparing evaluation")
 		o.log.Error(ctx, "error preparing the opa data", zap.Error(err))
 		return false, err
 	}
 	httpCli := &http.Client{}
-	res, _ := httpCli.Do(r)
+	res, err := httpCli.Do(r)
+	if err != nil {
+		err := errors.ErrOpaPrepareEvalError.Wrap(err, "error while getting response from opa server")
+		o.log.Error(ctx, "error while getting response from opa server", zap.Error(err))
+		return false, err
+	}
 	defer res.Body.Close()
 	json.NewDecoder(res.Body).Decode(&resp)
 	fmt.Println(resp.Response)
