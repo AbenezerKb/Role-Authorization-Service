@@ -3,7 +3,6 @@ package registeruser
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"fmt"
@@ -36,9 +35,7 @@ func (r *registerUser) iHaveServiceWith(service *godog.Table) error {
 	if err = r.apiTest.UnmarshalJSON([]byte(body), &r.service); err != nil {
 		return err
 	}
-	if r.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	r.service.Password = "123456"
 
 	createdService, err := r.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     r.service.Name,
