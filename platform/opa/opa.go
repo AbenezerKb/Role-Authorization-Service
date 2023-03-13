@@ -146,7 +146,7 @@ func (o *opa) GetData(ctx context.Context) error {
 		return err
 
 	}
-	time.Sleep(time.Millisecond * 20)
+	time.Sleep(time.Millisecond * 100)
 	return nil
 }
 
