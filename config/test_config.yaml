@@ -22,3 +22,6 @@ cors:
     - PATCH
 opa:
   path: platform/opa/authz.rego
+  server_addr: http://localhost:8181/v1/data/authz/allow
+  server_exec: platform/opa/server/opa
+  data_file: platform/opa/data.json
