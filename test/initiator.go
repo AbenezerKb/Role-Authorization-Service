@@ -52,7 +52,8 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "persistence layer initialized")
 
 	log.Info(context.Background(), "initializing opa")
-	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), persistence, log)
+
+	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), path+viper.GetString("opa.data_file"), path+viper.GetString("opa.server_exec"), persistence, log)
 	log.Info(context.Background(), "opa initialized")
 
 	log.Info(context.Background(), "initializing module")
