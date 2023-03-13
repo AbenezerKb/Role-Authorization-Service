@@ -5,7 +5,6 @@ import (
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/module"
 	"2f-authorization/internal/storage"
-	"2f-authorization/platform/argon"
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"2f-authorization/platform/utils"
@@ -47,16 +46,14 @@ func (s *service) CreateService(ctx context.Context, param dto.CreateService) (*
 		return nil, errors.ErrDataExists.Wrap(err, "service with this name already exists")
 	}
 
-	hashpass := utils.GenerateRandomString(20, true)
-	if param.Password, err = argon.CreateHash(hashpass, argon.DefaultParams); err != nil {
-		return nil, err
-	}
+	generatedPass := utils.GenerateRandomString(20, true)
+	param.Password = generatedPass
 
 	service, err := s.servicePersistence.CreateService(ctx, param)
 	if err != nil {
 		return nil, err
 	}
-	service.Password = hashpass
+	service.Password = generatedPass
 	return service, nil
 }
 
