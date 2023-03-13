@@ -3,7 +3,6 @@ package deletepermission
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"fmt"
@@ -79,7 +78,7 @@ func (d *deletePermissionTest) aPermissionRegisteredOnTheTenant(permission *godo
 		return err
 	}
 	d.createdPermissionId = result.ID
-	
+
 	return nil
 }
 
@@ -122,9 +121,7 @@ func (d *deletePermissionTest) iHaveARegisteredService(service *godog.Table) err
 	if err = d.apiTest.UnmarshalJSON([]byte(body), &d.service); err != nil {
 		return err
 	}
-	if d.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	d.service.Password = "123456"
 
 	createdService, err := d.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     d.service.Name,

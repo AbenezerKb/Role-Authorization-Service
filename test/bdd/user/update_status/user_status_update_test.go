@@ -3,7 +3,6 @@ package updatestatus
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/json"
@@ -41,9 +40,7 @@ func (u *updateUserStatusTest) iHaveServiceWith(service *godog.Table) error {
 		return err
 	}
 
-	if u.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	u.service.Password = "123456"
 
 	if u.createdService, err = u.DB.CreateService(context.Background(), u.service); err != nil {
 		return err

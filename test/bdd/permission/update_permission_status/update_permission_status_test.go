@@ -4,7 +4,6 @@ import (
 	"2f-authorization/internal/constants/dbinstance"
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/json"
@@ -79,9 +78,7 @@ func (u *updatePermissionStatusTest) iHaveServiceWith(service *godog.Table) erro
 	if err = u.apiTest.UnmarshalJSON([]byte(body), &u.service); err != nil {
 		return err
 	}
-	if u.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	u.service.Password = "123456"
 
 	createdService, err := u.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     u.service.Name,

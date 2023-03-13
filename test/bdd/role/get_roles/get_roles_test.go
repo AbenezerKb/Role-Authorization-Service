@@ -3,7 +3,6 @@ package getroles
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"fmt"
@@ -79,10 +78,7 @@ func (g *getRolesTest) iHaveServiceWith(service *godog.Table) error {
 	if err = g.apiTest.UnmarshalJSON([]byte(body), &g.service); err != nil {
 		return err
 	}
-	if g.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
-
+	g.service.Password = "123456"
 	createdService, err := g.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     g.service.Name,
 		Password: g.service.Password,

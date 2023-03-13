@@ -3,7 +3,6 @@ package getusers
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/json"
@@ -97,9 +96,7 @@ func (r *getUserTenantUsersWithRoles) iHaveServiceWith(service *godog.Table) err
 	}
 	r.serviceName = serviceInstance.Name
 	r.serviceUserId = uuid.New()
-	if r.servicePassword, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	r.servicePassword = "123456"
 	serviceCreated, err := r.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     serviceInstance.Name,
 		Password: r.servicePassword,
