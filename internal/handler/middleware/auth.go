@@ -35,7 +35,7 @@ func InitAuthMiddleware(logger logger.Logger, service storage.Service, opa opa.O
 
 func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		Id, _, ok := ctx.Request.BasicAuth()
+		Id, secret, ok := ctx.Request.BasicAuth()
 		if !ok {
 			err := errors.ErrInternalServerError.Wrap(nil, "could not extract service credentials")
 			a.logger.Error(ctx, "extract error", zap.Error(err))
@@ -69,6 +69,14 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			"service detail",
 			zap.Any("service", service),
 		)
+		if service.Password != secret {
+			err = errors.ErrAcessError.Wrap(err, "unauthorized_service")
+			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
+			_ = ctx.Error(err)
+			ctx.Abort()
+			return
+
+		}
 
 		switch service.Status {
 		case constants.InActive:
