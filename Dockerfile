@@ -10,6 +10,8 @@ COPY --from=builder /bin/authz .
 COPY --from=builder /config/test_config.yaml /config/config.yaml
 COPY --from=builder /internal/constants/query/schemas /internal/constants/query/schemas
 COPY --from=builder /platform/opa/authz.rego /platform/opa/authz.rego
+COPY --from=builder /platform/opa/server/opa /platform/opa/server/opa
+
 
 
 EXPOSE 5184
