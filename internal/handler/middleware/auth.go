@@ -6,7 +6,6 @@ import (
 	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/storage"
-	"2f-authorization/platform/argon"
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"strings"
@@ -36,7 +35,7 @@ func InitAuthMiddleware(logger logger.Logger, service storage.Service, opa opa.O
 
 func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		Id, secret, ok := ctx.Request.BasicAuth()
+		Id, _, ok := ctx.Request.BasicAuth()
 		if !ok {
 			err := errors.ErrInternalServerError.Wrap(nil, "could not extract service credentials")
 			a.logger.Error(ctx, "extract error", zap.Error(err))
@@ -85,31 +84,13 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		ok, err = argon.ComparePasswordAndHash(secret, service.Password)
-		if err != nil {
-			err = errors.ErrAcessError.Wrap(err, "unauthorized_service")
-			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
-			_ = ctx.Error(err)
-			ctx.Abort()
-			return
-		}
-
 		a.logger.Info(
 			ctx,
 			"service authorization completed",
-			zap.Any("service", service),
+			zap.Any("service", serviceId),
 		)
 
-		if !ok {
-			err = errors.ErrAcessError.Wrap(nil, "unauthorized_service")
-			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
-			_ = ctx.Error(err)
-			ctx.Abort()
-			return
-		}
-
-		ctx.Set("x-service-id", service.ID.String())
+		ctx.Set("x-service-id", serviceId.String())
 		ctx.Next()
 	}
 }
