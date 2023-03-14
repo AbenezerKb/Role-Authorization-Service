@@ -9,14 +9,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
+	"math/rand"
 	"os"
-	"os/exec"
+	"time"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
 )
 
 type TestInstance struct {
@@ -26,13 +25,6 @@ type TestInstance struct {
 }
 
 func Initiate(ctx context.Context, path string) TestInstance {
-	output, _ := exec.Command("lsof", "-t", "-i", ":8181").Output()
-	if len(output) != 0 {
-		if err := exec.Command("killall", "opa").Run(); err != nil {
-			log.Fatal(context.Background(), "error  while cleaning used port", zap.Error(err))
-		}
-
-	}
 	log := logger.New(initiator.InitLogger())
 	log.Info(context.Background(), "logger initialized")
 
@@ -62,8 +54,9 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "persistence layer initialized")
 
 	log.Info(context.Background(), "initializing opa")
-
-	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), path+viper.GetString("opa.data_file"), path+viper.GetString("opa.server_exec"), persistence, log)
+	rand.Seed(time.Now().Unix())
+	port := rand.Intn(1000) + 40000
+	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), path+viper.GetString("opa.data_file"), path+viper.GetString("opa.server_exec"), persistence, port, log)
 	log.Info(context.Background(), "opa initialized")
 
 	log.Info(context.Background(), "initializing module")

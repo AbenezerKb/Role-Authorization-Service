@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -42,9 +41,7 @@ type opa struct {
 	evaluatorPort int
 }
 
-func Init(policy string, policyDb dbstore.Policy, filepath, regopath, server string, log logger.Logger) Opa {
-	rand.Seed(time.Now().Unix())
-	port := rand.Intn(1000) + 40000
+func Init(policy string, policyDb dbstore.Policy, filepath, regopath, server string, port int, log logger.Logger) Opa {
 
 	go func() {
 		cmd := exec.Command(server, "run", "--server", "--watch", "--addr", fmt.Sprintf("localhost:%d", port), regopath, filepath)
@@ -78,19 +75,19 @@ type RequestBody struct {
 }
 
 func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
-	posturl := fmt.Sprintf("http://localhost:%d", o.evaluatorPort)
+	posturl := fmt.Sprintf("http://localhost:%d/v1/data/authz/allow", o.evaluatorPort)
 	reqst := RequestBody{
 		Input: req,
 	}
 	resp := responseBody{}
 	js, err := json.Marshal(reqst)
-
-	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(js))
 	if err != nil {
 		err := errors.ErrOpaPrepareEvalError.Wrap(err, "error while preparing evaluation to json")
 		o.log.Error(ctx, "error preparing the opa data to json", zap.Error(err))
 		return false, err
 	}
+	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(js))
+
 	if err != nil {
 		err := errors.ErrOpaPrepareEvalError.Wrap(err, "error while preparing evaluation")
 		o.log.Error(ctx, "error preparing the opa data", zap.Error(err))
@@ -105,7 +102,7 @@ func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
 	}
 	defer res.Body.Close()
 	json.NewDecoder(res.Body).Decode(&resp)
-	fmt.Println(resp.Response)
+
 	return resp.Response, nil
 }
 
@@ -141,8 +138,7 @@ func (o *opa) GetData(ctx context.Context) error {
 		return err
 	}
 
-	f, err := os.OpenFile(o.filepath,
-		os.O_WRONLY|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(o.filepath, os.O_WRONLY|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "can not read  opa data")
 		o.log.Error(ctx, "error while reading opa data", zap.Error(err))
