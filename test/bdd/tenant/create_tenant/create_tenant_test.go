@@ -3,7 +3,6 @@ package tenant
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
@@ -43,9 +42,7 @@ func (c *createTenant) iHaveServiceWith(service *godog.Table) error {
 	if err != nil {
 		return err
 	}
-	if c.servicemodel.Password, err = argon.CreateHash("password", argon.DefaultParams); err != nil {
-		return err
-	}
+	c.servicemodel.Password = "password"
 	result, err := c.DB.CreateService(context.Background(), c.servicemodel)
 	if err != nil {
 		return err

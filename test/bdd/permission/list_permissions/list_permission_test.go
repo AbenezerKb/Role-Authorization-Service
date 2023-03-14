@@ -3,7 +3,6 @@ package listpermissions
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"fmt"
@@ -119,10 +118,7 @@ func (l *ListPermissions) iHaveServiceWith(service *godog.Table) error {
 	if err = l.apiTest.UnmarshalJSON([]byte(body), &l.service); err != nil {
 		return err
 	}
-	if l.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
-
+	l.service.Password = "123456"
 	createdService, err := l.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     l.service.Name,
 		Password: l.service.Password,

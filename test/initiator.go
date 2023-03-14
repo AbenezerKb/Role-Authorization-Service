@@ -9,7 +9,9 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
@@ -52,7 +54,9 @@ func Initiate(ctx context.Context, path string) TestInstance {
 	log.Info(context.Background(), "persistence layer initialized")
 
 	log.Info(context.Background(), "initializing opa")
-	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), persistence, log)
+	rand.Seed(time.Now().Unix())
+	port := rand.Intn(1000) + 40000
+	opa := initiator.InitOpa(ctx, path+viper.GetString("opa.path"), path+viper.GetString("opa.data_file"), path+viper.GetString("opa.server_exec"), persistence, port, log)
 	log.Info(context.Background(), "opa initialized")
 
 	log.Info(context.Background(), "initializing module")

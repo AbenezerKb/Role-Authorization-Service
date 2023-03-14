@@ -6,7 +6,6 @@ import (
 	"2f-authorization/internal/constants/model"
 	"2f-authorization/internal/constants/model/dto"
 	"2f-authorization/internal/storage"
-	"2f-authorization/platform/argon"
 	"2f-authorization/platform/logger"
 	"2f-authorization/platform/opa"
 	"strings"
@@ -70,6 +69,14 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			"service detail",
 			zap.Any("service", service),
 		)
+		if service.Password != secret {
+			err = errors.ErrAcessError.Wrap(err, "unauthorized_service")
+			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
+			_ = ctx.Error(err)
+			ctx.Abort()
+			return
+
+		}
 
 		switch service.Status {
 		case constants.InActive:
@@ -85,31 +92,13 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		ok, err = argon.ComparePasswordAndHash(secret, service.Password)
-		if err != nil {
-			err = errors.ErrAcessError.Wrap(err, "unauthorized_service")
-			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
-			_ = ctx.Error(err)
-			ctx.Abort()
-			return
-		}
-
 		a.logger.Info(
 			ctx,
 			"service authorization completed",
-			zap.Any("service", service),
+			zap.Any("service", serviceId),
 		)
 
-		if !ok {
-			err = errors.ErrAcessError.Wrap(nil, "unauthorized_service")
-			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))
-			_ = ctx.Error(err)
-			ctx.Abort()
-			return
-		}
-
-		ctx.Set("x-service-id", service.ID.String())
+		ctx.Set("x-service-id", serviceId.String())
 		ctx.Next()
 	}
 }

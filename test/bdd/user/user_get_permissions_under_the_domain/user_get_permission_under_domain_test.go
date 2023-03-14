@@ -3,7 +3,6 @@ package usergetpermissionsunderthedomain
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/json"
@@ -173,7 +172,7 @@ func (g *getUserPermissionsWithinDomainTest) aRoleInTenantWithTheFollowingPermis
 func (g *getUserPermissionsWithinDomainTest) theUserIsGrantedTheFollowingRoleInTheRespectiveTenant() error {
 	for _, r := range g.createdRoleResponseId {
 		if err := g.DB.AssignRole(context.Background(), db.AssignRoleParams{
-			ID:     r.roleId,
+			ID:         r.roleId,
 			UserID:     g.user.UserId,
 			TenantName: r.tenant,
 			ServiceID:  g.createdService.ServiceID,
@@ -195,9 +194,7 @@ func (g *getUserPermissionsWithinDomainTest) iHaveServiceWith(service *godog.Tab
 	if err = g.apiTest.UnmarshalJSON([]byte(body), &g.service); err != nil {
 		return err
 	}
-	if g.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	g.service.Password = "123456"
 
 	createdService, err := g.DB.CreateService(context.Background(), db.CreateServiceParams{
 		Name:     g.service.Name,

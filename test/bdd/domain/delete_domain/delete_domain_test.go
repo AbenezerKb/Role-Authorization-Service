@@ -3,7 +3,6 @@ package domain
 import (
 	"2f-authorization/internal/constants/model/db"
 	"2f-authorization/internal/constants/model/dto"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
@@ -43,9 +42,7 @@ func (d *deleteDomainTest) iHaveDomain(domainName *godog.Table) error {
 	if err := d.apiTest.UnmarshalJSON([]byte(body), &d.domainrequest); err != nil {
 		return err
 	}
-	if d.servicemodel.Password, err = argon.CreateHash("password", argon.DefaultParams); err != nil {
-		return err
-	}
+	d.servicemodel.Password = "password"
 
 	if err != nil {
 		return err

@@ -2,7 +2,6 @@ package domain
 
 import (
 	"2f-authorization/internal/constants/model/db"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
@@ -42,9 +41,7 @@ func (c *createDomainTest) iHaveServiceWith(service *godog.Table) error {
 
 	c.apiTest.UnmarshalJSON([]byte(body), &c.servicemodel)
 
-	if c.servicemodel.Password, err = argon.CreateHash("password", argon.DefaultParams); err != nil {
-		return err
-	}
+	c.servicemodel.Password = "password"
 
 	result, err := c.DB.CreateService(context.Background(), c.servicemodel)
 	if err != nil {

@@ -2,7 +2,6 @@ package deleteservice
 
 import (
 	"2f-authorization/internal/constants/model/db"
-	"2f-authorization/platform/argon"
 	"2f-authorization/test"
 	"context"
 	"encoding/base64"
@@ -60,9 +59,7 @@ func (d *deleteServiceTest) iHaveARegisteredService(service *godog.Table) error 
 		return err
 	}
 
-	if d.service.Password, err = argon.CreateHash("123456", argon.DefaultParams); err != nil {
-		return err
-	}
+	d.service.Password = "123456"
 
 	if d.createdService, err = d.DB.CreateService(context.Background(), d.service); err != nil {
 		return err
