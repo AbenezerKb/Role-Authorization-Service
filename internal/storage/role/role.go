@@ -87,7 +87,8 @@ func (r *role) IsRoleAssigned(ctx context.Context, param dto.TenantUsersRole) (b
 	count, err := r.db.IsRoleAssigned(ctx, db.IsRoleAssignedParams{
 		TenantName: param.TenantName,
 		UserID:     param.UserID,
-		RoleID:     param.RoleID,
+		ID:         param.RoleID,
+		Name:       param.RoleName,
 	})
 	if err != nil {
 		err := errors.ErrReadError.Wrap(err, "could not  read role")
@@ -220,20 +221,20 @@ func (r *role) GetRole(ctx context.Context, param uuid.UUID, serviceId uuid.UUID
 	}, nil
 }
 
-func (r *role) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
+func (r *role) RevokeAdminRole(ctx context.Context, tenantID string) error {
 	err := r.db.RevokeAdminRole(ctx, tenantID)
 	if err != nil {
 		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
 			err := errors.ErrNoRecordFound.Wrap(err, "admin role not found")
 			r.log.Error(ctx, "admin role not found", zap.Error(err),
-				zap.String("tenant", tenantID.String()))
+				zap.String("tenant", tenantID))
 			return err
 		}
 
 		err = errors.ErrUpdateError.Wrap(err, "error updating admin role's status")
 		r.log.Error(ctx, "error updating admin role's status",
 			zap.Error(err),
-			zap.String("tenant", tenantID.String()))
+			zap.String("tenant", tenantID))
 		return err
 	}
 	return nil

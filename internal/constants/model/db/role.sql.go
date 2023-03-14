@@ -22,7 +22,7 @@ WITH new_row AS (
 )
 insert into tenant_users_roles(tenant_id, user_id, role_id)
 select tenants.id,_user.id,roles.id
-from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and roles.id=$3 or roles.name=$4 and roles.tenant_id=tenants.id and roles.deleted_at is null
+from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and (roles.id=$3 or roles.name=$4) and roles.tenant_id=tenants.id and roles.deleted_at is null
 `
 
 type AssignRoleParams struct {
@@ -160,25 +160,29 @@ func (q *Queries) GetRoleByNameAndTenantName(ctx context.Context, arg GetRoleByN
 }
 
 const isRoleAssigned = `-- name: IsRoleAssigned :one
-SELECT count_rows() FROM tenant_users_roles 
-WHERE tenant_users_roles.tenant_id in (
-    SELECT tenants.id FROM 
-    tenants where tenants.tenant_name = $1 and tenants.deleted_at IS NULL
-)
-and tenant_users_roles.user_id in (
-    SELECT users.id from users 
-    where users.user_id = $2 and users.deleted_at IS NULL
-) and tenant_users_roles.role_id = $3
+select count_rows() from tenant_users_roles tur
+    join tenants t on t.id = tur.tenant_id
+    join users u on u.id = tur.user_id
+    join roles r on r.id = tur.role_id 
+    where t.tenant_name=$1
+and u.user_id=$2 and( r.id=$3 or r.name=$4)
+ and tur.deleted_at is null and r.deleted_at is null
 `
 
 type IsRoleAssignedParams struct {
 	TenantName string    `json:"tenant_name"`
 	UserID     uuid.UUID `json:"user_id"`
-	RoleID     uuid.UUID `json:"role_id"`
+	ID         uuid.UUID `json:"id"`
+	Name       string    `json:"name"`
 }
 
 func (q *Queries) IsRoleAssigned(ctx context.Context, arg IsRoleAssignedParams) (interface{}, error) {
-	row := q.db.QueryRow(ctx, isRoleAssigned, arg.TenantName, arg.UserID, arg.RoleID)
+	row := q.db.QueryRow(ctx, isRoleAssigned,
+		arg.TenantName,
+		arg.UserID,
+		arg.ID,
+		arg.Name,
+	)
 	var count_rows interface{}
 	err := row.Scan(&count_rows)
 	return count_rows, err
@@ -240,36 +244,39 @@ func (q *Queries) RemovePermissionsFromRole(ctx context.Context, arg RemovePermi
 }
 
 const revokeAdminRole = `-- name: RevokeAdminRole :exec
-UPDATE tenant_users_roles
-SET status = 'INACTIVE'
-WHERE tenant_id = $1 AND role_id = 'admin'
+UPDATE tenant_users_roles tur
+SET status = 'ACTIVE'
+FROM roles r, tenants t
+WHERE t.tenant_name = $1
+  AND r.name = 'admin'
+  AND r.id = tur.role_id
+  AND tur.tenant_id = t.id
 `
 
-func (q *Queries) RevokeAdminRole(ctx context.Context, tenantID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, revokeAdminRole, tenantID)
+func (q *Queries) RevokeAdminRole(ctx context.Context, tenantName string) error {
+	_, err := q.db.Exec(ctx, revokeAdminRole, tenantName)
 	return err
 }
 
 const revokeUserRole = `-- name: RevokeUserRole :exec
-UPDATE tenant_users_roles 
-SET deleted_at= now() WHERE tenant_users_roles.tenant_id = (
-    SELECT tenants.id FROM 
-    tenants where tenants.tenant_name = $1 and tenants.deleted_at IS NULL
-)
-and tenant_users_roles.user_id = (
-    SELECT users.id from users 
-    where users.user_id = $2 and users.deleted_at IS NULL
-) and tenant_users_roles.role_id = $3
+UPDATE tenant_users_roles tur
+SET deleted_at= now() FROM roles r, tenants t,users u
+WHERE t.tenant_name =  $1
+  AND tur.role_id =  $2
+  AND u.user_id=$3
+  AND r.id = tur.role_id
+  AND u.id=tur.user_id
+  AND tur.tenant_id = t.id and tur.deleted_at is null and r.deleted_at is null and u.deleted_at is null
 `
 
 type RevokeUserRoleParams struct {
 	TenantName string    `json:"tenant_name"`
-	UserID     uuid.UUID `json:"user_id"`
 	RoleID     uuid.UUID `json:"role_id"`
+	UserID     uuid.UUID `json:"user_id"`
 }
 
 func (q *Queries) RevokeUserRole(ctx context.Context, arg RevokeUserRoleParams) error {
-	_, err := q.db.Exec(ctx, revokeUserRole, arg.TenantName, arg.UserID, arg.RoleID)
+	_, err := q.db.Exec(ctx, revokeUserRole, arg.TenantName, arg.RoleID, arg.UserID)
 	return err
 }
 

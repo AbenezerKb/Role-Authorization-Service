@@ -80,10 +80,24 @@ type TenantUsersRole struct {
 	//UserID is the user identifier which going to get the the role
 	UserID uuid.UUID `json:"user_id"`
 }
+type SystemTenantUsersRole struct {
+	SystemAssignRole
+	//UserID is the user identifier which going to get the the role
+	UserID uuid.UUID `json:"user_id"`
+}
 
 type RoleTenant struct {
 	//RoleID is id of the role which is going to be assigned to the user.
 	RoleID uuid.UUID `json:"role_id"`
+	//RoleName is the name of the role which is going to be assigned to the user.
+	RoleName string `json:"role_name"`
+	//TenantName The Name of the tenante which is given when the tenant is created
+	TenantName string `json:"tenant_name"`
+}
+
+type SystemAssignRole struct {
+	//RoleID is id of the role which is going to be assigned to the user.
+	RoleID string `json:"role_id"`
 	//RoleName is the name of the role which is going to be assigned to the user.
 	RoleName string `json:"role_name"`
 	//TenantName The Name of the tenante which is given when the tenant is created

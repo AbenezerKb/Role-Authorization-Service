@@ -359,7 +359,7 @@ func (r *role) GetRole(ctx *gin.Context) {
 // @Router       /system/users/{userid}/roles [post]
 // @security 	 BasicAuth
 func (r *role) SystemAssignRole(ctx *gin.Context) {
-	roleTenant := dto.RoleTenant{}
+	roleTenant := dto.SystemTenantUsersRole{}
 
 	err := ctx.ShouldBind(&roleTenant)
 	if err != nil {
@@ -377,9 +377,24 @@ func (r *role) SystemAssignRole(ctx *gin.Context) {
 		return
 	}
 
+	roleID := uuid.Nil
+	if roleTenant.RoleID != "" {
+		roleID, err = uuid.Parse(roleTenant.RoleID)
+		if err != nil {
+			err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+			r.logger.Info(ctx, "invalid input", zap.Error(err), zap.Any("role id", roleTenant.RoleID))
+			_ = ctx.Error(err)
+			return
+		}
+	}
+
 	err = r.roleModule.AssignRole(ctx, dto.TenantUsersRole{
-		UserID:     userID,
-		RoleTenant: roleTenant,
+		UserID: userID,
+		RoleTenant: dto.RoleTenant{
+			RoleID:     roleID,
+			RoleName:   roleTenant.RoleName,
+			TenantName: roleTenant.TenantName,
+		},
 	})
 	if err != nil {
 		_ = ctx.Error(err)

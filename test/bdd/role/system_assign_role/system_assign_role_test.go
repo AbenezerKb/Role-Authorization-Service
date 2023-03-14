@@ -299,7 +299,7 @@ func (s *systemAssignRoleTest) theRoleShouldSuccessfullyBeAssigned() error {
 	}
 	row, err := s.DB.IsRoleAssigned(context.Background(), db.IsRoleAssignedParams{
 		TenantName: s.tenant,
-		RoleID:     s.createdRoleResponseId,
+		ID:         s.createdRoleResponseId,
 		UserID:     s.createdUser.UserId,
 	})
 	if err != nil {

@@ -25,19 +25,17 @@ WITH new_row AS (
 )
 insert into tenant_users_roles(tenant_id, user_id, role_id)
 select tenants.id,_user.id,roles.id
-from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and roles.id=$3 or roles.name=$4 and roles.tenant_id=tenants.id and roles.deleted_at is null;
+from roles,tenants,_user  where tenants.tenant_name=$5 and tenants.deleted_at IS NULL and (roles.id=$3 or roles.name=$4) and roles.tenant_id=tenants.id and roles.deleted_at is null;
 
 -- name: IsRoleAssigned :one 
-SELECT count_rows() FROM tenant_users_roles 
-WHERE tenant_users_roles.tenant_id in (
-    SELECT tenants.id FROM 
-    tenants where tenants.tenant_name = $1 and tenants.deleted_at IS NULL
-)
-and tenant_users_roles.user_id in (
-    SELECT users.id from users 
-    where users.user_id = $2 and users.deleted_at IS NULL
-) and tenant_users_roles.role_id = $3;
-
+select count_rows() from tenant_users_roles tur
+    join tenants t on t.id = tur.tenant_id
+    join users u on u.id = tur.user_id
+    join roles r on r.id = tur.role_id 
+    where t.tenant_name=$1
+and u.user_id=$2 and( r.id=$3 or r.name=$4)
+ and tur.deleted_at is null and r.deleted_at is null;
+ 
 -- name: RemovePermissionsFromRole :exec
 DELETE FROM role_permissions WHERE role_id=$1 AND NOT permission_id=any($2::uuid[]);
 
@@ -46,16 +44,15 @@ INSERT INTO role_permissions (role_id,permission_id)
 SELECT $1,permissions.id FROM permissions WHERE permissions.id =ANY($2::uuid[]) AND permissions.deleted_at IS NULL ON conflict do nothing;
 
 -- name: RevokeUserRole :exec 
-UPDATE tenant_users_roles 
-SET deleted_at= now() WHERE tenant_users_roles.tenant_id = (
-    SELECT tenants.id FROM 
-    tenants where tenants.tenant_name = $1 and tenants.deleted_at IS NULL
-)
-and tenant_users_roles.user_id = (
-    SELECT users.id from users 
-    where users.user_id = $2 and users.deleted_at IS NULL
-) and tenant_users_roles.role_id = $3;
-
+UPDATE tenant_users_roles tur
+SET deleted_at= now() FROM roles r, tenants t,users u
+WHERE t.tenant_name =  $1
+  AND tur.role_id =  $2
+  AND u.user_id=$3
+  AND r.id = tur.role_id
+  AND u.id=tur.user_id
+  AND tur.tenant_id = t.id and tur.deleted_at is null and r.deleted_at is null and u.deleted_at is null;
+  
 -- name: DeleteRole :one
 Update roles set deleted_at=now() where roles.id=$1 AND deleted_at IS NULL returning name,id,created_at,updated_at;
 
@@ -72,6 +69,10 @@ update roles r set status =$3 from _tenants where r.id=$4 and r.deleted_at IS NU
 select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r join tenants t on t.id = r.tenant_id where t.service_id=$1 and t.deleted_at is null and r.id=$2 and r.deleted_at is null;
 
 -- name: RevokeAdminRole :exec
-UPDATE tenant_users_roles
-SET status = 'INACTIVE'
-WHERE tenant_id = $1 AND role_id = 'admin';
+UPDATE tenant_users_roles tur
+SET status = 'ACTIVE'
+FROM roles r, tenants t
+WHERE t.tenant_name = $1
+  AND r.name = 'admin'
+  AND r.id = tur.role_id
+  AND tur.tenant_id = t.id;
