@@ -9,11 +9,14 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 type TestInstance struct {
@@ -23,6 +26,13 @@ type TestInstance struct {
 }
 
 func Initiate(ctx context.Context, path string) TestInstance {
+	output, _ := exec.Command("lsof", "-t", "-i", ":8181").Output()
+	if len(output) != 0 {
+		if err := exec.Command("killall", "opa").Run(); err != nil {
+			log.Fatal(context.Background(), "error  while cleaning used port", zap.Error(err))
+		}
+
+	}
 	log := logger.New(initiator.InitLogger())
 	log.Info(context.Background(), "logger initialized")
 
