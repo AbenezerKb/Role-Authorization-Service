@@ -42,13 +42,21 @@ type opa struct {
 }
 
 func Init(policy string, policyDb dbstore.Policy, filepath, regopath, server string, log logger.Logger) Opa {
-
+	a, b := []byte{}, []byte{}
+	x := bytes.NewBuffer(b)
+	y := bytes.NewBuffer(a)
+	fmt.Println("server initializing")
 	go func() {
 
-		err := exec.Command(server, "run", "--server", "--watch", regopath, filepath).Run()
+		cmd := exec.Command(server, "run", "--server", "--watch", regopath, filepath)
+		cmd.Stdout = x
+		cmd.Stderr = y
+		err := cmd.Run()
 		if err != nil {
 			err := errors.ErrOpaPrepareEvalError.Wrap(err, "error  Initializing OPA  Server")
-			log.Fatal(context.Background(), "error preparing the rego for eval", zap.Error(err))
+			log.Fatal(context.Background(), "error preparing the rego for eval", zap.Error(err),
+				zap.String("command-stdout", string(b)),
+				zap.String("command-stderr", string(a)))
 		}
 	}()
 
@@ -148,7 +156,7 @@ func (o *opa) GetData(ctx context.Context) error {
 		return err
 
 	}
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Second)
 	return nil
 }
 
