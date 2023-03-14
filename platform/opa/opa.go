@@ -18,7 +18,6 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage"
 	"github.com/open-policy-agent/opa/util"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -84,13 +83,6 @@ func Init(policy string, policyDb dbstore.Policy, filepath, regopath, server str
 		server:   server,
 		log:      log,
 	}
-}
-
-type responseBody struct {
-	Response bool `json:"result"`
-}
-type RequestBody struct {
-	Input model.Request `json:"input"`
 }
 
 type responseBody struct {

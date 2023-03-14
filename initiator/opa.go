@@ -4,7 +4,6 @@ import (
 	"2f-authorization/platform/logger"
 	opa_platform "2f-authorization/platform/opa"
 	"context"
-	"fmt"
 	"os"
 
 	"go.uber.org/zap"
