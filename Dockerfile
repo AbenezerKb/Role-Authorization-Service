@@ -17,7 +17,6 @@ RUN ["apk","update"]
 RUN ["apk","add","bash"]
 RUN ["apk","add","lsof"]
 RUN ["chmod","755","platform/opa/server/opa"]
-RUN [""]
 
 
 
