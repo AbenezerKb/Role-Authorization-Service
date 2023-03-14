@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -18,7 +19,6 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage"
 	"github.com/open-policy-agent/opa/util"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -30,43 +30,43 @@ type Opa interface {
 }
 
 type opa struct {
-	db       dbstore.Policy
-	store    storage.Store
-	policy   string
-	Query    string
-	log      logger.Logger
-	filepath string
-	regopath string
-	server   string
-	query    rego.PreparedEvalQuery
+	db            dbstore.Policy
+	store         storage.Store
+	policy        string
+	Query         string
+	log           logger.Logger
+	filepath      string
+	regopath      string
+	server        string
+	query         rego.PreparedEvalQuery
+	evaluatorPort int
 }
 
 func Init(policy string, policyDb dbstore.Policy, filepath, regopath, server string, log logger.Logger) Opa {
-	a, b := []byte{}, []byte{}
-	x := bytes.NewBuffer(b)
-	y := bytes.NewBuffer(a)
-	fmt.Println("server initializing")
-	go func() {
+	rand.Seed(time.Now().Unix())
+	port := rand.Intn(1000) + 40000
 
-		cmd := exec.Command(server, "run", "--server", "--watch", regopath, filepath)
-		cmd.Stdout = x
-		cmd.Stderr = y
-		err := cmd.Run()
+	go func() {
+		cmd := exec.Command(server, "run", "--server", "--watch", "--addr", fmt.Sprintf("localhost:%d", port), regopath, filepath)
+		defer func() {
+			err := cmd.Process.Kill()
+			log.Error(context.Background(), "error while killing somebody", zap.Error(err))
+		}()
+		output, err := cmd.CombinedOutput()
 		if err != nil {
 			err := errors.ErrOpaPrepareEvalError.Wrap(err, "error  Initializing OPA  Server")
-			log.Fatal(context.Background(), "error preparing the rego for eval", zap.Error(err),
-				zap.String("command-stdout", string(b)),
-				zap.String("command-stderr", string(a)))
+			log.Fatal(context.Background(), "error preparing the rego for eval", zap.Error(err), zap.String("combined-output", string(output)))
 		}
 	}()
 
 	return &opa{
-		policy:   policy,
-		db:       policyDb,
-		filepath: filepath,
-		regopath: regopath,
-		server:   server,
-		log:      log,
+		policy:        policy,
+		db:            policyDb,
+		filepath:      filepath,
+		regopath:      regopath,
+		server:        server,
+		log:           log,
+		evaluatorPort: port,
 	}
 }
 
@@ -78,7 +78,7 @@ type RequestBody struct {
 }
 
 func (o *opa) Allow(ctx context.Context, req model.Request) (bool, error) {
-	posturl := viper.GetString("opa.server_addr")
+	posturl := fmt.Sprintf("http://localhost:%d", o.evaluatorPort)
 	reqst := RequestBody{
 		Input: req,
 	}
