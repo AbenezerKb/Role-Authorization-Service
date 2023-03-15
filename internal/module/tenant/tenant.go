@@ -150,7 +150,7 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 		{
 			Name:   "created_at",
 			Type:   db_pgnflt.Time,
-			DBName: "u.created_at",
+			DBName: "ur.created_at",
 		},
 		{
 			Name:   "role_name",
