@@ -70,7 +70,7 @@ select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(s
 
 -- name: RevokeAdminRole :exec
 UPDATE tenant_users_roles tur
-SET status = 'ACTIVE'
+SET status = 'INACTIVE'
 FROM roles r, tenants t
 WHERE t.tenant_name = $1
   AND r.name = 'admin'

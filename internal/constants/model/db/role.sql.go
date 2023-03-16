@@ -245,7 +245,7 @@ func (q *Queries) RemovePermissionsFromRole(ctx context.Context, arg RemovePermi
 
 const revokeAdminRole = `-- name: RevokeAdminRole :exec
 UPDATE tenant_users_roles tur
-SET status = 'ACTIVE'
+SET status = 'INACTIVE'
 FROM roles r, tenants t
 WHERE t.tenant_name = $1
   AND r.name = 'admin'
