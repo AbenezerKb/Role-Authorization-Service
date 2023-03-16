@@ -19,7 +19,7 @@ type GetTenantUsersRoles struct {
 func (db *DBInstance) GetTenantUsersWithRoles(ctx context.Context, filter db_pgnflt.FilterParams, arg GetTenantUsersRoles) ([]dto.TenantUserRoles, *model.MetaData, error) {
 	_, sql := db_pgnflt.GetFilterSQL(filter)
 
-	where := fmt.Sprintf("WHERE t.tenant_name ='%s' AND t.service_id ='%s' and rl.deleted_at is null and t.deleted_at is null", arg.TenantName, arg.ServiceID.String())
+	where := fmt.Sprintf("WHERE t.tenant_name ='%s' AND t.service_id ='%s' and rl.deleted_at is null and t.deleted_at is null and tur.deleted_at is null", arg.TenantName, arg.ServiceID.String())
 
 	if len(sql.Where) != 0 {
 		where += fmt.Sprintf(" AND (%s)", sql.Where)
