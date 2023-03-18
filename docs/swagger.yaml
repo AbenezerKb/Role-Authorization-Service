@@ -23,9 +23,6 @@ definitions:
       name:
         description: Name is the name of the permission being created
         type: string
-      service_id:
-        description: ServiceID is the id of the service the permission belongs to
-        type: string
       statement:
         $ref: '#/definitions/dto.Statement'
         description: Statement is an object that holds the action, resource and effect
@@ -586,7 +583,7 @@ paths:
       consumes:
       - application/json
       description: |-
-        this function registers the service if it does already exist.
+        this function registers the permission if it does already exist.
         if the process finishes with out any error it returns true.
         if the process finishes with any error it returns false.
       parameters:
@@ -794,6 +791,47 @@ paths:
       security:
       - BasicAuth: []
       summary: changes permission status
+      tags:
+      - permissions
+  /permissions/bulk:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        this function registers the permission if it does already exist.
+        if the process finishes with out any error it returns true.
+        if the process finishes with any error it returns false.
+      parameters:
+      - description: register permission request body
+        in: body
+        name: creatnewpermission
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dto.CreatePermission'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: successfully register the permission
+          schema:
+            type: boolean
+        "400":
+          description: required field error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: unauthorized service
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: service is not active
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: register a new permission.
       tags:
       - permissions
   /permissions/inherit:

@@ -324,7 +324,7 @@ const docTemplate = `{
                         "BasicAuth": []
                     }
                 ],
-                "description": "this function registers the service if it does already exist.\nif the process finishes with out any error it returns true.\nif the process finishes with any error it returns false.",
+                "description": "this function registers the permission if it does already exist.\nif the process finishes with out any error it returns true.\nif the process finishes with any error it returns false.",
                 "consumes": [
                     "application/json"
                 ],
@@ -343,6 +343,66 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.CreatePermission"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successfully register the permission",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "required field error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized service",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "service is not active",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/permissions/bulk": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "this function registers the permission if it does already exist.\nif the process finishes with out any error it returns true.\nif the process finishes with any error it returns false.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "permissions"
+                ],
+                "summary": "register a new permission.",
+                "parameters": [
+                    {
+                        "description": "register permission request body",
+                        "name": "creatnewpermission",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CreatePermission"
+                            }
                         }
                     }
                 ],
@@ -2196,10 +2256,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "Name is the name of the permission being created",
-                    "type": "string"
-                },
-                "service_id": {
-                    "description": "ServiceID is the id of the service the permission belongs to",
                     "type": "string"
                 },
                 "statement": {
