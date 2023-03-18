@@ -30,8 +30,7 @@ func Init(log logger.Logger, permissionPersistence storage.Permission, opa opa.O
 
 func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermission) error {
 
-	var err error
-	param.ServiceID, err = uuid.Parse(ctx.Value("x-service-id").(string))
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
 		p.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
@@ -47,9 +46,39 @@ func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermi
 		p.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
-	_, err = p.permissionPersistence.CreatePermission(ctx, param)
+	_, err = p.permissionPersistence.CreatePermission(ctx, param, serviceID)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (p *permission) BulkCreatePermission(ctx context.Context, param []dto.CreatePermission) error {
+
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	for _, per := range param {
+
+		if len(per.Statement.Fields) == 0 {
+			per.Statement.Fields = []string{"*"}
+		}
+
+		if err = per.Validate(); err != nil {
+			err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+			p.log.Info(ctx, "invalid input", zap.Error(err))
+			return err
+		}
+		_, err = p.permissionPersistence.CreatePermission(ctx, per, serviceID)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil
