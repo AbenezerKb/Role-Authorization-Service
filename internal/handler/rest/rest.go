@@ -15,6 +15,7 @@ type Domain interface {
 }
 type Permission interface {
 	CreatePermission(ctx *gin.Context)
+	BulkCreatePermission(ctx *gin.Context)
 	ListPermissions(ctx *gin.Context)
 	CreatePermissionDependency(ctx *gin.Context)
 	DeletePermission(ctx *gin.Context)

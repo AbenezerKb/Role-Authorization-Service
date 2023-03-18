@@ -28,7 +28,7 @@ func Init(logger logger.Logger, permissionModule module.Permission) rest.Permiss
 
 // CreatePermission is used to register new permissions.
 // @Summary      register a new permission.
-// @Description  this function registers the service if it does already exist.
+// @Description  this function registers the permission if it does already exist.
 // @Description  if the process finishes with out any error it returns true.
 // @Description  if the process finishes with any error it returns false.
 // @Tags         permissions
@@ -46,12 +46,45 @@ func (p *permission) CreatePermission(ctx *gin.Context) {
 	err := ctx.ShouldBind(&permission)
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		p.logger.Info(ctx, "couldn't bind to dto.Service body", zap.Error(err))
+		p.logger.Info(ctx, "couldn't bind to dto.CreatePermission body", zap.Error(err))
 		_ = ctx.Error(err)
 		return
 	}
 
 	if err := p.permissionModule.CreatePermission(ctx, permission); err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	constants.SuccessResponse(ctx, http.StatusCreated, nil, nil)
+}
+
+// BulkCreatePermission is used to register new permissions.
+// @Summary      register a new permission.
+// @Description  this function registers the permission if it does already exist.
+// @Description  if the process finishes with out any error it returns true.
+// @Description  if the process finishes with any error it returns false.
+// @Tags         permissions
+// @Accept       json
+// @Produce      json
+// @param 		 creatnewpermission body []dto.CreatePermission true "register permission request body"
+// @Success      201  boolean true "successfully register the permission"
+// @Failure      400  {object}  model.ErrorResponse "required field error"
+// @Failure      401  {object}  model.ErrorResponse "unauthorized service"
+// @Failure      403  {object}  model.ErrorResponse "service is not active"
+// @Router       /permissions/bulk [post]
+// @security 	 BasicAuth
+func (p *permission) BulkCreatePermission(ctx *gin.Context) {
+	permission := []dto.CreatePermission{}
+	err := ctx.ShouldBind(&permission)
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		p.logger.Info(ctx, "couldn't bind to dto.Service body", zap.Error(err))
+		_ = ctx.Error(err)
+		return
+	}
+
+	if err := p.permissionModule.BulkCreatePermission(ctx, permission); err != nil {
 		_ = ctx.Error(err)
 		return
 	}
