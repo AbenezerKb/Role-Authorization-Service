@@ -49,8 +49,6 @@ type CreatePermission struct {
 	Description string `json:"description"`
 	// Statement is an object that holds the action, resource and effect of the permission being created
 	Statement Statement `json:"statement"`
-	// ServiceID is the id of the service the permission belongs to
-	ServiceID uuid.UUID `json:"service_id"`
 	// Domain is an array that holds the id of the domains the permission is accessible at
 	Domain []uuid.UUID `json:"domains"`
 }
