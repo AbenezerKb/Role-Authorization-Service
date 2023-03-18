@@ -27,12 +27,12 @@ func Init(db dbinstance.DBInstance, log logger.Logger) storage.Permission {
 	}
 }
 
-func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermission) (uuid.UUID, error) {
+func (p *permission) CreatePermission(ctx context.Context, param dto.CreatePermission, serviceID uuid.UUID) (uuid.UUID, error) {
 
 	statement, _ := param.Statement.Value()
 	permissionId, err := p.db.CreateOrGetPermission(ctx, db.CreateOrGetPermissionParams{
 		Name:        param.Name,
-		ServiceID:   param.ServiceID,
+		ServiceID:   serviceID,
 		Description: param.Description,
 		Statement: pgtype.JSON{
 			Bytes:  statement,
