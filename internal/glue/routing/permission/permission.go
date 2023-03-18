@@ -23,6 +23,15 @@ func InitRoute(group *gin.RouterGroup, permission rest.Permission, log logger.Lo
 			},
 		},
 		{
+			Method:      http.MethodPost,
+			Path:        "/bulk",
+			Handler:     permission.BulkCreatePermission,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+			},
+		},
+		{
 			Method:      http.MethodGet,
 			Path:        "",
 			Handler:     permission.ListPermissions,
