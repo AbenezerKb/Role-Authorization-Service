@@ -126,7 +126,7 @@ deployment:
   script:
     - ssh $SERVER_USER@$SERVER_IP "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
     - ssh $SERVER_USER@$SERVER_IP "docker pull $TAG"
-    - ssh $SERVER_USER@$SERVER_IP "docker service update --image $TAG --force $SERVICE"
+    - ssh $SERVER_USER@$SERVER_IP "docker service update --image $TAG --force --with-registry-auth $SERVICE"
 
   only:
     refs:
