@@ -54,7 +54,7 @@ WHERE t.tenant_name =  $1
   AND tur.tenant_id = t.id and tur.deleted_at is null and r.deleted_at is null and u.deleted_at is null;
   
 -- name: DeleteRole :one
-Update roles set deleted_at=now() where roles.id=$1 AND deleted_at IS NULL returning name,id,created_at,updated_at;
+Update roles set deleted_at=now() where roles.id=$1 and r.name !='admin' AND deleted_at IS NULL returning name,id,created_at,updated_at;
 
 -- name: ListRoles :many
 select r.name,r.created_at,r.id,r.status from roles r join tenants t on r.tenant_id=t.id where t.tenant_name=$1 AND t.service_id=$2 AND t.deleted_at IS NULL AND r.deleted_at IS NULL;
@@ -63,7 +63,7 @@ select r.name,r.created_at,r.id,r.status from roles r join tenants t on r.tenant
 with _tenants as(
     select id from tenants t where t.tenant_name=$1 and t.service_id=$2 and t.deleted_at IS NULL
 )
-update roles r set status =$3 from _tenants where r.id=$4 and r.deleted_at IS NULL and r.tenant_id=_tenants.id returning r.id;
+update roles r set status =$3 from _tenants where r.id=$4 and r.name !='admin' and r.deleted_at IS NULL and r.tenant_id=_tenants.id returning r.id;
 
 -- name: GetRoleById :one
 select r.name,r.id,r.status,r.created_at,r.updated_at, (select string_to_array(string_agg(p.name,','),',')::string[] from role_permissions join permissions p on role_permissions.permission_id = p.id where role_id=r.id and p.deleted_at is null) as permission  from roles r join tenants t on t.id = r.tenant_id where t.service_id=$1 and t.deleted_at is null and r.id=$2 and r.deleted_at is null;
