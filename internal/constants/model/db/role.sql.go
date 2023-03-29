@@ -88,7 +88,7 @@ func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (CreateR
 }
 
 const deleteRole = `-- name: DeleteRole :one
-Update roles set deleted_at=now() where roles.id=$1 and r.name !='admin' AND deleted_at IS NULL returning name,id,created_at,updated_at
+Update roles set deleted_at=now() where roles.id=$1 and name !='admin' AND deleted_at IS NULL returning name,id,created_at,updated_at
 `
 
 type DeleteRoleRow struct {
