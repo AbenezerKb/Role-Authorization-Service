@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -99,6 +100,18 @@ func (l *logger) Log(ctx context.Context, level pgx.LogLevel, msg string, data m
 	data["pgx_time"] = data["time"]
 	delete(data, "time")
 	for k, v := range data {
+		// format args values to []string
+		// this is to insure a valid json encoding
+		if k == "args" {
+			if args, ok := v.([]interface{}); ok {
+				var argsStr []string
+				for _, arg := range args {
+					argsStr = append(argsStr, fmt.Sprintf("%s", arg))
+				}
+				v = argsStr
+			}
+		}
+
 		fields = append(fields, zap.Any(k, v))
 	}
 	switch level {
