@@ -98,20 +98,8 @@ func (u *user) GetPermissionWithInTenant(ctx context.Context, tenant string, use
 }
 
 func (u *user) UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, roleId, userId, serviceId uuid.UUID, tenant string) error {
-	_, err := u.db.UpdateUserRoleStatus(ctx, db.UpdateUserRoleStatusParams{
-		UserID:     userId,
-		TenantName: tenant,
-		ServiceID:  serviceId,
-		Status:     db.Status(param.Status),
-		RoleID:     roleId,
-	})
+	err := u.db.UpdateUserRoleStatus(ctx, tenant, param.Status, userId, serviceId, roleId)
 	if err != nil {
-		if sqlcerr.Is(err, sqlcerr.ErrNoRows) {
-			err := errors.ErrNoRecordFound.Wrap(err, "user's role not found")
-			u.log.Error(ctx, "error changing user's role status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("user-id", userId.String()), zap.String("role-status", param.Status), zap.String("role-id", roleId.String()), zap.String("tenant", tenant))
-			return err
-		}
-
 		err = errors.ErrUpdateError.Wrap(err, "error changing user's role status")
 		u.log.Error(ctx, "error changing user's role status", zap.Error(err), zap.String("service", serviceId.String()), zap.String("user-id", userId.String()), zap.String("role-status", param.Status), zap.String("role-id", roleId.String()), zap.String("tenant", tenant))
 		return err

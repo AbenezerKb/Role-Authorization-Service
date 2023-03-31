@@ -31,6 +31,7 @@ with _tenants as(
 )
 update tenant_users_roles tur set status =$4 from _tenants,_user where tur.role_id=$5 and tur.deleted_at IS NULL and tur.tenant_id=_tenants.id and tur.user_id=_user.id returning tur.id;
 
+
 -- name: GetUserPermissionWithInTheDomain :many
 with _user as(
     select id from users u where u.user_id=$1 and u.service_id=$2 and u.deleted_at is null and u.status='ACTIVE'
