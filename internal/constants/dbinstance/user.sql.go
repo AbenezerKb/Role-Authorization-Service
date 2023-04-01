@@ -97,7 +97,7 @@ func (q *DBInstance) UpdateUserRoleStatus(ctx context.Context, tenant,
 	if err != nil {
 		return err
 	}
-	if roleName == "admin" {
+	if roleName == "admin" && status == "ACTIVE" {
 		deactivate := `WITH _tenants AS(
 			SELECT id FROM tenants t WHERE t.tenant_name='%s' AND t.service_id='%s' AND t.deleted_at IS NULL
 		),_user AS(
@@ -132,6 +132,44 @@ func (q *DBInstance) UpdateUserRoleStatus(ctx context.Context, tenant,
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (q *DBInstance) UpdateCorporateUserRoleStatus(ctx context.Context, tenant,
+	status string, userId, serviceId, roleId uuid.UUID) error {
+	newQuery := fmt.Sprintf(`  SELECT name FROM roles WHERE id = '%s'; `, roleId)
+	row := q.Pool.QueryRow(ctx, newQuery)
+	var roleName string
+	err := row.Scan(&roleName)
+	if err != nil {
+		return err
+	}
+	if roleName != "admin" && status != "ACTIVE" {
+		return fmt.Errorf("invalid access admin")
+	}
+	deactivate := `WITH _tenants AS(
+			SELECT id FROM tenants t WHERE t.tenant_name='%s' AND t.service_id='%s' AND t.deleted_at IS NULL
+		),_user AS(
+			SELECT id FROM users u WHERE u.user_id='%s' AND u.deleted_at IS NULL AND u.service_id='%s'
+		)
+		UPDATE tenant_users_roles tur SET status ='INACTIVE' FROM _tenants,_user WHERE tur.role_id='%s' AND tur.deleted_at IS NULL AND
+		tur.tenant_id=_tenants.id AND tur.user_id!=_user.id RETURNING tur.id;		
+		`
+	_, err = q.Pool.Exec(ctx, fmt.Sprintf(deactivate, tenant, serviceId, userId, serviceId, roleId))
+	if err != nil {
+		return err
+	}
+
+	_, err = q.Pool.Exec(ctx, fmt.Sprintf(`WITH _tenants AS(
+			SELECT id FROM tenants t WHERE t.tenant_name='%s' AND t.service_id='%s' AND t.deleted_at IS NULL
+		),_user AS(
+			SELECT id FROM users u WHERE u.user_id='%s' AND u.deleted_at IS NULL AND u.service_id='%s'
+		)
+		UPDATE tenant_users_roles tur SET status ='ACTIVE' FROM _tenants,_user WHERE tur.role_id='%s' AND tur.deleted_at IS NULL AND
+		tur.tenant_id=_tenants.id AND tur.user_id=_user.id RETURNING tur.id;`, tenant, serviceId, userId, serviceId, roleId))
+	if err != nil {
+		return err
 	}
 	return nil
 }
