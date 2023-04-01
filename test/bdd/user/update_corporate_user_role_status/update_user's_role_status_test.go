@@ -110,7 +110,7 @@ func (u *updateUserRoleStatusTest) iSendTheRequestToUpdateTheStatus() error {
 }
 
 func (u *updateUserRoleStatusTest) iWantToUpdateTheUsersRoleStatusTo(status string) error {
-	u.apiTest.URL = "/v1/corporate/" + u.tenant + "/users/" + u.createdUser.UserId.String() + "/roles/" + u.createdRoleResponseId.String() + "/status"
+	u.apiTest.URL = "/v1/tenants/corporate/" + u.tenant + "/users/" + u.createdUser.UserId.String() + "/roles/" + u.createdRoleResponseId.String() + "/status"
 	fmt.Println("the URL: ", u.apiTest.URL)
 	u.apiTest.Method = http.MethodPatch
 	u.userRoleStatus.Status = status
@@ -232,7 +232,7 @@ func (u *updateUserRoleStatusTest) thenIShouldGetAFieldErrorWithMessage(message 
 	return nil
 }
 
-func (u *updateUserRoleStatusTest) theUserHasAdminRoleInTheFollowingTenant(userRoleTenant *godog.Table) error {
+func (u *updateUserRoleStatusTest) theUserHasACTIVEAdminRoleInTheFollowingTenant(userRoleTenant *godog.Table) error {
 	body, err := u.apiTest.ReadRow(userRoleTenant, nil, false)
 	if err != nil {
 		return err
@@ -272,6 +272,16 @@ func (u *updateUserRoleStatusTest) theUserHasAdminRoleInTheFollowingTenant(userR
 	return nil
 }
 
+func (u *updateUserRoleStatusTest) theRoleStatusShouldFailToUpdateWith(message string) error {
+	if err := u.apiTest.AssertStatusCode(http.StatusInternalServerError); err != nil {
+		return err
+	}
+	if err := u.apiTest.AssertStringValueOnPathInResponse("error.message", message); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *updateUserRoleStatusTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		u.apiTest.SetHeader("Content-Type", "application/json")
@@ -287,7 +297,9 @@ func (u *updateUserRoleStatusTest) InitializeScenario(ctx *godog.ScenarioContext
 	ctx.Step(`^I have service with$`, u.iHaveServiceWith)
 	ctx.Step(`^I send the request to update the status$`, u.iSendTheRequestToUpdateTheStatus)
 	ctx.Step(`^I want to update the user\'s role status to "([^"]*)"$`, u.iWantToUpdateTheUsersRoleStatusTo)
+	ctx.Step(`^the role status should fail to update with "([^"]*)"$`, u.theRoleStatusShouldFailToUpdateWith)
 	ctx.Step(`^the role status should update to "([^"]*)"$`, u.theRoleStatusShouldUpdateTo)
-	ctx.Step(`^the user has admin role in the following tenant$`, u.theUserHasAdminRoleInTheFollowingTenant)
+	ctx.Step(`^the user has ACTIVE admin role in the following tenant$`, u.theUserHasACTIVEAdminRoleInTheFollowingTenant)
+	ctx.Step(`^the user has admin role in the following tenant$`, u.theUserHasTheFollowingRoleInTheFollowingTenant)
 	ctx.Step(`^the user has the following role in the following tenant$`, u.theUserHasTheFollowingRoleInTheFollowingTenant)
 }

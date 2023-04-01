@@ -28,6 +28,7 @@ type Tenant interface {
 	RegisterTenantPermission(ctx *gin.Context)
 	UpdateTenantStatus(ctx *gin.Context)
 	GetUsersWithTheirRoles(ctx *gin.Context)
+	UpdateCorporateUserRoleStatus(ctx *gin.Context)
 }
 
 type User interface {
@@ -36,7 +37,6 @@ type User interface {
 	GetPermissionWithInTenant(ctx *gin.Context)
 	UpdateUserRoleStatus(ctx *gin.Context)
 	GetPermissionWithInDomain(ctx *gin.Context)
-	UpdateCorporateUserRoleStatus(ctx *gin.Context)
 }
 
 type Role interface {

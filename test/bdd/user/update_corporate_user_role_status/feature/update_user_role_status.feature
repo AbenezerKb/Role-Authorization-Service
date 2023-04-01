@@ -24,9 +24,21 @@ Feature: Update User's Role Status
     Then the role status should update to "<status>"
 
     Examples: 
-      | user_id                              | tenant   | role  | status   |
-      | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin | INACTIVE |
-      | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin | ACTIVE   |
+      | user_id                              | tenant   | role  | status |
+      | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | Admin | ACTIVE |
+
+  @failure
+  Scenario Outline: Fail To make status inactive
+    Given the user has ACTIVE admin role in the following tenant
+      | user_id   | tenant   |
+      | <user_id> | <tenant> |
+    And I want to update the user's role status to "<status>"
+    When I send the request to update the status
+    Then the role status should fail to update with "error changing user's role status"
+
+    Examples: 
+      | user_id                              | tenant   | status   |
+      | 8e70df10-7957-426c-912a-9ed00f887e46 | vendor_1 | INACTIVE |
 
   @failure
   Scenario Outline: Missing required field values

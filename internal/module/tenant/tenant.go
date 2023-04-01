@@ -186,3 +186,32 @@ func (t *tenant) GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.Pg
 	return tenantUserRoles, metadata, nil
 
 }
+
+func (u *tenant) UpdateCorporateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, corporateID string,
+	roleId, userId uuid.UUID) error {
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
+		u.log.Info(ctx, "invalid service id", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
+		return err
+	}
+
+	tenant, ok := ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid tenant")
+		u.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+	}
+
+	if err = param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		u.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+
+	if err = u.tenantPersistant.UpdateCorporateUserRoleStatus(ctx, param, roleId, userId, serviceID, corporateID); err != nil {
+		return err
+	}
+
+	return u.opa.Refresh(ctx, fmt.Sprintf("Updating  [%v]'s role [%v] status in tenant [%v] with [%v]", userId, roleId.String(), tenant, param.Status))
+}

@@ -36,6 +36,8 @@ type Tenant interface {
 	RegsiterTenantPermission(ctx context.Context, param dto.RegisterTenantPermission) (*dto.Permission, error)
 	UpdateTenantStatus(ctx context.Context, param dto.UpdateTenantStatus, tenantId string) error
 	GetTenantUsersWithRoles(ctx context.Context, query db_pgnflt.PgnFltQueryParams) ([]dto.TenantUserRoles, *model.MetaData, error)
+	UpdateCorporateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, corporateID string,
+		roleId, userId uuid.UUID) error
 }
 type User interface {
 	RegisterUser(ctx context.Context, param dto.RegisterUser) error
@@ -43,8 +45,6 @@ type User interface {
 	GetPermissionWithInTenant(ctx context.Context, tenant string, userId uuid.UUID) ([]dto.Permission, error)
 	GetPermissionWithInDomain(ctx context.Context, domain string, userId uuid.UUID) ([]dto.DomainPermissions, error)
 	UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, roleId, userId uuid.UUID) error
-	UpdateCorporateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, corporateID,
-		roleId, userId uuid.UUID) error
 }
 
 type Role interface {
