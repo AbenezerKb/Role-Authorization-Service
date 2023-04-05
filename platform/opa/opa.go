@@ -138,24 +138,7 @@ func (o *opa) GetData(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	var services map[string]interface{}
-	err = json.Unmarshal(data, &services)
-	if err != nil {
-		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "error while preparing opa data to json")
-		o.log.Error(ctx, "error while updating  opa data", zap.Error(err))
-		return err
-	}
-
-	serv := map[string]interface{}{
-		"services": services,
-	}
 	o.log.Info(ctx, "Successfully retrieved opa data from database")
-	servicedata, err := json.Marshal(serv)
-	if err != nil {
-		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "error while preparing opa service data to json")
-		o.log.Error(ctx, "error while updating  opa service data", zap.Error(err))
-		return err
-	}
 
 	f, err := os.OpenFile(o.filepath, os.O_WRONLY|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -166,7 +149,7 @@ func (o *opa) GetData(ctx context.Context) error {
 	writer := bufio.NewWriter(f)
 
 	defer f.Close()
-	if _, err := writer.WriteString(string(servicedata)); err != nil {
+	if _, err := writer.WriteString(string(data)); err != nil {
 		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "can not write new opa data")
 		o.log.Error(ctx, "error while updating opa data", zap.Error(err))
 		return err
@@ -179,7 +162,7 @@ func (o *opa) GetData(ctx context.Context) error {
 		return err
 	}
 	time.Sleep(time.Second)
-	o.log.Info(ctx, "Successfully updated enforcer")
+	o.log.Info(ctx, "Successfully updated opa enforcer")
 	return nil
 }
 

@@ -64,11 +64,6 @@ func (a *authMiddeleware) BasicAuth() gin.HandlerFunc {
 			return
 		}
 
-		a.logger.Info(
-			ctx,
-			"service detail",
-			zap.Any("service", service),
-		)
 		if service.Password != secret {
 			err = errors.ErrAcessError.Wrap(err, "unauthorized_service")
 			a.logger.Warn(ctx, "unauthorized_service", zap.Error(err), zap.String("service-id", service.ID.String()), zap.String("provided-password", secret))

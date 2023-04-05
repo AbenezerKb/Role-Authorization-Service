@@ -30,8 +30,11 @@ func (o *opa) GetOpaData(ctx context.Context) ([]byte, error) {
 		o.log.Error(ctx, "error getting opa data", zap.Error(err))
 		return nil, err
 	}
+	serviceMap := map[string]interface{}{
+		"services": data,
+	}
 	
-	opaData, err := json.Marshal(data)
+	opaData, err := json.Marshal(serviceMap)
 	if err != nil {
 		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "can not update opa policy data")
 		o.log.Error(ctx, "error getting opa data", zap.Error(err))
