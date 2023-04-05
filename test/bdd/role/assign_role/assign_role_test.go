@@ -204,10 +204,7 @@ func (r *assignRoleTest) iRequestToAssignRoleToUser(user_id_role_name *godog.Tab
 		return err
 	}
 
-	requestRoleId := r.createdRoleResponseId
-	requestUserId := user_id
-
-	r.apiTest.URL = fmt.Sprintf("/v1/roles/%s/users/%s", requestRoleId, requestUserId)
+	r.apiTest.URL = fmt.Sprintf("/v1/roles/%s/users/%s", r.createdRoleResponseId, user_id)
 	r.apiTest.SetHeader("Authorization", "Basic "+r.BasicAuth(r.createdService.ServiceID.String(), "123456"))
 	r.apiTest.SetHeader("x-subject", r.service.UserId)
 	r.apiTest.SetHeader("x-action", "*")

@@ -81,6 +81,17 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 	tenant, ok := ctx.Value("x-tenant").(string)
 	if ok {
 		param.TenantName = tenant
+
+	}
+
+	if err = param.Validate(); err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err))
+		return err
+	}
+	
+	_, ok = ctx.Value("x-tenant").(string)
+	if ok {
 		role, err := r.rolePersistence.GetRole(ctx, param.RoleID, serviceID)
 		if err != nil {
 			return err
@@ -91,13 +102,6 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 			r.log.Info(ctx, "Access denied, Not eligible to assign admin role", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
 			return err
 		}
-
-	}
-
-	if err = param.Validate(); err != nil {
-		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
-		r.log.Info(ctx, "invalid input", zap.Error(err))
-		return err
 	}
 	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
 	if err != nil {
