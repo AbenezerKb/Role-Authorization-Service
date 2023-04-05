@@ -16,13 +16,15 @@ import (
 
 type user struct {
 	userPersistant storage.User
+	rolePersistant storage.Role
 	log            logger.Logger
 	opa            opa.Opa
 }
 
-func Init(log logger.Logger, userPersistant storage.User, opa opa.Opa) module.User {
+func Init(log logger.Logger, userPersistant storage.User, rolePersistant storage.Role, opa opa.Opa) module.User {
 	return &user{
 		userPersistant: userPersistant,
+		rolePersistant: rolePersistant,
 		log:            log,
 		opa:            opa,
 	}
@@ -93,18 +95,11 @@ func (u *user) GetPermissionWithInTenant(ctx context.Context, tenant string, use
 	return u.userPersistant.GetPermissionWithInTenant(ctx, tenant, userId, serviceID)
 }
 
-func (u *user) UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, roleId, userId uuid.UUID) error {
+func (u *user) UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRoleStatus, tenant string, roleId, userId uuid.UUID) error {
 	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
 	if err != nil {
 		err := errors.ErrInvalidUserInput.Wrap(err, "invalid service id")
 		u.log.Info(ctx, "invalid service id", zap.Error(err), zap.Any("service-id", ctx.Value("x-service-id")))
-		return err
-	}
-
-	tenant, ok := ctx.Value("x-tenant").(string)
-	if !ok {
-		err := errors.ErrInvalidUserInput.Wrap(err, "invalid tenant")
-		u.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
 		return err
 	}
 
@@ -113,9 +108,33 @@ func (u *user) UpdateUserRoleStatus(ctx context.Context, param dto.UpdateUserRol
 		u.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
-
-	if err = u.userPersistant.UpdateUserRoleStatus(ctx, param, roleId, userId, serviceID, tenant); err != nil {
+	role, err := u.rolePersistant.GetRole(ctx, roleId, serviceID)
+	if err != nil {
 		return err
+	}
+
+	t, ok := ctx.Value("x-tenant").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.New("invalid tenant")
+		u.log.Info(ctx, "invalid tenant", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+	}
+
+	if tenant == t && role.Name == "admin" || tenant != t && role.Name != "admin" {
+		err := errors.ErrAcessError.New("Access denied")
+		u.log.Info(ctx, "Access denied", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+
+	} else if tenant == t {
+		if err = u.userPersistant.UpdateUserRoleStatus(ctx, param, roleId, userId, serviceID, tenant); err != nil {
+			return err
+		}
+
+	} else {
+		if err = u.userPersistant.SystemUpdateUserRoleStatus(ctx, param, roleId, userId, serviceID, tenant); err != nil {
+			return err
+		}
+
 	}
 
 	return u.opa.Refresh(ctx, fmt.Sprintf("Updating  [%v]'s role [%v] status in tenant [%v] with [%v]", userId, roleId.String(), tenant, param.Status))

@@ -81,6 +81,17 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 	tenant, ok := ctx.Value("x-tenant").(string)
 	if ok {
 		param.TenantName = tenant
+		role, err := r.rolePersistence.GetRole(ctx, param.RoleID, serviceID)
+		if err != nil {
+			return err
+		}
+
+		if role.Name == "admin" {
+			err := errors.ErrAcessError.New("Access denied")
+			r.log.Info(ctx, "Access denied, Not eligible to assign admin role", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+			return err
+		}
+
 	}
 
 	if err = param.Validate(); err != nil {
@@ -101,7 +112,13 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		if err := r.rolePersistence.RevokeAdminRole(ctx, param.TenantName); err != nil {
 			return err
 		}
+	} else if param.RoleName != "admin" && param.RoleName != "" {
+		err := errors.ErrAcessError.New("Access denied")
+		r.log.Info(ctx, "Access denied, Not eligible to assign admin role", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")))
+		return err
+
 	}
+
 	if err := r.rolePersistence.AssignRole(ctx, serviceID, param); err != nil {
 		return err
 	}
@@ -155,11 +172,7 @@ func (r *role) UpdateRole(ctx context.Context, param dto.UpdateRole) error {
 		return err
 	}
 
-	if err := r.opa.Refresh(ctx, fmt.Sprintf("Updating [%v]  role", param.RoleID)); err != nil {
-		return err
-	}
-
-	return nil
+	return r.opa.Refresh(ctx, fmt.Sprintf("Updating [%v]  role", param.RoleID))
 }
 
 func (r *role) DeleteRole(ctx context.Context, param string) (*dto.Role, error) {

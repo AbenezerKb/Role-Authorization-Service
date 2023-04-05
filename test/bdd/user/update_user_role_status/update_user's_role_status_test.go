@@ -224,46 +224,6 @@ func (u *updateUserRoleStatusTest) thenIShouldGetAFieldErrorWithMessage(message 
 	return nil
 }
 
-func (u *updateUserRoleStatusTest) theUserHasAdminRoleInTheFollowingTenant(userRoleTenant *godog.Table) error {
-	body, err := u.apiTest.ReadRow(userRoleTenant, nil, false)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal([]byte(body), &u.createdUser)
-	if err != nil {
-		return err
-	}
-	err = u.DB.RegisterUser(context.Background(), db.RegisterUserParams{
-		UserID:    u.createdUser.UserId,
-		ServiceID: u.createdService.ServiceID,
-	})
-	if err != nil {
-		return err
-	}
-	tenant, err := u.apiTest.ReadCellString(userRoleTenant, "tenant")
-	if err != nil {
-		return err
-	}
-	u.tenant = tenant
-	role, err := u.DB.GetRoleByNameAndTenantName(context.Background(), db.GetRoleByNameAndTenantNameParams{
-		Name:       "admin",
-		TenantName: tenant,
-	})
-	if err != nil {
-		return err
-	}
-	if err := u.DB.AssignRole(context.Background(), db.AssignRoleParams{
-		UserID:     u.createdUser.UserId,
-		TenantName: u.tenant,
-		ID:         role,
-		ServiceID:  u.createdService.ServiceID,
-	}); err != nil {
-		return err
-	}
-	u.createdRoleResponseId = role
-	return nil
-}
-
 func (u *updateUserRoleStatusTest) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		u.apiTest.SetHeader("Content-Type", "application/json")
@@ -280,6 +240,5 @@ func (u *updateUserRoleStatusTest) InitializeScenario(ctx *godog.ScenarioContext
 	ctx.Step(`^I send the request to update the status$`, u.iSendTheRequestToUpdateTheStatus)
 	ctx.Step(`^I want to update the user\'s role status to "([^"]*)"$`, u.iWantToUpdateTheUsersRoleStatusTo)
 	ctx.Step(`^the role status should update to "([^"]*)"$`, u.theRoleStatusShouldUpdateTo)
-	ctx.Step(`^the user has admin role in the following tenant$`, u.theUserHasAdminRoleInTheFollowingTenant)
 	ctx.Step(`^the user has the following role in the following tenant$`, u.theUserHasTheFollowingRoleInTheFollowingTenant)
 }

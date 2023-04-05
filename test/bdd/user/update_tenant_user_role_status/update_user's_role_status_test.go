@@ -104,14 +104,13 @@ func (u *updateUserRoleStatusTest) iSendTheRequestToUpdateTheStatus() error {
 	u.apiTest.SetHeader("x-subject", u.service.UserID.String())
 	u.apiTest.SetHeader("x-action", "*")
 	u.apiTest.SetHeader("x-resource", "*")
-	u.apiTest.SetHeader("x-tenant", u.tenant)
+	u.apiTest.SetHeader("x-tenant", "system")
 	u.apiTest.SendRequest()
 	return nil
 }
 
 func (u *updateUserRoleStatusTest) iWantToUpdateTheUsersRoleStatusTo(status string) error {
-	u.apiTest.URL = "/v1/tenants/corporate/" + u.tenant + "/users/" + u.createdUser.UserId.String() + "/roles/" + u.createdRoleResponseId.String() + "/status"
-	fmt.Println("the URL: ", u.apiTest.URL)
+	u.apiTest.URL = "/v1/system/tenants/" + u.tenant + "/users/" + u.createdUser.UserId.String() + "/roles/" + u.createdRoleResponseId.String() + "/status"
 	u.apiTest.Method = http.MethodPatch
 	u.userRoleStatus.Status = status
 	body, err := json.Marshal(&u.userRoleStatus)
@@ -300,6 +299,5 @@ func (u *updateUserRoleStatusTest) InitializeScenario(ctx *godog.ScenarioContext
 	ctx.Step(`^the role status should fail to update with "([^"]*)"$`, u.theRoleStatusShouldFailToUpdateWith)
 	ctx.Step(`^the role status should update to "([^"]*)"$`, u.theRoleStatusShouldUpdateTo)
 	ctx.Step(`^the user has ACTIVE admin role in the following tenant$`, u.theUserHasACTIVEAdminRoleInTheFollowingTenant)
-	ctx.Step(`^the user has admin role in the following tenant$`, u.theUserHasTheFollowingRoleInTheFollowingTenant)
 	ctx.Step(`^the user has the following role in the following tenant$`, u.theUserHasTheFollowingRoleInTheFollowingTenant)
 }

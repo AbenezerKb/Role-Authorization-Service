@@ -86,7 +86,7 @@ from
                             ) as role on
 				role.id = tur.role_id
 			where
-				u.deleted_at is null
+				u.deleted_at is null and tur.deleted_at is null 
 			group by
 				u.status,
 				u.user_id,

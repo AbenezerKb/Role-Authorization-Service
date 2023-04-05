@@ -64,7 +64,7 @@ check_admin_user = user {
 
 user_check(user) {
 	user.status = "ACTIVE"
-	user.user_role_status
+	user.user_role_status = "ACTIVE"
 }
 
 check_user_role[role] {

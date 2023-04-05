@@ -11,11 +11,11 @@ import (
 )
 
 func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMiddleware middleware.AuthMiddeleware) {
-	tenants := group.Group("/users")
+	// tenants := group.Group("/users")
 	tenantRoutes := []routing.Router{
 		{
 			Method:      http.MethodPost,
-			Path:        "",
+			Path:        "users",
 			Handler:     user.RegisterUser,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -25,7 +25,7 @@ func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPatch,
-			Path:        "/status",
+			Path:        "users/status",
 			Handler:     user.UpdateUserStatus,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -35,7 +35,7 @@ func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodGet,
-			Path:        "/:id/tenants/:tenant-id/permissions",
+			Path:        "users/:id/tenants/:tenant-id/permissions",
 			Handler:     user.GetPermissionWithInTenant,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -44,7 +44,7 @@ func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodPatch,
-			Path:        "/:id/roles/:role-id/status",
+			Path:        "users/:id/roles/:role-id/status",
 			Handler:     user.UpdateUserRoleStatus,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
@@ -54,13 +54,23 @@ func InitRoute(group *gin.RouterGroup, user rest.User, log logger.Logger, authMi
 		},
 		{
 			Method:      http.MethodGet,
-			Path:        "/:id/domains/:domain-id/permissions",
+			Path:        "users/:id/domains/:domain-id/permissions",
 			Handler:     user.GetPermissionWithInDomain,
 			UnAuthorize: true,
 			Middlewares: []gin.HandlerFunc{
 				authMiddleware.BasicAuth(),
 			},
 		},
+		{
+			Method:      http.MethodPatch,
+			Path:        "system/tenants/:tenant_id/users/:user_id/roles/:role_id/status",
+			Handler:     user.SystemUpdateUserRoleStatus,
+			UnAuthorize: true,
+			Middlewares: []gin.HandlerFunc{
+				authMiddleware.BasicAuth(),
+				authMiddleware.Authorize(),
+			},
+		},
 	}
-	routing.RegisterRoutes(tenants, tenantRoutes)
+	routing.RegisterRoutes(group, tenantRoutes)
 }

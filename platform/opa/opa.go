@@ -171,6 +171,7 @@ func (o *opa) GetData(ctx context.Context) error {
 
 	}
 	time.Sleep(time.Second)
+	o.log.Info(ctx, "Opa rule refreshed")
 	return nil
 }
 
