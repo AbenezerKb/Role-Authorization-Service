@@ -4,6 +4,7 @@ import (
 	errors "2f-authorization/internal/constants/error"
 	"2f-authorization/internal/constants/model"
 	"2f-authorization/platform/logger"
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
@@ -17,7 +18,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage"
-	"github.com/open-policy-agent/opa/util"
 	"go.uber.org/zap"
 )
 
@@ -139,7 +139,7 @@ func (o *opa) GetData(ctx context.Context) error {
 		return err
 	}
 	var services map[string]interface{}
-	err = util.UnmarshalJSON(data, &services)
+	err = json.Unmarshal(data, &services)
 	if err != nil {
 		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "error while preparing opa data to json")
 		o.log.Error(ctx, "error while updating  opa data", zap.Error(err))
@@ -149,6 +149,7 @@ func (o *opa) GetData(ctx context.Context) error {
 	serv := map[string]interface{}{
 		"services": services,
 	}
+	o.log.Info(ctx, "Successfully retrieved opa data from database")
 	servicedata, err := json.Marshal(serv)
 	if err != nil {
 		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "error while preparing opa service data to json")
@@ -162,16 +163,23 @@ func (o *opa) GetData(ctx context.Context) error {
 		o.log.Error(ctx, "error while reading opa data", zap.Error(err))
 		return err
 	}
+	writer := bufio.NewWriter(f)
 
 	defer f.Close()
-	if _, err := f.WriteString(string(servicedata)); err != nil {
+	if _, err := writer.WriteString(string(servicedata)); err != nil {
 		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "can not write new opa data")
 		o.log.Error(ctx, "error while updating opa data", zap.Error(err))
 		return err
 
 	}
+	err = writer.Flush()
+	if err != nil {
+		err := errors.ErrOpaUpdatePolicyError.Wrap(err, "can not write new opa data")
+		o.log.Error(ctx, "error while updating opa data", zap.Error(err))
+		return err
+	}
 	time.Sleep(time.Second)
-	o.log.Info(ctx, "Opa rule refreshed")
+	o.log.Info(ctx, "Successfully updated enforcer")
 	return nil
 }
 
