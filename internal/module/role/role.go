@@ -89,7 +89,7 @@ func (r *role) AssignRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
-	
+
 	_, ok = ctx.Value("x-tenant").(string)
 	if ok {
 		role, err := r.rolePersistence.GetRole(ctx, param.RoleID, serviceID)
@@ -141,6 +141,33 @@ func (r *role) RevokeRole(ctx context.Context, param dto.TenantUsersRole) error 
 		r.log.Info(ctx, "invalid input", zap.Error(err))
 		return err
 	}
+	serviceID, err := uuid.Parse(ctx.Value("x-service-id").(string))
+	if err != nil {
+		err := errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("service id", ctx.Value("x-service-id")))
+		return err
+	}
+	role, err := r.rolePersistence.GetRole(ctx, param.RoleID, serviceID)
+	if err != nil {
+		return err
+	}
+	if role.Name == "admin" {
+		err := errors.ErrAcessError.New("Access denied")
+		r.log.Info(ctx, "Access denied, Not eligible to revoke the admin role", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")), zap.Any("user", ctx.Value("x-user")))
+		return err
+	}
+	userID, ok := ctx.Value("x-user").(string)
+	if !ok {
+		err := errors.ErrInvalidUserInput.New("invalid input")
+		r.log.Info(ctx, "invalid input", zap.Error(err), zap.Any("user id", ctx.Value("x-user")))
+		return err
+	}
+	if param.UserID.String() == userID {
+		err := errors.ErrAcessError.New("Access denied")
+		r.log.Info(ctx, "Access denied, Can not revoke your own role", zap.Error(err), zap.Any("tenant", ctx.Value("x-tenant")), zap.Any("user", ctx.Value("x-user")))
+		return err
+	}
+
 	isExist, err := r.rolePersistence.IsRoleAssigned(ctx, param)
 	if err != nil {
 		return err
